@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 import sys
 import argparse
@@ -25,9 +25,7 @@ def get_gh_issue_reservation(repo: str):
     :return: Returns a dict containing all issues with `title:login`
     """
 
-    issues = requests.get(
-        "https://api.github.com/repos/" + repo + "/issues"
-    ).json()
+    issues = requests.get("https://api.github.com/repos/" + repo + "/issues").json()
     reservations = {
         issue["title"].split()[-1].lower(): issue["user"]["login"] for issue in issues
     }
@@ -76,7 +74,9 @@ def exec_potodo(path: str, above: int, below: int, repo: str):
         is_above = False
         is_below = False
     else:
-        raise ValueError("Unexpected error occuped when processing values for above and below.")
+        raise ValueError(
+            "Unexpected error occuped when processing values for above and below."
+        )
 
     if repo:
         issue_reservations = get_gh_issue_reservation(repo)
@@ -108,10 +108,12 @@ def exec_potodo(path: str, above: int, below: int, repo: str):
                         printed_list.append(False)
                         continue
                 else:
-                    raise ValueError("Unexpected error: is_above/is_below values shouldn't be like this")
+                    raise ValueError(
+                        "Unexpected error: is_above/is_below values shouldn't be like this"
+                    )
 
-            t = str(po_file).split('/')[-2:]
-            po_file_name = t[0] + '/' + t[1]
+            t = str(po_file).split("/")[-2:]
+            po_file_name = t[0] + "/" + t[1]
 
             buffer.append(
                 f"- {po_file.name:<30} "
@@ -146,23 +148,38 @@ def main():
     """
 
     parser = argparse.ArgumentParser(
-        prog="potodo",
-        description="List and prettify the po files left to translate",
+        prog="potodo", description="List and prettify the po files left to translate"
     )
 
-    parser.add_argument("-p", "--path", type=str,
-                        help="REQUIRED: Execute Potodo in the given path", required=True)
+    parser.add_argument(
+        'path',
+        type=Path,
+        help="Execute Potodo in the given path",
+    )
 
-    parser.add_argument("-r", "--repo", type=str,
-                        help="REQUIRED: Repo in the form of ORG/REPO to display if translation is reserved in issues", required=True)
+    parser.add_argument(
+        'repo',
+        type=str,
+        help="Repo in the form of ORG/REPO to display if translation is reserved in issues",
+    )
 
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-a', '--above', type=int, help="Will list all TODOs ABOVE given INT%% completion")
-    group.add_argument('-b', '--below', type=int, help="Will list all TODOs BELOW given INT%% completion")
+    group.add_argument(
+        "-a",
+        "--above",
+        type=int,
+        help="Will list all TODOs ABOVE given INT%% completion",
+    )
+    group.add_argument(
+        "-b",
+        "--below",
+        type=int,
+        help="Will list all TODOs BELOW given INT%% completion",
+    )
 
     args = parser.parse_args()
     if not args.path:
-        path = '.'
+        path = "."
     else:
         path = str(args.path)
 
