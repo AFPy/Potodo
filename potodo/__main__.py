@@ -1,0 +1,1 @@
+__import__("potodo.potodo").potodo.main()
