@@ -51,7 +51,9 @@ def get_po_files_from_path(path: str):
     return po_files_per_directory
 
 
-def exec_potodo(path: str, above: int, below: int, repo: str):
+def exec_potodo(
+    path: str, above: int, below: int, repo: str, matching_files: bool, fuzzy: bool
+):
     """
     Will run everything based on the given parameters
 
@@ -78,7 +80,7 @@ def exec_potodo(path: str, above: int, below: int, repo: str):
             "Unexpected error occuped when processing values for above and below."
         )
 
-    if repo:
+    if repo and not matching_files:
         issue_reservations = get_gh_issue_reservation(repo)
     else:
         issue_reservations = None
@@ -112,37 +114,72 @@ def exec_potodo(path: str, above: int, below: int, repo: str):
                         "Unexpected error: is_above/is_below values shouldn't be like this"
                     )
 
-            t = str(po_file).split("/")[-2:]
-            po_file_name = t[0] + "/" + t[1]
+            if matching_files:
+                if fuzzy:
+                    # TODO: For fuzzys, obsolete files are listed. maybe make it so they aren't ?
+                    if len(po_file_stats.fuzzy_entries()) > 0:
+                        print(str(po_file))
+                    else:
+                        continue
+                else:
+                    print(str(po_file))
+            else:
+                if fuzzy:
+                    if len(po_file_stats.fuzzy_entries()) > 0:
+                        t = str(po_file).split("/")[-2:]
+                        po_file_name = t[0] + "/" + t[1]
 
-            buffer.append(
-                f"- {po_file.name:<30} "
-                + f"{len(po_file_stats.translated_entries()):3d} / {len(po_file_stats):3d} "
-                + f"({po_file_stat_percent:5.1f}% translated)"
-                + (
-                    f", {len(po_file_stats.fuzzy_entries())} fuzzy"
-                    if po_file_stats.fuzzy_entries()
-                    else ""
-                )
-                + (
-                    f", réservé par {issue_reservations[po_file_name.lower()]}"
-                    if po_file_name.lower() in issue_reservations
-                    else ""
-                )
-            )
-            folder_stats.append(po_file_stat_percent)
-            printed_list.append(True)
-        if True in printed_list:
+                        buffer.append(
+                            f"- {po_file.name:<30} "
+                            + f"{len(po_file_stats.translated_entries()):3d} / {len(po_file_stats):3d} "
+                            + f"({po_file_stat_percent:5.1f}% translated)"
+                            + (
+                                f", {len(po_file_stats.fuzzy_entries())} fuzzy"
+                                if po_file_stats.fuzzy_entries()
+                                else ""
+                            )
+                            + (
+                                f", réservé par {issue_reservations[po_file_name.lower()]}"
+                                if po_file_name.lower() in issue_reservations
+                                else ""
+                            )
+                        )
+                        folder_stats.append(po_file_stat_percent)
+                        printed_list.append(True)
+                    else:
+                        continue
+                else:
+                    t = str(po_file).split("/")[-2:]
+                    po_file_name = t[0] + "/" + t[1]
+
+                    buffer.append(
+                        f"- {po_file.name:<30} "
+                        + f"{len(po_file_stats.translated_entries()):3d} / {len(po_file_stats):3d} "
+                        + f"({po_file_stat_percent:5.1f}% translated)"
+                        + (
+                            f", {len(po_file_stats.fuzzy_entries())} fuzzy"
+                            if po_file_stats.fuzzy_entries()
+                            else ""
+                        )
+                        + (
+                            f", réservé par {issue_reservations[po_file_name.lower()]}"
+                            if po_file_name.lower() in issue_reservations
+                            else ""
+                        )
+                    )
+                    folder_stats.append(po_file_stat_percent)
+                    printed_list.append(True)
+        if True in printed_list and not matching_files:
             print(f"\n\n# {directory} ({statistics.mean(folder_stats):.2f}% done)\n")
             print("\n".join(buffer))
 
 
 def main():
     """
-    TODO: Add variable to skip github issues
+    TODO: Add variable to skip github (--github to enable ?)
     TODO: Remove requirement of -r and fetch the repo name manually
     TODO: Add json output possibility
-    TODO: -l for path line by line --matching-files
+    TODO: Add `-f` `--fuzzy` to show only fuzzys
     TODO: classify ?
     TODO: Make it so you can specify both: list todos above 50 but below 60 (between 50 and 60)
     """
@@ -151,16 +188,26 @@ def main():
         prog="potodo", description="List and prettify the po files left to translate"
     )
 
+    parser.add_argument("path", type=Path, help="Execute Potodo in the given path")
+
     parser.add_argument(
-        'path',
-        type=Path,
-        help="Execute Potodo in the given path",
+        "repo",
+        type=str,
+        help="Repo in the form of ORG/REPO to display if translation is reserved in issues",
     )
 
     parser.add_argument(
-        'repo',
-        type=str,
-        help="Repo in the form of ORG/REPO to display if translation is reserved in issues",
+        "-l",
+        "--matching-files",
+        action="store_true",
+        help="Suppress normal output; instead print the name of each matching po file from which output would normally have been printed.",
+    )
+
+    parser.add_argument(
+        "-f",
+        "--fuzzy",
+        action="store_true",
+        help="Will only print files marked as fuzzys",
     )
 
     group = parser.add_mutually_exclusive_group()
@@ -183,4 +230,6 @@ def main():
     else:
         path = str(args.path)
 
-    exec_potodo(path, args.above, args.below, args.repo)
+    exec_potodo(
+        path, args.above, args.below, args.repo, args.matching_files, args.fuzzy
+    )
