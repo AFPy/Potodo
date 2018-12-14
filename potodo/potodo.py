@@ -126,8 +126,11 @@ def exec_potodo(
             else:
                 if fuzzy:
                     if len(po_file_stats.fuzzy_entries()) > 0:
-                        t = str(po_file).split("/")[-2:]
-                        po_file_name = t[0] + "/" + t[1]
+                        if str(po_file).count('/') > 1:
+                            t = str(po_file).split("/")[-2:]
+                            po_file_name = t[0] + "/" + t[1]
+                        else:
+                            po_file_name = str(po_file)
 
                         buffer.append(
                             f"- {po_file.name:<30} "
@@ -149,8 +152,11 @@ def exec_potodo(
                     else:
                         continue
                 else:
-                    t = str(po_file).split("/")[-2:]
-                    po_file_name = t[0] + "/" + t[1]
+                    if str(po_file).count('/') > 1:
+                        t = str(po_file).split("/")[-2:]
+                        po_file_name = t[0] + "/" + t[1]
+                    else:
+                        po_file_name = str(po_file)
 
                     buffer.append(
                         f"- {po_file.name:<30} "
@@ -182,6 +188,8 @@ def main():
     TODO: Add `-f` `--fuzzy` to show only fuzzys
     TODO: classify ?
     TODO: Make it so you can specify both: list todos above 50 but below 60 (between 50 and 60)
+    TODO: Handle Pull Requests
+    TODO: add option to hide reserved files
     """
 
     parser = argparse.ArgumentParser(
