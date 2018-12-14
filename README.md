@@ -10,17 +10,17 @@ pip install potodo
 ## Usage
 
 ```
-usage: potodo [-h] [-l] [-f] [-o] [-n] [-a ABOVE | -b BELOW] path repo
+usage: potodo [-h] [-p PATH] [-l] [-f] [-o] [-n] [-a ABOVE | -b BELOW] repo
 
 List and prettify the po files left to translate
 
 positional arguments:
-  path                  Execute Potodo in the given path
   repo                  Repo in the form of ORG/REPO to display if translation
                         is reserved in issues
 
 optional arguments:
   -h, --help            show this help message and exit
+  -p PATH, --path PATH  Execute Potodo in the given path
   -l, --matching-files  Suppress normal output; instead print the name of each
                         matching po file from which output would normally have
                         been printed.
