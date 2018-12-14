@@ -194,7 +194,7 @@ def main():
         prog="potodo", description="List and prettify the po files left to translate"
     )
 
-    parser.add_argument("path", type=Path, help="Execute Potodo in the given path")
+    parser.add_argument('-p', "--path", type=Path, help="Execute Potodo in the given path")
 
     parser.add_argument(
         "repo",

@@ -10,7 +10,7 @@ pip install potodo
 ## Usage
 
 ```
-usage: potodo [-h] [-l] [-f] [-a ABOVE | -b BELOW] path repo
+usage: potodo [-h] [-l] [-f] [-o] [-n] [-a ABOVE | -b BELOW] path repo
 
 List and prettify the po files left to translate
 
@@ -25,6 +25,8 @@ optional arguments:
                         matching po file from which output would normally have
                         been printed.
   -f, --fuzzy           Will only print files marked as fuzzys
+  -o, --offline         Will not do any fetch to GitHub/online if given
+  -n, --no-reserved     Will not print the info about reserved files
   -a ABOVE, --above ABOVE
                         Will list all TODOs ABOVE given INT% completion
   -b BELOW, --below BELOW
