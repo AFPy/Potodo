@@ -52,7 +52,7 @@ def get_po_files_from_path(path: str):
 
 
 def exec_potodo(
-    path: str, above: int, below: int, repo: str, matching_files: bool, fuzzy: bool
+    path: str, above: int, below: int, repo: str, matching_files: bool, fuzzy: bool, offline: bool, hide_reserved: bool
 ):
     """
     Will run everything based on the given parameters
@@ -80,10 +80,10 @@ def exec_potodo(
             "Unexpected error occuped when processing values for above and below."
         )
 
-    if repo and not matching_files:
+    if repo and not matching_files and not offline and not hide_reserved:
         issue_reservations = get_gh_issue_reservation(repo)
     else:
-        issue_reservations = None
+        issue_reservations = []
 
     po_files_per_directory = get_po_files_from_path(path)
 
@@ -182,14 +182,12 @@ def exec_potodo(
 
 def main():
     """
-    TODO: Add variable to skip github (--github to enable ?)
     TODO: Remove requirement of -r and fetch the repo name manually
     TODO: Add json output possibility
-    TODO: Add `-f` `--fuzzy` to show only fuzzys
     TODO: classify ?
     TODO: Make it so you can specify both: list todos above 50 but below 60 (between 50 and 60)
-    TODO: Handle Pull Requests
-    TODO: add option to hide reserved files
+    TODO: Handle Pull Requests (PR are kinda like issues in API)
+    TODO: Fix if issue or PR doesn't have `.po` in title or full path (folder/file.po)
     """
 
     parser = argparse.ArgumentParser(
@@ -218,6 +216,20 @@ def main():
         help="Will only print files marked as fuzzys",
     )
 
+    parser.add_argument(
+        "-o",
+        "--offline",
+        action="store_true",
+        help="Will not do any fetch to GitHub/online if given",
+    )
+
+    parser.add_argument(
+        "-n",
+        "--no-reserved",
+        action="store_true",
+        help="Will not print the info about reserved files",
+    )
+
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
         "-a",
@@ -239,5 +251,5 @@ def main():
         path = str(args.path)
 
     exec_potodo(
-        path, args.above, args.below, args.repo, args.matching_files, args.fuzzy
+        path, args.above, args.below, args.repo, args.matching_files, args.fuzzy, args.offline, args.no_reserved
     )
