@@ -52,7 +52,14 @@ def get_po_files_from_path(path: str):
 
 
 def exec_potodo(
-    path: str, above: int, below: int, repo: str, matching_files: bool, fuzzy: bool, offline: bool, hide_reserved: bool
+    path: str,
+    above: int,
+    below: int,
+    github: str,
+    matching_files: bool,
+    fuzzy: bool,
+    offline: bool,
+    hide_reserved: bool,
 ):
     """
     Will run everything based on the given parameters
@@ -60,7 +67,7 @@ def exec_potodo(
     :param path: The path to search into
     :param above: The above threshold
     :param below: The below threshold
-    :param repo: The repository to query for issues
+    :param github: The github repository to query for issues
     """
 
     if not above:
@@ -72,8 +79,8 @@ def exec_potodo(
         if below < above:
             raise ValueError("Below must be inferior to above")
 
-    if repo and not matching_files and not offline and not hide_reserved:
-        issue_reservations = get_gh_issue_reservation(repo)
+    if github and not matching_files and not offline and not hide_reserved:
+        issue_reservations = get_gh_issue_reservation(github)
     else:
         issue_reservations = []
 
@@ -111,7 +118,7 @@ def exec_potodo(
             else:
                 if fuzzy:
                     if len(po_file_stats.fuzzy_entries()) > 0:
-                        if str(po_file).count('/') > 1:
+                        if str(po_file).count("/") > 1:
                             t = str(po_file).split("/")[-2:]
                             po_file_name = t[0] + "/" + t[1]
                         else:
@@ -137,7 +144,7 @@ def exec_potodo(
                     else:
                         continue
                 else:
-                    if str(po_file).count('/') > 1:
+                    if str(po_file).count("/") > 1:
                         t = str(po_file).split("/")[-2:]
                         po_file_name = t[0] + "/" + t[1]
                     else:
@@ -179,12 +186,15 @@ def main():
         prog="potodo", description="List and prettify the po files left to translate"
     )
 
-    parser.add_argument('-p', "--path", type=Path, help="Execute Potodo in the given path")
+    parser.add_argument(
+        "-p", "--path", type=Path, help="Execute Potodo in the given path"
+    )
 
     parser.add_argument(
-        "repo",
+        "--github",
         type=str,
-        help="Repo in the form of ORG/REPO to display if translation is reserved in issues",
+        help="Github repository, in the form of ORG/REPO to display if translation"
+        " is reserved in issues",
     )
 
     parser.add_argument(
@@ -235,5 +245,12 @@ def main():
         path = str(args.path)
 
     exec_potodo(
-        path, args.above, args.below, args.repo, args.matching_files, args.fuzzy, args.offline, args.no_reserved
+        path,
+        args.above,
+        args.below,
+        args.github,
+        args.matching_files,
+        args.fuzzy,
+        args.offline,
+        args.no_reserved,
     )
