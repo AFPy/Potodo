@@ -52,7 +52,14 @@ def get_po_files_from_path(path: str):
 
 
 def exec_potodo(
-    path: str, above: int, below: int, repo: str, matching_files: bool, fuzzy: bool, offline: bool, hide_reserved: bool
+    path: str,
+    above: int,
+    below: int,
+    repo: str,
+    matching_files: bool,
+    fuzzy: bool,
+    offline: bool,
+    hide_reserved: bool,
 ):
     """
     Will run everything based on the given parameters
@@ -111,7 +118,7 @@ def exec_potodo(
             else:
                 if fuzzy:
                     if len(po_file_stats.fuzzy_entries()) > 0:
-                        if str(po_file).count('/') > 1:
+                        if str(po_file).count("/") > 1:
                             t = str(po_file).split("/")[-2:]
                             po_file_name = t[0] + "/" + t[1]
                         else:
@@ -137,7 +144,7 @@ def exec_potodo(
                     else:
                         continue
                 else:
-                    if str(po_file).count('/') > 1:
+                    if str(po_file).count("/") > 1:
                         t = str(po_file).split("/")[-2:]
                         po_file_name = t[0] + "/" + t[1]
                     else:
@@ -179,7 +186,9 @@ def main():
         prog="potodo", description="List and prettify the po files left to translate"
     )
 
-    parser.add_argument('-p', "--path", type=Path, help="Execute Potodo in the given path")
+    parser.add_argument(
+        "-p", "--path", type=Path, help="Execute Potodo in the given path"
+    )
 
     parser.add_argument(
         "repo",
@@ -235,5 +244,12 @@ def main():
         path = str(args.path)
 
     exec_potodo(
-        path, args.above, args.below, args.repo, args.matching_files, args.fuzzy, args.offline, args.no_reserved
+        path,
+        args.above,
+        args.below,
+        args.repo,
+        args.matching_files,
+        args.fuzzy,
+        args.offline,
+        args.no_reserved,
     )
