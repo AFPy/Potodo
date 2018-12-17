@@ -63,22 +63,14 @@ def exec_potodo(
     :param repo: The repository to query for issues
     """
 
-    if not above and below:
-        is_all = False
-        is_above = False
-        is_below = True
-    elif not below and above:
-        is_all = False
-        is_above = True
-        is_below = False
-    elif not below and not above:
-        is_all = True
-        is_above = False
-        is_below = False
-    else:
-        raise ValueError(
-            "Unexpected error occuped when processing values for above and below."
-        )
+    if not above:
+        above = 0
+    if not below:
+        below = 100
+
+    if above and below:
+        if below < above:
+            raise ValueError("Below must be inferior to above")
 
     if repo and not matching_files and not offline and not hide_reserved:
         issue_reservations = get_gh_issue_reservation(repo)
@@ -98,21 +90,14 @@ def exec_potodo(
                 folder_stats.append(po_file_stat_percent)
                 printed_list.append(False)
                 continue
-            if not is_all:
-                if is_above:
-                    if int(po_file_stat_percent) < above:
-                        folder_stats.append(po_file_stat_percent)
-                        printed_list.append(False)
-                        continue
-                elif is_below:
-                    if int(po_file_stat_percent) > below:
-                        folder_stats.append(po_file_stat_percent)
-                        printed_list.append(False)
-                        continue
-                else:
-                    raise ValueError(
-                        "Unexpected error: is_above/is_below values shouldn't be like this"
-                    )
+            if int(po_file_stat_percent) < above:
+                folder_stats.append(po_file_stat_percent)
+                printed_list.append(False)
+                continue
+            if int(po_file_stat_percent) > below:
+                folder_stats.append(po_file_stat_percent)
+                printed_list.append(False)
+                continue
 
             if matching_files:
                 if fuzzy:
@@ -185,9 +170,9 @@ def main():
     TODO: Remove requirement of -r and fetch the repo name manually
     TODO: Add json output possibility
     TODO: classify ?
-    TODO: Make it so you can specify both: list todos above 50 but below 60 (between 50 and 60)
     TODO: Handle Pull Requests (PR are kinda like issues in API)
     TODO: Fix if issue or PR doesn't have `.po` in title or full path (folder/file.po)
+    TODO: Add no fuzzy option
     """
 
     parser = argparse.ArgumentParser(
@@ -230,14 +215,13 @@ def main():
         help="Will not print the info about reserved files",
     )
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument(
+    parser.add_argument(
         "-a",
         "--above",
         type=int,
         help="Will list all TODOs ABOVE given INT%% completion",
     )
-    group.add_argument(
+    parser.add_argument(
         "-b",
         "--below",
         type=int,

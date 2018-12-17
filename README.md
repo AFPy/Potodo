@@ -10,7 +10,7 @@ pip install potodo
 ## Usage
 
 ```
-usage: potodo [-h] [-p PATH] [-l] [-f] [-o] [-n] [-a ABOVE | -b BELOW] repo
+usage: potodo [-h] [-p PATH] [-l] [-f] [-o] [-n] [-a ABOVE] [-b BELOW] repo
 
 List and prettify the po files left to translate
 
