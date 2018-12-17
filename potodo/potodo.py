@@ -55,7 +55,7 @@ def exec_potodo(
     path: str,
     above: int,
     below: int,
-    repo: str,
+    github: str,
     matching_files: bool,
     fuzzy: bool,
     offline: bool,
@@ -67,7 +67,7 @@ def exec_potodo(
     :param path: The path to search into
     :param above: The above threshold
     :param below: The below threshold
-    :param repo: The repository to query for issues
+    :param github: The github repository to query for issues
     """
 
     if not above:
@@ -79,8 +79,8 @@ def exec_potodo(
         if below < above:
             raise ValueError("Below must be inferior to above")
 
-    if repo and not matching_files and not offline and not hide_reserved:
-        issue_reservations = get_gh_issue_reservation(repo)
+    if github and not matching_files and not offline and not hide_reserved:
+        issue_reservations = get_gh_issue_reservation(github)
     else:
         issue_reservations = []
 
@@ -191,9 +191,10 @@ def main():
     )
 
     parser.add_argument(
-        "repo",
+        "--github",
         type=str,
-        help="Repo in the form of ORG/REPO to display if translation is reserved in issues",
+        help="Github repository, in the form of ORG/REPO to display if translation"
+        " is reserved in issues",
     )
 
     parser.add_argument(
@@ -247,7 +248,7 @@ def main():
         path,
         args.above,
         args.below,
-        args.repo,
+        args.github,
         args.matching_files,
         args.fuzzy,
         args.offline,
