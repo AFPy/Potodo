@@ -14,15 +14,7 @@ except ImportError:
     print("You need to install polib and requests to be able to run potodo.")
     sys.exit(1)
 
-from potodo._github import get_repo_name
-
-
-def get_gh_issue_reservation():
-    issues = requests.get("https://api.github.com/repos/" + get_repo_name() + "/issues").json()
-    reservations = {
-        issue["title"].split()[-1].lower(): issue["user"]["login"] for issue in issues
-    }
-    return reservations
+from potodo._github import get_reservation_list
 
 
 def get_po_files_from_path(path: str):
@@ -75,7 +67,7 @@ def exec_potodo(
             raise ValueError("Below must be inferior to above")
 
     if not matching_files and not offline and not hide_reserved:
-        issue_reservations = get_gh_issue_reservation()
+        issue_reservations = get_reservation_list()
     else:
         issue_reservations = []
 
@@ -179,7 +171,8 @@ def main():
         "-l",
         "--matching-files",
         action="store_true",
-        help="Suppress normal output; instead print the name of each matching po file from which output would normally have been printed.",
+        help="Suppress normal output; instead print the name of each matching po file from which output would normally "
+        "have been printed.",
     )
 
     parser.add_argument(

@@ -18,7 +18,7 @@ setuptools.setup(
     package_dir={"potodo": "potodo"},
     entry_points={"console_scripts": ["potodo=potodo.potodo:main"]},
     include_package_data=True,
-    install_requires=["polib", 'requests'],
+    install_requires=["polib", "requests"],
     license="MIT license",
     zip_safe=False,
     keywords="potodo",
