@@ -10,22 +10,15 @@ try:
     import polib
     import requests
 except ImportError:
+    # TODO: Have the content of requirements.txt dumped in this error message
     print("You need to install polib and requests to be able to run potodo.")
     sys.exit(1)
 
+from potodo._github import get_repo_name
 
-def get_gh_issue_reservation(repo: str):
-    """
-    TODO: Try except if repo unvalid
 
-    Will query given repo and get all issues and return a list of reservations
-
-    :param repo: The repository to query on the API
-
-    :return: Returns a dict containing all issues with `title:login`
-    """
-
-    issues = requests.get("https://api.github.com/repos/" + repo + "/issues").json()
+def get_gh_issue_reservation():
+    issues = requests.get("https://api.github.com/repos/" + get_repo_name() + "/issues").json()
     reservations = {
         issue["title"].split()[-1].lower(): issue["user"]["login"] for issue in issues
     }
@@ -55,7 +48,6 @@ def exec_potodo(
     path: str,
     above: int,
     below: int,
-    github: str,
     matching_files: bool,
     fuzzy: bool,
     offline: bool,
@@ -67,7 +59,10 @@ def exec_potodo(
     :param path: The path to search into
     :param above: The above threshold
     :param below: The below threshold
-    :param github: The github repository to query for issues
+    :param matching_files: Should the file paths be printed instead of normal output
+    :param fuzzy: Should only fuzzys be printed
+    :param offline: Will not connect to internet
+    :param hide_reserved: Will not show the reserved files
     """
 
     if not above:
@@ -79,8 +74,8 @@ def exec_potodo(
         if below < above:
             raise ValueError("Below must be inferior to above")
 
-    if github and not matching_files and not offline and not hide_reserved:
-        issue_reservations = get_gh_issue_reservation(github)
+    if not matching_files and not offline and not hide_reserved:
+        issue_reservations = get_gh_issue_reservation()
     else:
         issue_reservations = []
 
@@ -108,7 +103,6 @@ def exec_potodo(
 
             if matching_files:
                 if fuzzy:
-                    # TODO: For fuzzys, obsolete files are listed. maybe make it so they aren't ?
                     if len(po_file_stats.fuzzy_entries()) > 0:
                         print(str(po_file))
                     else:
@@ -173,28 +167,12 @@ def exec_potodo(
 
 
 def main():
-    """
-    TODO: Remove requirement of -r and fetch the repo name manually
-    TODO: Add json output possibility
-    TODO: classify ?
-    TODO: Handle Pull Requests (PR are kinda like issues in API)
-    TODO: Fix if issue or PR doesn't have `.po` in title or full path (folder/file.po)
-    TODO: Add no fuzzy option
-    """
-
     parser = argparse.ArgumentParser(
         prog="potodo", description="List and prettify the po files left to translate"
     )
 
     parser.add_argument(
         "-p", "--path", type=Path, help="Execute Potodo in the given path"
-    )
-
-    parser.add_argument(
-        "--github",
-        type=str,
-        help="Github repository, in the form of ORG/REPO to display if translation"
-        " is reserved in issues",
     )
 
     parser.add_argument(
@@ -248,7 +226,6 @@ def main():
         path,
         args.above,
         args.below,
-        args.github,
         args.matching_files,
         args.fuzzy,
         args.offline,
