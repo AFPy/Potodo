@@ -102,6 +102,7 @@ def exec_potodo(
                 else:
                     print(str(po_file))
             else:
+                tot_num = len(po_file_stats) - len(po_file_stats.obsolete_entries())
                 if fuzzy:
                     if len(po_file_stats.fuzzy_entries()) > 0:
                         if str(po_file).count("/") > 1:
@@ -112,7 +113,7 @@ def exec_potodo(
 
                         buffer.append(
                             f"- {po_file.name:<30} "
-                            + f"{len(po_file_stats.translated_entries()):3d} / {len(po_file_stats):3d} "
+                            + f"{len(po_file_stats.translated_entries()):3d} / {tot_num:3d} "
                             + f"({po_file_stat_percent:5.1f}% translated)"
                             + (
                                 f", {len(po_file_stats.fuzzy_entries())} fuzzy"
@@ -138,7 +139,7 @@ def exec_potodo(
 
                     buffer.append(
                         f"- {po_file.name:<30} "
-                        + f"{len(po_file_stats.translated_entries()):3d} / {len(po_file_stats):3d} "
+                        + f"{len(po_file_stats.translated_entries()):3d} / {tot_num:3d} "
                         + f"({po_file_stat_percent:5.1f}% translated)"
                         + (
                             f", {len(po_file_stats.fuzzy_entries())} fuzzy"
