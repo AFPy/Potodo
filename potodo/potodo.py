@@ -44,6 +44,7 @@ def exec_potodo(
     fuzzy: bool,
     offline: bool,
     hide_reserved: bool,
+    by_entrie_number: bool
 ):
     """
     Will run everything based on the given parameters
@@ -55,6 +56,7 @@ def exec_potodo(
     :param fuzzy: Should only fuzzys be printed
     :param offline: Will not connect to internet
     :param hide_reserved: Will not show the reserved files
+    :param by_entrie_number: Render list with number of entries to do (translate or review) instead of percent done
     """
 
     if not above:
@@ -111,6 +113,70 @@ def exec_potodo(
                         else:
                             po_file_name = str(po_file)
 
+                        if by_entrie_number:
+                            todonum = len(po_file_stats.fuzzy_entries()) + \
+                                len(po_file_stats.untranslated_entries())
+                            buffer.append(
+                                f"- {po_file.name:<30} "
+                                + f"{todonum:3d} to do"
+                                + (
+                                    f", {len(po_file_stats.fuzzy_entries())} fuzzy"
+                                    if po_file_stats.fuzzy_entries()
+                                    else ""
+                                )
+                                + (
+                                    f", réservé par {issue_reservations[po_file_name.lower()]}"
+                                    if po_file_name.lower() in issue_reservations
+                                    else ""
+                                )
+                            )
+                        else:
+                            buffer.append(
+                                f"- {po_file.name:<30} "
+                                + f"{len(po_file_stats.translated_entries()):3d} / {tot_num:3d} "
+                                + f"({po_file_stat_percent:5.1f}% translated)"
+                                + (
+                                    f" (including {len(po_file_stats.fuzzy_entries())} fuzzy)"
+                                    if po_file_stats.fuzzy_entries()
+                                    else ""
+                                )
+                                + (
+                                    f", réservé par {issue_reservations[po_file_name.lower()]}"
+                                    if po_file_name.lower() in issue_reservations
+                                    else ""
+                                )
+                            )
+                        folder_stats.append(po_file_stat_percent)
+                        printed_list.append(True)
+                    else:
+                        continue
+                else:
+                    if str(po_file).count("/") > 1:
+                        t = str(po_file).split("/")[-2:]
+                        po_file_name = t[0] + "/" + t[1]
+                    else:
+                        po_file_name = str(po_file)
+
+                    if by_entrie_number:
+                        todonum = len(po_file_stats.fuzzy_entries()) + \
+                            len(po_file_stats.untranslated_entries())
+                        buffer.append(
+                            f"- {po_file.name:<30} "
+                            + f"{todonum:3d} to do"
+                            + (
+                                f" (including {len(po_file_stats.fuzzy_entries())} fuzzy)"
+                                if po_file_stats.fuzzy_entries()
+                                else ""
+                            )
+                            + (
+                                f", réservé par {issue_reservations[po_file_name.lower()]}"
+                                if po_file_name.lower() in issue_reservations
+                                else ""
+                            )
+                        )
+                    else:
+                        todonum = len(po_file_stats.fuzzy_entries()) + \
+                            len(po_file_stats.untranslated_entries())
                         buffer.append(
                             f"- {po_file.name:<30} "
                             + f"{len(po_file_stats.translated_entries()):3d} / {tot_num:3d} "
@@ -126,32 +192,6 @@ def exec_potodo(
                                 else ""
                             )
                         )
-                        folder_stats.append(po_file_stat_percent)
-                        printed_list.append(True)
-                    else:
-                        continue
-                else:
-                    if str(po_file).count("/") > 1:
-                        t = str(po_file).split("/")[-2:]
-                        po_file_name = t[0] + "/" + t[1]
-                    else:
-                        po_file_name = str(po_file)
-
-                    buffer.append(
-                        f"- {po_file.name:<30} "
-                        + f"{len(po_file_stats.translated_entries()):3d} / {tot_num:3d} "
-                        + f"({po_file_stat_percent:5.1f}% translated)"
-                        + (
-                            f", {len(po_file_stats.fuzzy_entries())} fuzzy"
-                            if po_file_stats.fuzzy_entries()
-                            else ""
-                        )
-                        + (
-                            f", réservé par {issue_reservations[po_file_name.lower()]}"
-                            if po_file_name.lower() in issue_reservations
-                            else ""
-                        )
-                    )
                     folder_stats.append(po_file_stat_percent)
                     printed_list.append(True)
         if True in printed_list and not matching_files:
@@ -210,6 +250,13 @@ def main():
         help="Will list all TODOs BELOW given INT%% completion",
     )
 
+    parser.add_argument(
+        "-e",
+        "--by-entrie-number",
+        action="store_true",
+        help="Render list with number of entries to do (translate or review) instead of percent done",
+    )
+
     args = parser.parse_args()
     if not args.path:
         path = "."
@@ -224,4 +271,5 @@ def main():
         args.fuzzy,
         args.offline,
         args.no_reserved,
+        args.by_entrie_number,
     )
