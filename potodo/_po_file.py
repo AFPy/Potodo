@@ -64,9 +64,6 @@ def get_po_files_from_repo(repo_path: str) -> dict:
     po_files_per_directory: dict = {path.parent.name: set(path.parent.glob("*.po")) for path in all_po_files}
     end_dict: dict = {}
     for directory, po_files in sorted(po_files_per_directory.items()):
-        new_list: list = []
-        for po_file in po_files:
-            # For each file in each directory, gets a PoFile instance then add it to a dict
-            new_list.append(PoFile(po_file, directory))
-        end_dict[directory] = new_list
+        # For each file in each directory, gets a PoFile instance then add it to a dict
+        end_dict[directory] = [PoFile(po_file, directory) for po_file in po_files]
     return end_dict
