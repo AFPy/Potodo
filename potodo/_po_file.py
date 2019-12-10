@@ -7,6 +7,7 @@ class PoFile:
     """
     Class for each `.po` file containing all the necessary information about its progress
     """
+
     def __init__(self, path: Path, directory: str):
         """
         Initialises the class with all the correct information
@@ -35,11 +36,13 @@ class PoFile:
         self.filename_dir = self.directory + "/" + self.filename
 
     def __str__(self):
-        return f"Filename: {self.filename}\n" \
-               f"Fuzzy Entries: {self.fuzzy_entries}\n" \
-               f"Percent Translated: {self.percent_translated}\n" \
-               f"Translated Entries: {self.translated_entries}\n" \
-               f"Untranslated Entries: {self.untranslated_entries}"
+        return (
+            f"Filename: {self.filename}\n"
+            f"Fuzzy Entries: {self.fuzzy_entries}\n"
+            f"Percent Translated: {self.percent_translated}\n"
+            f"Translated Entries: {self.translated_entries}\n"
+            f"Untranslated Entries: {self.untranslated_entries}"
+        )
 
     def __lt__(self, other):
         """
@@ -55,7 +58,9 @@ def get_po_files_from_repo(repo_path: str):
     """
 
     # Get all the files matching `**/*.po` and not being `.git/` in the given path
-    all_po_files = [file for file in Path(repo_path).glob("**/*.po") if ".git/" not in str(file)]
+    all_po_files = [
+        file for file in Path(repo_path).glob("**/*.po") if ".git/" not in str(file)
+    ]
 
     # Separates each directory and places all pofiles for each directory accordingly
     po_files_per_directory = {

@@ -44,7 +44,9 @@ def initialize_arguments(above: int, below: int, offline: bool, hide_reserved: b
     return above, below, issue_reservations
 
 
-def print_dir_stats(directory_name: str, buffer: list, folder_stats: list, printed_list: list):
+def print_dir_stats(
+    directory_name: str, buffer: list, folder_stats: list, printed_list: list
+):
     """
     This function prints the directory name, its stats and the buffer
     """
@@ -55,7 +57,15 @@ def print_dir_stats(directory_name: str, buffer: list, folder_stats: list, print
         print("\n".join(buffer))
 
 
-def buffer_add(buffer: list, folder_stats: list, printed_list: list, po_file: PoFile, issue_reservations: dict, above: int, below: int):
+def buffer_add(
+    buffer: list,
+    folder_stats: list,
+    printed_list: list,
+    po_file: PoFile,
+    issue_reservations: dict,
+    above: int,
+    below: int,
+):
     """
     Will add to the buffer the information to print about the file is the file isn't translated entirely or above or below requested values
     """
@@ -97,11 +107,7 @@ def buffer_add(buffer: list, folder_stats: list, printed_list: list, po_file: Po
         # The percent of the file translated
         + f"({po_file.percent_translated:5.1f}% translated)"
         # The fuzzies in the file IF fuzzies exists in the file
-        + (
-            f", {po_file.fuzzy_nb} fuzzy"
-            if po_file.fuzzy_entries
-            else ""
-        )
+        + (f", {po_file.fuzzy_nb} fuzzy" if po_file.fuzzy_entries else "")
         # The `reserved by` if the file is reserved unless if the offline/hide_reservation are enabled
         + (
             f", réservé par {issue_reservations[po_file.filename_dir.lower()]}"
@@ -119,12 +125,7 @@ def buffer_add(buffer: list, folder_stats: list, printed_list: list, po_file: Po
 
 
 def exec_potodo(
-    path: str,
-    above: int,
-    below: int,
-    fuzzy: bool,
-    offline: bool,
-    hide_reserved: bool,
+    path: str, above: int, below: int, fuzzy: bool, offline: bool, hide_reserved: bool
 ):
     """
     Will run everything based on the given parameters
@@ -138,7 +139,9 @@ def exec_potodo(
     """
 
     # Initialize the arguments
-    above, below, issue_reservations = initialize_arguments(above, below, offline, hide_reserved)
+    above, below, issue_reservations = initialize_arguments(
+        above, below, offline, hide_reserved
+    )
 
     # Get a dict with the directory name and all po files.
     po_files_and_dirs = get_po_files_from_repo(path)
@@ -154,12 +157,28 @@ def exec_potodo(
             if fuzzy:
                 # Ignore files without fuzzies
                 if len(po_file.fuzzy_entries) > 0:
-                    buffer, folder_stats, printed_list = buffer_add(buffer, folder_stats, printed_list, po_file, issue_reservations, above, below)
+                    buffer, folder_stats, printed_list = buffer_add(
+                        buffer,
+                        folder_stats,
+                        printed_list,
+                        po_file,
+                        issue_reservations,
+                        above,
+                        below,
+                    )
                 else:
                     pass
             else:
                 # All files, with and without fuzzies
-                buffer, folder_stats, printed_list = buffer_add(buffer, folder_stats, printed_list, po_file, issue_reservations, above, below)
+                buffer, folder_stats, printed_list = buffer_add(
+                    buffer,
+                    folder_stats,
+                    printed_list,
+                    po_file,
+                    issue_reservations,
+                    above,
+                    below,
+                )
         # Once all files have been processed, print the dir and the files
         print_dir_stats(directory_name, buffer, folder_stats, printed_list)
 
@@ -215,10 +234,5 @@ def main():
         path = str(args.path)
 
     exec_potodo(
-        path,
-        args.above,
-        args.below,
-        args.fuzzy,
-        args.offline,
-        args.no_reserved,
+        path, args.above, args.below, args.fuzzy, args.offline, args.no_reserved
     )
