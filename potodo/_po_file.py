@@ -10,7 +10,7 @@ class PoFile:
 
     def __init__(self, path: Path, directory: str):
         """
-        Initialises the class with all the correct information
+        Initializes the class with all the correct information
         """
         self.path: Path = path
         self.filename: str = path.name
