@@ -4,10 +4,17 @@ from pathlib import Path
 
 
 class PoFile:
-    def __init__(self, path: Path):
+    """
+    Class for each `.po` file containing all the necessary information about its progress
+    """
+    def __init__(self, path: Path, directory: str):
+        """
+        Initialises the class with all the correct information
+        """
         self.path: Path = path
         self.filename: str = path.name
         self.pofile: polib.POFile = polib.pofile(self.path)
+        self.directory = directory
 
         self.fuzzy_entries: list = self.pofile.fuzzy_entries()
         self.fuzzy_nb: int = len(self.fuzzy_entries)
@@ -25,8 +32,7 @@ class PoFile:
 
         self.po_file_size = len(self.pofile) - self.obsolete_nb
 
-    def get_dir_and_filename(self, directory):
-        return directory + "/" + self.filename
+        self.filename_dir = self.directory + "/" + self.filename
 
     def __str__(self):
         return f"Filename: {self.filename}\n" \
@@ -36,10 +42,22 @@ class PoFile:
                f"Untranslated Entries: {self.untranslated_entries}"
 
     def __lt__(self, other):
+        """
+        When two PoFiles are compared, their filenames are compared.
+        """
         return self.filename < other.filename
 
+
 def get_po_files_from_repo(repo_path: str):
+    """
+    Gets all the po files from a given repository.
+    Will return a list with all directories and PoFile instances of `.po` files in those directories
+    """
+
+    # Get all the files matching `**/*.po` and not being `.git/` in the given path
     all_po_files = [file for file in Path(repo_path).glob("**/*.po") if ".git/" not in str(file)]
+
+    # Separates each directory and places all pofiles for each directory accordingly
     po_files_per_directory = {
         path.parent.name: set(path.parent.glob("*.po")) for path in all_po_files
     }
@@ -47,6 +65,7 @@ def get_po_files_from_repo(repo_path: str):
     for directory, po_files in sorted(po_files_per_directory.items()):
         new_list = []
         for po_file in po_files:
-            new_list.append(PoFile(po_file))
+            # For each file in each directory, gets a PoFile instance then add it to a dict
+            new_list.append(PoFile(po_file, directory))
         end_dict[directory] = new_list
     return end_dict
