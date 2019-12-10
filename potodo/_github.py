@@ -1,15 +1,15 @@
 import requests
 
-from subprocess import getoutput
+from subprocess import check_output
 
 
 def get_repo_url() -> str:
     """
     Tries to get the repository url from git commands
     """
-    url: str = getoutput("git remote get-url --all upstream")
+    url: str = str(check_output("git remote get-url --all upstream"))
     if "fatal" in url:
-        url = getoutput("git remote get-url --all origin")
+        url = str(check_output("git remote get-url --all origin"))
     if "fatal" in url:
         # If the commands didn't work
         raise ValueError(f"Unknown error. `git get-url --all upstream|origin` returned {url}")
