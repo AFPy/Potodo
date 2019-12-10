@@ -15,7 +15,7 @@ except ImportError:
     sys.exit(1)
 
 from potodo._github import get_reservation_list
-from potodo._po_file import get_po_files
+from potodo._po_file import PoFile
 
 
 def get_po_files_from_path(path: str):
@@ -37,11 +37,95 @@ def get_po_files_from_path(path: str):
     return po_files_per_directory
 
 
+# def initialize_arguments(above: int, below: int, matching_files: bool, offline: bool, hide_reserved: bool):
+def initialize_arguments(above: int, below: int, offline: bool, hide_reserved: bool):
+    if not above:
+        above = 0
+    if not below:
+        below = 100
+
+    if above and below:
+        if below < above:
+            raise ValueError("Below must be inferior to above")
+
+    # if not matching_files and not offline and not hide_reserved:
+    #     issue_reservations = get_reservation_list()
+    # else:
+    #     issue_reservations = []
+    if not offline and not hide_reserved:
+        issue_reservations = get_reservation_list()
+    else:
+        issue_reservations = []
+    return above, below, issue_reservations
+
+
+def print_dir_stats(directory_name: str, buffer: list, folder_stats: list, printed_list: list, fuzzy: bool):
+    if True in printed_list:
+        print(f"\n\n# {directory_name} ({statistics.mean(folder_stats):.2f}% done)\n")
+        print("\n".join(buffer))
+
+
+# def print_matching_files(directory_name: str, po_files: list, fuzzy: bool):
+#     for po_file in po_files:
+#         po_file_stats = po_file.pofile
+#         if fuzzy:
+#             if len(po_file_stats.fuzzy_entries()) > 0:
+#                 print(directory_name + "/" + po_file.filename)
+#             else:
+#                 continue
+#         else:
+#             print(directory_name + "/" + po_file.filename)
+
+
+def buffer_add(buffer: list, folder_stats: list, printed_list: list, po_file: PoFile, issue_reservations: dict, directory_name: str, above: int, below: int):
+
+    if po_file.percent_translated == 100:
+        # Add the percentage of the file to the stats of the folder
+        folder_stats.append(po_file.percent_translated)
+        # Indicate not to print that file
+        printed_list.append(False)
+        return buffer, folder_stats, printed_list
+
+    if po_file.percent_translated < above:
+        # Add the percentage of the file to the stats of the folder
+        folder_stats.append(po_file.percent_translated)
+        # Indicate not to print that file
+        printed_list.append(False)
+        return buffer, folder_stats, printed_list
+
+    if po_file.percent_translated > below:
+        # Add the percentage of the file to the stats of the folder
+        folder_stats.append(po_file.percent_translated)
+        # Indicate not to print that file
+        printed_list.append(False)
+        return buffer, folder_stats, printed_list
+
+    buffer.append(
+        f"- {po_file.filename:<30} "
+        + f"{po_file.translated_nb:3d} / {po_file.po_file_size:3d} "
+        + f"({po_file.percent_translated:5.1f}% translated)"
+        + (
+            f", {po_file.fuzzy_nb} fuzzy"
+            if po_file.fuzzy_entries
+            else ""
+        )
+        + (
+            f", réservé par {issue_reservations[po_file.get_dir_and_filename(directory_name).lower()]}"
+            if po_file.get_dir_and_filename(directory_name).lower() in issue_reservations
+            else ""
+        )
+    )
+    folder_stats.append(po_file.percent_translated)
+    printed_list.append(True)
+
+    return buffer, folder_stats, printed_list
+
+
 def exec_potodo(
     path: str,
     above: int,
     below: int,
-    matching_files: bool,
+    # matching_files: bool,
     fuzzy: bool,
     offline: bool,
     hide_reserved: bool,
@@ -52,290 +136,38 @@ def exec_potodo(
     :param path: The path to search into
     :param above: The above threshold
     :param below: The below threshold
-    :param matching_files: Should the file paths be printed instead of normal output
-    :param fuzzy: Should only fuzzys be printed
+    # :param matching_files: Should the file paths be printed instead of normal output
+    :param fuzzy: Should only fuzzies be printed
     :param offline: Will not connect to internet
     :param hide_reserved: Will not show the reserved files
     """
 
-    if not above:
-        above = 0
-    if not below:
-        below = 100
+    # above, below, issue_reservations = initialize_arguments(above, below, matching_files, offline, hide_reserved)
+    above, below, issue_reservations = initialize_arguments(above, below, offline, hide_reserved)
 
-    if above and below:
-        if below < above:
-            raise ValueError("Below must be inferior to above")
+    from potodo._po_file import get_po_files_from_repo
 
-    if not matching_files and not offline and not hide_reserved:
-        issue_reservations = get_reservation_list()
-    else:
-        issue_reservations = []
+    po_files_and_dirs = get_po_files_from_repo(path)
 
-    po_files_per_directory = get_po_files_from_path(path)
-
-    for directory, po_files in sorted(po_files_per_directory.items()):
+    for directory_name, po_files in sorted(po_files_and_dirs.items()):
+        # if matching_files:
+        #     print_matching_files(directory_name, po_files, fuzzy)
         buffer = []
         folder_stats = []
         printed_list = []
+
         for po_file in sorted(po_files):
-            po_file_stats = polib.pofile(po_file)
-            po_file_stat_percent = po_file_stats.percent_translated()
-            if po_file_stat_percent == 100:
-                folder_stats.append(po_file_stat_percent)
-                printed_list.append(False)
-                continue
-            if int(po_file_stat_percent) < above:
-                folder_stats.append(po_file_stat_percent)
-                printed_list.append(False)
-                continue
-            if int(po_file_stat_percent) > below:
-                folder_stats.append(po_file_stat_percent)
-                printed_list.append(False)
-                continue
-
-            if matching_files:
-                if fuzzy:
-                    if len(po_file_stats.fuzzy_entries()) > 0:
-                        print(str(po_file))
-                    else:
-                        continue
+            if fuzzy:
+                # ignore files without fuzzies
+                if len(po_file.fuzzy_entries) > 0:
+                    buffer, folder_stats, printed_list = buffer_add(buffer, folder_stats, printed_list, po_file, issue_reservations, directory_name, above, below)
                 else:
-                    print(str(po_file))
+                    pass
             else:
-                tot_num = len(po_file_stats) - len(po_file_stats.obsolete_entries())
-                if fuzzy:
-                    if len(po_file_stats.fuzzy_entries()) > 0:
-                        if str(po_file).count("/") > 1:
-                            t = str(po_file).split("/")[-2:]
-                            po_file_name = t[0] + "/" + t[1]
-                        else:
-                            po_file_name = str(po_file)
-
-                        buffer.append(
-                            f"- {po_file.name:<30} "
-                            + f"{len(po_file_stats.translated_entries()):3d} / {tot_num:3d} "
-                            + f"({po_file_stat_percent:5.1f}% translated)"
-                            + (
-                                f", {len(po_file_stats.fuzzy_entries())} fuzzy"
-                                if po_file_stats.fuzzy_entries()
-                                else ""
-                            )
-                            + (
-                                f", réservé par {issue_reservations[po_file_name.lower()]}"
-                                if po_file_name.lower() in issue_reservations
-                                else ""
-                            )
-                        )
-                        folder_stats.append(po_file_stat_percent)
-                        printed_list.append(True)
-                    else:
-                        continue
-                else:
-                    if str(po_file).count("/") > 1:
-                        t = str(po_file).split("/")[-2:]
-                        po_file_name = t[0] + "/" + t[1]
-                    else:
-                        po_file_name = str(po_file)
-
-                    buffer.append(
-                        f"- {po_file.name:<30} "
-                        + f"{len(po_file_stats.translated_entries()):3d} / {tot_num:3d} "
-                        + f"({po_file_stat_percent:5.1f}% translated)"
-                        + (
-                            f", {len(po_file_stats.fuzzy_entries())} fuzzy"
-                            if po_file_stats.fuzzy_entries()
-                            else ""
-                        )
-                        + (
-                            f", réservé par {issue_reservations[po_file_name.lower()]}"
-                            if po_file_name.lower() in issue_reservations
-                            else ""
-                        )
-                    )
-                    folder_stats.append(po_file_stat_percent)
-                    printed_list.append(True)
-        if True in printed_list and not matching_files:
-            print(f"\n\n# {directory} ({statistics.mean(folder_stats):.2f}% done)\n")
-            print("\n".join(buffer))
-
-
-def exec_potodo2(
-    path: str,
-    above: int,
-    below: int,
-    matching_files: bool,
-    fuzzy: bool,
-    offline: bool,
-    hide_reserved: bool,
-):
-    if not above:
-        above = 0
-    if not below:
-        below = 100
-
-    if above and below:
-        if below < above:
-            raise ValueError("Below must be inferior to above")
-
-    if not matching_files and not offline and not hide_reserved:
-        issue_reservations = get_reservation_list()
-    else:
-        issue_reservations = []
-
-    po_files_and_dirs: dict = get_po_files(path)
-
-    for directory, po_files in sorted(po_files_and_dirs.items()):
-        buffer = []
-        folder_stats = []
-        printed_list = []
-        for po_file in sorted(po_files):
-            if po_file.percent_translated == 100:
-                folder_stats.append(po_file.percent_translated)
-                printed_list.append(False)
-                continue
-            if int(po_file.percent_translated) < above:
-                folder_stats.append(po_file.percent_translated)
-                printed_list.append(False)
-                continue
-            if int(po_file.percent_translated) > below:
-                folder_stats.append(po_file.percent_translated)
-                printed_list.append(False)
-                continue
-
-            if matching_files:
-                if fuzzy:
-                    if po_file.fuzzy_nb > 0:
-                        print(str(po_file.path))
-                    else:
-                        continue
-                else:
-                    print(str(po_file.path))
-            else:
-                if fuzzy:
-                    if po_file.fuzzy_nb > 0:
-                        if str(po_file.path).count("/") > 1:
-                            t = str(po_file.path).split("/")[-2:]
-                            po_file_name = t[0] + "/" + t[1]
-                        else:
-                            po_file_name = str(po_file.path)
-
-                        buffer.append(
-                            f"- {po_file.name:<30} "
-                            + f"{len(po_file_stats.translated_entries()):3d} / {len(po_file_stats):3d} "
-                            + f"({po_file_stat_percent:5.1f}% translated)"
-                            + (
-                                f", {len(po_file_stats.fuzzy_entries())} fuzzy"
-                                if po_file_stats.fuzzy_entries()
-                                else ""
-                            )
-                            + (
-                                f", réservé par {issue_reservations[po_file_name.lower()]}"
-                                if po_file_name.lower() in issue_reservations
-                                else ""
-                            )
-                        )
-                        folder_stats.append(po_file_stat_percent)
-                        printed_list.append(True)
-                    else:
-                        continue
-                else:
-                    if str(po_file).count("/") > 1:
-                        t = str(po_file).split("/")[-2:]
-                        po_file_name = t[0] + "/" + t[1]
-                    else:
-                        po_file_name = str(po_file)
-
-                    buffer.append(
-                        f"- {po_file.name:<30} "
-                        + f"{len(po_file_stats.translated_entries()):3d} / {len(po_file_stats):3d} "
-                        + f"({po_file_stat_percent:5.1f}% translated)"
-                        + (
-                            f", {len(po_file_stats.fuzzy_entries())} fuzzy"
-                            if po_file_stats.fuzzy_entries()
-                            else ""
-                        )
-                        + (
-                            f", réservé par {issue_reservations[po_file_name.lower()]}"
-                            if po_file_name.lower() in issue_reservations
-                            else ""
-                        )
-                    )
-                    folder_stats.append(po_file_stat_percent)
-                    printed_list.append(True)
-                if True in printed_list and not matching_files:
-                    print(f"\n\n# {directory} ({statistics.mean(folder_stats):.2f}% done)\n")
-                    print("\n".join(buffer))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    if len(po_file_stats.fuzzy_entries()) > 0:
-                        if str(po_file).count("/") > 1:
-                            t = str(po_file).split("/")[-2:]
-                            po_file_name = t[0] + "/" + t[1]
-                        else:
-                            po_file_name = str(po_file)
-
-                        buffer.append(
-                            f"- {po_file.name:<30} "
-                            + f"{len(po_file_stats.translated_entries()):3d} / {len(po_file_stats):3d} "
-                            + f"({po_file_stat_percent:5.1f}% translated)"
-                            + (
-                                f", {len(po_file_stats.fuzzy_entries())} fuzzy"
-                                if po_file_stats.fuzzy_entries()
-                                else ""
-                            )
-                            + (
-                                f", réservé par {issue_reservations[po_file_name.lower()]}"
-                                if po_file_name.lower() in issue_reservations
-                                else ""
-                            )
-                        )
-                        folder_stats.append(po_file_stat_percent)
-                        printed_list.append(True)
-                    else:
-                        continue
-                else:
-                    if str(po_file).count("/") > 1:
-                        t = str(po_file).split("/")[-2:]
-                        po_file_name = t[0] + "/" + t[1]
-                    else:
-                        po_file_name = str(po_file)
-
-                    buffer.append(
-                        f"- {po_file.name:<30} "
-                        + f"{len(po_file_stats.translated_entries()):3d} / {len(po_file_stats):3d} "
-                        + f"({po_file_stat_percent:5.1f}% translated)"
-                        + (
-                            f", {len(po_file_stats.fuzzy_entries())} fuzzy"
-                            if po_file_stats.fuzzy_entries()
-                            else ""
-                        )
-                        + (
-                            f", réservé par {issue_reservations[po_file_name.lower()]}"
-                            if po_file_name.lower() in issue_reservations
-                            else ""
-                        )
-                    )
-                    folder_stats.append(po_file_stat_percent)
-                    printed_list.append(True)
-        if True in printed_list and not matching_files:
-            print(f"\n\n# {directory} ({statistics.mean(folder_stats):.2f}% done)\n")
-            print("\n".join(buffer))
-
-
+                # all files, with and without fuzzies
+                buffer, folder_stats, printed_list = buffer_add(buffer, folder_stats, printed_list, po_file, issue_reservations, directory_name, above, below)
+        # Once all files have been processed, print the dir and the files
+        print_dir_stats(directory_name, buffer, folder_stats, printed_list, fuzzy)
 
 
 def main():
@@ -347,13 +179,15 @@ def main():
         "-p", "--path", type=Path, help="Execute Potodo in the given path"
     )
 
-    parser.add_argument(
-        "-l",
-        "--matching-files",
-        action="store_true",
-        help="Suppress normal output; instead print the name of each matching po file from which output would normally "
-        "have been printed.",
-    )
+    # Removed as it needs to be refactored
+
+    # parser.add_argument(
+    #     "-l",
+    #     "--matching-files",
+    #     action="store_true",
+    #     help="Suppress normal output; instead print the name of each matching po file from which output would normally "
+    #     "have been printed.",
+    # )
 
     parser.add_argument(
         "-f",
@@ -399,7 +233,7 @@ def main():
         path,
         args.above,
         args.below,
-        args.matching_files,
+        # args.matching_files,
         args.fuzzy,
         args.offline,
         args.no_reserved,
