@@ -14,6 +14,7 @@ except ImportError:
     print("You need to install polib and requests to be able to run potodo.")
     sys.exit(1)
 
+from potodo import __version__
 from potodo._github import get_reservation_list
 from potodo._po_file import PoFileStats, get_po_files_from_repo
 
@@ -266,6 +267,8 @@ def main():
         action="store_true",
         help="Render list with the count of remaining entries (translate or review) rather than percentage done",
     )
+
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
 
     args = parser.parse_args()
     # If no path is specified, then use the current path
