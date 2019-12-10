@@ -10,31 +10,11 @@ try:
     import polib
     import requests
 except ImportError:
-    # TODO: Have the content of requirements.txt dumped in this error message
     print("You need to install polib and requests to be able to run potodo.")
     sys.exit(1)
 
 from potodo._github import get_reservation_list
 from potodo._po_file import PoFile
-
-
-def get_po_files_from_path(path: str):
-    """
-    TODO: Try except if path unvalid
-
-    Will get all po files from given path
-
-    :param path: The path to search `po` files for
-
-    :return: Returns a dict will the folder and the po files in it
-    """
-
-    po_files = [file for file in Path(path).glob("**/*.po") if ".git/" not in str(file)]
-
-    po_files_per_directory = {
-        path.parent.name: set(path.parent.glob("*.po")) for path in po_files
-    }
-    return po_files_per_directory
 
 
 # def initialize_arguments(above: int, below: int, matching_files: bool, offline: bool, hide_reserved: bool):
