@@ -268,7 +268,7 @@ def main():
         help="Render list with the count of remaining entries (translate or review) rather than percentage done",
     )
 
-    parser.add_argument('-V', '--version', action='version', version='%(prog)s ' + __version__)
+    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     args = parser.parse_args()
     # If no path is specified, then use the current path
