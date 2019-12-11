@@ -4,7 +4,7 @@ import sys
 import argparse
 import statistics
 
-from typing import Tuple, NoReturn
+from typing import Tuple
 from pathlib import Path
 
 try:
