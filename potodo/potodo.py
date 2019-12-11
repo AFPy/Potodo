@@ -23,7 +23,7 @@ from potodo._po_file import PoFileStats, get_po_files_from_repo
 
 
 def initialize_arguments(
-    above: int, below: int, offline: bool, hide_reserved: bool
+    above: int, below: int, offline: bool, hide_reserved: bool, repo_path: str
 ) -> Tuple[int, int, Mapping[str, str]]:
     """Will initialize the arguments as necessary
     """
@@ -41,7 +41,7 @@ def initialize_arguments(
 
     if not offline and not hide_reserved:
         # If the reservations are to be displayed, then get them
-        issue_reservations = get_reservation_list()
+        issue_reservations = get_reservation_list(repo_path)
     else:
         # Otherwise, an empty list will do the trick
         issue_reservations = {}
@@ -175,7 +175,7 @@ def exec_potodo(
 
     # Initialize the arguments
     above, below, issue_reservations = initialize_arguments(
-        above, below, offline, hide_reserved
+        above, below, offline, hide_reserved, path
     )
 
     # Get a dict with the directory name and all po files.
