@@ -1,6 +1,7 @@
 import re
 import requests
 
+from typing import Mapping
 from subprocess import check_output
 
 
@@ -31,7 +32,7 @@ def get_repo_name() -> str:
     return repo_name
 
 
-def get_reservation_list() -> dict:
+def get_reservation_list() -> Mapping[str, str]:
     """Will get the repository name then request all the issues and put them in a dict
     """
     # Gets the issues into a dict
