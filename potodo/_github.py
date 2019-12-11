@@ -8,9 +8,9 @@ from subprocess import check_output
 def get_repo_url(repo_path: str) -> str:
     """Tries to get the repository url from git commands
     """
-    url = check_output("git remote get-url --all upstream", universal_newlines=True, shell=True, cwd=repo_path)
+    url = check_output("git remote get-url --all upstream".split(), universal_newlines=True, cwd=repo_path)
     if "fatal" in url:
-        url = check_output("git remote get-url --all origin", universal_newlines=True, shell=True, cwd=repo_path)
+        url = check_output("git remote get-url --all upstream".split(), universal_newlines=True, cwd=repo_path)
     if "fatal" in url:
         # If the commands didn't work
         raise RuntimeError(
