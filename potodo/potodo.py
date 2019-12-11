@@ -15,7 +15,7 @@ except ImportError:
     sys.exit(1)
 
 from potodo._github import get_reservation_list
-from potodo._po_file import PoFile, get_po_files_from_repo
+from potodo._po_file import PoFileStats, get_po_files_from_repo
 
 # TODO: Sort the functions (maybe in different files ?
 
@@ -63,7 +63,7 @@ def buffer_add(
     buffer: list,
     folder_stats: list,
     printed_list: list,
-    po_file: PoFile,
+    po_file_stats: PoFileStats,
     issue_reservations: dict,
     above: int,
     below: int,
@@ -71,31 +71,31 @@ def buffer_add(
     """Will add to the buffer the information to print about the file is the file isn't translated
     entirely or above or below requested values
     """
-    if po_file.percent_translated == 100:
+    if po_file_stats.percent_translated == 100:
         # If the file is completely translated
 
         # Add the percentage of the file to the stats of the folder
-        folder_stats.append(po_file.percent_translated)
+        folder_stats.append(po_file_stats.percent_translated)
         # Indicate not to print that file
         printed_list.append(False)
         # End the function call without adding anything to the buffer
         return buffer, folder_stats, printed_list
 
-    if po_file.percent_translated < above:
+    if po_file_stats.percent_translated < above:
         # If the file's percent translated is below what is requested
 
         # Add the percentage of the file to the stats of the folder
-        folder_stats.append(po_file.percent_translated)
+        folder_stats.append(po_file_stats.percent_translated)
         # Indicate not to print that file
         printed_list.append(False)
         # End the function call without adding anything to the buffer
         return buffer, folder_stats, printed_list
 
-    if po_file.percent_translated > below:
+    if po_file_stats.percent_translated > below:
         # If the file's percent translated is above what is requested
 
         # Add the percentage of the file to the stats of the folder
-        folder_stats.append(po_file.percent_translated)
+        folder_stats.append(po_file_stats.percent_translated)
         # Indicate not to print that file
         printed_list.append(False)
         # End the function call without adding anything to the buffer
@@ -103,22 +103,22 @@ def buffer_add(
 
     buffer.append(
         # The filename
-        f"- {po_file.filename:<30} "
+        f"- {po_file_stats.filename:<30} "
         # The number of entries translated / the file size
-        + f"{po_file.translated_nb:3d} / {po_file.po_file_size:3d} "
+        + f"{po_file_stats.translated_nb:3d} / {po_file_stats.po_file_size:3d} "
         # The percent of the file translated
-        + f"({po_file.percent_translated:5.1f}% translated)"
+        + f"({po_file_stats.percent_translated:5.1f}% translated)"
         # The fuzzies in the file IF fuzzies exists in the file
-        + (f", {po_file.fuzzy_nb} fuzzy" if po_file.fuzzy_entries else "")
+        + (f", {po_file_stats.fuzzy_nb} fuzzy" if po_file_stats.fuzzy_entries else "")
         # The `reserved by` if the file is reserved unless if the offline/hide_reservation are enabled
         + (
-            f", réservé par {issue_reservations[po_file.filename_dir.lower()]}"
-            if po_file.filename_dir.lower() in issue_reservations
+            f", réservé par {issue_reservations[po_file_stats.filename_dir.lower()]}"
+            if po_file_stats.filename_dir.lower() in issue_reservations
             else ""
         )
     )
     # Add the percent translated to the folder statistics
-    folder_stats.append(po_file.percent_translated)
+    folder_stats.append(po_file_stats.percent_translated)
     # Indicate to print the file
     printed_list.append(True)
 

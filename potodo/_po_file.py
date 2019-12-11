@@ -3,7 +3,7 @@ import polib
 from pathlib import Path
 
 
-class PoFile:
+class PoFileStats:
     """Class for each `.po` file containing all the necessary information about its progress
     """
 
@@ -42,7 +42,7 @@ class PoFile:
             f"Untranslated Entries: {self.untranslated_entries}"
         )
 
-    def __lt__(self, other: "PoFile") -> bool:
+    def __lt__(self, other: "PoFileStats") -> bool:
         """When two PoFiles are compared, their filenames are compared.
         """
         return self.filename < other.filename
@@ -65,5 +65,5 @@ def get_po_files_from_repo(repo_path: str) -> dict:
     end_dict: dict = {}
     for directory, po_files in sorted(po_files_per_directory.items()):
         # For each file in each directory, gets a PoFile instance then add it to a dict
-        end_dict[directory] = [PoFile(po_file) for po_file in po_files]
+        end_dict[directory] = [PoFileStats(po_file) for po_file in po_files]
     return end_dict
