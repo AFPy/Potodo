@@ -48,8 +48,8 @@ def get_reservation_list(repo_path: str) -> Mapping[str, str]:
 
     for issue in issues:
         # Maybe find a better way for not using python 3.8 ?
-        if re.search(r'\w*/\w*\.po', issue['title']):
-            yes = re.search(r'\w*/\w*\.po', issue['title'])
+        yes = re.search(r'\w*/\w*\.po', issue['title'])
+        if yes:
             reservations[yes.group()] = issue['user']['login']
 
     return reservations
