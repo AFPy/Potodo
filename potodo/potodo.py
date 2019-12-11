@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import argparse
 import statistics
@@ -168,6 +169,7 @@ def exec_potodo(
     :param fuzzy: Should only fuzzies be printed
     :param offline: Will not connect to internet
     :param hide_reserved: Will not show the reserved files
+    :param counts: Render list with counts not percentage
     """
 
     # Initialize the arguments
@@ -223,7 +225,24 @@ def main():
     )
 
     parser.add_argument(
-        "-p", "--path", type=Path, help="Execute Potodo in the given path"
+        "-p",
+        "--path",
+        type=Path,
+        help="Execute Potodo in the given path"
+    )
+
+    parser.add_argument(
+        "-a",
+        "--above",
+        type=int,
+        help="Will list all TODOs ABOVE given INT%% completion",
+    )
+
+    parser.add_argument(
+        "-b",
+        "--below",
+        type=int,
+        help="Will list all TODOs BELOW given INT%% completion",
     )
 
     parser.add_argument(
@@ -248,19 +267,6 @@ def main():
     )
 
     parser.add_argument(
-        "-a",
-        "--above",
-        type=int,
-        help="Will list all TODOs ABOVE given INT%% completion",
-    )
-    parser.add_argument(
-        "-b",
-        "--below",
-        type=int,
-        help="Will list all TODOs BELOW given INT%% completion",
-    )
-
-    parser.add_argument(
         "-c",
         "--counts",
         action="store_true",
@@ -269,10 +275,10 @@ def main():
 
     args = parser.parse_args()
     # If no path is specified, then use the current path
-    if not args.path:
-        path = "."
-    else:
+    if args.path:
         path = str(args.path)
+    else:
+        path = os.getcwd()
 
     exec_potodo(
         path,
