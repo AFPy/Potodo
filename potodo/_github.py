@@ -1,3 +1,4 @@
+import re
 import requests
 
 from subprocess import check_output
@@ -24,9 +25,9 @@ def get_repo_name() -> str:
     """
     repo_url: str = get_repo_url()
     # Removes useless stuff. If it isn't there then nothing happens
-    repo_url = repo_url.strip("https://github.com/")
-    repo_url = repo_url.strip("git@github.com:")
-    repo_name = repo_url.strip(".git")
+    repo_name = re.sub("https://github.com/", "", repo_url)
+    repo_name = re.sub("git@github.com:", "", repo_name)
+    repo_name = re.sub(".git", "", repo_name)
     return repo_name
 
 
