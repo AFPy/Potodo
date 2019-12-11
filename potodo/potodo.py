@@ -23,8 +23,7 @@ from potodo._po_file import PoFile, get_po_files_from_repo
 def initialize_arguments(
     above: int, below: int, offline: bool, hide_reserved: bool
 ) -> Tuple[int, int, dict]:
-    """
-    Will initialize the arguments as necessary
+    """Will initialize the arguments as necessary
     """
     if not above:
         # If above isn't specified, then print all files above 0% (all of them)
@@ -50,8 +49,7 @@ def initialize_arguments(
 def print_dir_stats(
     directory_name: str, buffer: list, folder_stats: list, printed_list: list
 ):
-    """
-    This function prints the directory name, its stats and the buffer
+    """This function prints the directory name, its stats and the buffer
     """
     if True in printed_list:
         # If at least one of the files isn't done then print the folder stats and file(s)
@@ -70,8 +68,8 @@ def buffer_add(
     above: int,
     below: int,
 ) -> Tuple[list, list, list]:
-    """
-    Will add to the buffer the information to print about the file is the file isn't translated entirely or above or below requested values
+    """Will add to the buffer the information to print about the file is the file isn't translated
+    entirely or above or below requested values
     """
     if po_file.percent_translated == 100:
         # If the file is completely translated
@@ -131,8 +129,7 @@ def buffer_add(
 def exec_potodo(
     path: str, above: int, below: int, fuzzy: bool, offline: bool, hide_reserved: bool
 ):
-    """
-    Will run everything based on the given parameters
+    """Will run everything based on the given parameters
 
     :param path: The path to search into
     :param above: The above threshold

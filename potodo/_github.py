@@ -4,10 +4,11 @@ from subprocess import check_output
 
 
 def get_repo_url() -> str:
+    """Tries to get the repository url from git commands
     """
-    Tries to get the repository url from git commands
-    """
-    url: str = check_output("git remote get-url --all upstream", universal_newlines=True)
+    url: str = check_output(
+        "git remote get-url --all upstream", universal_newlines=True
+    )
     if "fatal" in url:
         url = check_output("git remote get-url --all origin", universal_newlines=True)
     if "fatal" in url:
@@ -19,8 +20,7 @@ def get_repo_url() -> str:
 
 
 def get_repo_name() -> str:
-    """
-    Will get the repository url from git commands then remove useless stuff to get ORG/NAME
+    """Will get the repository url from git commands then remove useless stuff to get ORG/NAME
     """
     repo_url: str = get_repo_url()
     # Removes useless stuff. If it isn't there then nothing happens
@@ -31,8 +31,7 @@ def get_repo_name() -> str:
 
 
 def get_reservation_list() -> dict:
-    """
-    Will get the repository name then request all the issues and put them in a dict
+    """Will get the repository name then request all the issues and put them in a dict
     """
     # Gets the issues into a dict
     issues = requests.get(

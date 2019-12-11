@@ -4,13 +4,11 @@ from pathlib import Path
 
 
 class PoFile:
-    """
-    Class for each `.po` file containing all the necessary information about its progress
+    """Class for each `.po` file containing all the necessary information about its progress
     """
 
     def __init__(self, path: Path):
-        """
-        Initializes the class with all the correct information
+        """Initializes the class with all the correct information
         """
         self.path: Path = path
         self.filename: str = path.name
@@ -45,15 +43,13 @@ class PoFile:
         )
 
     def __lt__(self, other: "PoFile") -> bool:
-        """
-        When two PoFiles are compared, their filenames are compared.
+        """When two PoFiles are compared, their filenames are compared.
         """
         return self.filename < other.filename
 
 
 def get_po_files_from_repo(repo_path: str) -> dict:
-    """
-    Gets all the po files from a given repository.
+    """Gets all the po files from a given repository.
     Will return a list with all directories and PoFile instances of `.po` files in those directories
     """
 
