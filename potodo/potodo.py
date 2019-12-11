@@ -264,7 +264,7 @@ def main():
         "-c",
         "--counts",
         action="store_true",
-        help="Render list with count of entries to do (translate or review) instead of percent done",
+        help="Render list with the count of remaining entries (translate or review) rather than percentage done",
     )
 
     args = parser.parse_args()
