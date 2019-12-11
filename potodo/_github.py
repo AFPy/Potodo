@@ -30,7 +30,7 @@ def get_repo_name() -> str:
 
 def get_reservation_list() -> dict:
     """
-    Will get the repository name then request all the issues and put then in a dict
+    Will get the repository name then request all the issues and put them in a dict
     """
     # Gets the issues into a dict
     issues = requests.get("https://api.github.com/repos/" + get_repo_name() + "/issues").json()
