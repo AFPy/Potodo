@@ -7,9 +7,9 @@ def get_repo_url() -> str:
     """
     Tries to get the repository url from git commands
     """
-    url: str = str(check_output("git remote get-url --all upstream"))
+    url: str = check_output("git remote get-url --all upstream", universal_newlines=True)
     if "fatal" in url:
-        url = str(check_output("git remote get-url --all origin"))
+        url = check_output("git remote get-url --all origin", universal_newlines=True)
     if "fatal" in url:
         # If the commands didn't work
         raise ValueError(

@@ -8,14 +8,14 @@ class PoFile:
     Class for each `.po` file containing all the necessary information about its progress
     """
 
-    def __init__(self, path: Path, directory: str):
+    def __init__(self, path: Path):
         """
         Initializes the class with all the correct information
         """
         self.path: Path = path
         self.filename: str = path.name
         self.pofile: polib.POFile = polib.pofile(self.path)
-        self.directory: str = directory
+        self.directory: str = self.path.parent.name
 
         self.fuzzy_entries: list = self.pofile.fuzzy_entries()
         self.fuzzy_nb: int = len(self.fuzzy_entries)
@@ -69,5 +69,5 @@ def get_po_files_from_repo(repo_path: str) -> dict:
     end_dict: dict = {}
     for directory, po_files in sorted(po_files_per_directory.items()):
         # For each file in each directory, gets a PoFile instance then add it to a dict
-        end_dict[directory] = [PoFile(po_file, directory) for po_file in po_files]
+        end_dict[directory] = [PoFile(po_file) for po_file in po_files]
     return end_dict
