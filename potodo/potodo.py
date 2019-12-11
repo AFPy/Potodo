@@ -39,7 +39,7 @@ def initialize_arguments(
 
     if not offline and not hide_reserved:
         # If the reservations are to be displayed, then get them
-        issue_reservations: dict = get_reservation_list()
+        issue_reservations = get_reservation_list()
     else:
         # Otherwise, an empty list will do the trick
         issue_reservations = {}
@@ -67,7 +67,7 @@ def buffer_add(
     issue_reservations: dict,
     above: int,
     below: int,
-) -> Tuple[list, list, list]:
+) -> None:
     """Will add to the buffer the information to print about the file is the file isn't translated
     entirely or above or below requested values
     """
@@ -79,7 +79,7 @@ def buffer_add(
         # Indicate not to print that file
         printed_list.append(False)
         # End the function call without adding anything to the buffer
-        return buffer, folder_stats, printed_list
+        return
 
     if po_file_stats.percent_translated < above:
         # If the file's percent translated is below what is requested
@@ -89,7 +89,7 @@ def buffer_add(
         # Indicate not to print that file
         printed_list.append(False)
         # End the function call without adding anything to the buffer
-        return buffer, folder_stats, printed_list
+        return
 
     if po_file_stats.percent_translated > below:
         # If the file's percent translated is above what is requested
@@ -99,7 +99,7 @@ def buffer_add(
         # Indicate not to print that file
         printed_list.append(False)
         # End the function call without adding anything to the buffer
-        return buffer, folder_stats, printed_list
+        return
 
     buffer.append(
         # The filename
@@ -123,7 +123,7 @@ def buffer_add(
     printed_list.append(True)
 
     # Return the updated vars with the new file
-    return buffer, folder_stats, printed_list
+    return
 
 
 def exec_potodo(
@@ -146,7 +146,7 @@ def exec_potodo(
     )
 
     # Get a dict with the directory name and all po files.
-    po_files_and_dirs: dict = get_po_files_from_repo(path)
+    po_files_and_dirs = get_po_files_from_repo(path)
 
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
         # For each directory and files in this directory
@@ -159,7 +159,7 @@ def exec_potodo(
             if fuzzy:
                 # Ignore files without fuzzies
                 if len(po_file.fuzzy_entries) > 0:
-                    buffer, folder_stats, printed_list = buffer_add(
+                    buffer_add(
                         buffer,
                         folder_stats,
                         printed_list,
@@ -172,7 +172,7 @@ def exec_potodo(
                     pass
             else:
                 # All files, with and without fuzzies
-                buffer, folder_stats, printed_list = buffer_add(
+                buffer_add(
                     buffer,
                     folder_stats,
                     printed_list,

@@ -1,6 +1,6 @@
 import polib
 
-from typing import Mapping
+from typing import Mapping, Sequence
 from pathlib import Path
 
 
