@@ -153,13 +153,13 @@ def buffer_add(
 
 
 def exec_potodo(
-    path: str,
     above: int,
     below: int,
-    fuzzy: bool,
-    offline: bool,
-    hide_reserved: bool,
     counts: bool,
+    fuzzy: bool,
+    hide_reserved: bool,
+    offline: bool,
+    path: str,
 ):
     """
     Will run everything based on the given parameters
@@ -226,13 +226,6 @@ def main():
     )
 
     parser.add_argument(
-        "-p",
-        "--path",
-        type=Path,
-        help="Execute Potodo in the given path"
-    )
-
-    parser.add_argument(
         "-a",
         "--above",
         type=int,
@@ -247,17 +240,17 @@ def main():
     )
 
     parser.add_argument(
+        "-c",
+        "--counts",
+        action="store_true",
+        help="Render list with the count of remaining entries (translate or review) rather than percentage done",
+    )
+
+    parser.add_argument(
         "-f",
         "--fuzzy",
         action="store_true",
         help="Will only print files marked as fuzzys",
-    )
-
-    parser.add_argument(
-        "-o",
-        "--offline",
-        action="store_true",
-        help="Will not do any fetch to GitHub/online if given",
     )
 
     parser.add_argument(
@@ -268,10 +261,17 @@ def main():
     )
 
     parser.add_argument(
-        "-c",
-        "--counts",
+        "-o",
+        "--offline",
         action="store_true",
-        help="Render list with the count of remaining entries (translate or review) rather than percentage done",
+        help="Will not do any fetch to GitHub/online if given",
+    )
+
+    parser.add_argument(
+        "-p",
+        "--path",
+        type=Path,
+        help="Execute Potodo in the given path"
     )
 
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
@@ -284,11 +284,11 @@ def main():
         path = os.getcwd()
 
     exec_potodo(
-        path,
         args.above,
         args.below,
-        args.fuzzy,
-        args.offline,
-        args.no_reserved,
         args.counts,
+        args.fuzzy,
+        args.no_reserved,
+        args.offline,
+        path,
     )
