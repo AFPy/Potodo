@@ -7,7 +7,7 @@ with open("README.md") as readme:
 
 setuptools.setup(
     name="potodo",
-    version="0.2.0",
+    version="0.2.1",
     description="Will list all .po files that are to be transated",
     long_description=long_description,
     long_description_content_type="text/markdown",  # This is important!
