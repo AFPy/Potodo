@@ -1,19 +1,11 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import argparse
 import statistics
 
 from typing import Tuple, Mapping
 from pathlib import Path
-
-try:
-    import polib
-    import requests
-except ImportError:
-    print("You need to install polib and requests to be able to run potodo.")
-    sys.exit(1)
 
 from potodo import __version__
 from potodo._github import get_reservation_list
@@ -36,7 +28,8 @@ def initialize_arguments(
 
     if above and below:
         if below < above:
-            # If above and below are specified and that below is superior to above, raise an error
+            # If above and below are specified and that below is superior to above,
+            # raise an error
             raise ValueError("Below must be inferior to above")
 
     if not offline and not hide_reserved:
@@ -54,9 +47,10 @@ def print_dir_stats(
     """This function prints the directory name, its stats and the buffer
     """
     if True in printed_list:
-        # If at least one of the files isn't done then print the folder stats and file(s)
-        # Each time a file is went over True or False is placed in the printed_list list.
-        # If False is placed it means it doesnt need to be printed
+        # If at least one of the files isn't done then print the
+        # folder stats and file(s) Each time a file is went over True
+        # or False is placed in the printed_list list.  If False is
+        # placed it means it doesnt need to be printed
         print(f"\n\n# {directory_name} ({statistics.mean(folder_stats):.2f}% done)\n")
         print("\n".join(buffer))
 
@@ -71,8 +65,9 @@ def buffer_add(
     below: int,
     counts: bool,
 ) -> None:
-    """Will add to the buffer the information to print about the file is the file isn't translated
-    entirely or above or below requested values
+    """Will add to the buffer the information to print about the file is
+    the file isn't translated entirely or above or below requested
+    values.
     """
     if po_file_stats.percent_translated == 100:
         # If the file is completely translated
@@ -118,9 +113,11 @@ def buffer_add(
                 if po_file_stats.fuzzy_entries
                 else ""
             )
-            # The `reserved by` if the file is reserved unless the offline/hide_reservation are enabled
+            # The `reserved by` if the file is reserved unless the
+            # offline/hide_reservation are enabled
             + (
-                f", réservé par {issue_reservations[po_file_stats.filename_dir.lower()]}"
+                f", réservé par "
+                f"{issue_reservations[po_file_stats.filename_dir.lower()]}"
                 if po_file_stats.filename_dir.lower() in issue_reservations
                 else ""
             )
@@ -139,9 +136,11 @@ def buffer_add(
                 if po_file_stats.fuzzy_entries
                 else ""
             )
-            # The `reserved by` if the file is reserved unless the offline/hide_reservation are enabled
+            # The `reserved by` if the file is reserved unless the
+            # offline/hide_reservation are enabled
             + (
-                f", réservé par {issue_reservations[po_file_stats.filename_dir.lower()]}"
+                f", réservé par "
+                f"{issue_reservations[po_file_stats.filename_dir.lower()]}"
                 if po_file_stats.filename_dir.lower() in issue_reservations
                 else ""
             )
@@ -173,7 +172,7 @@ def exec_potodo(
     :param counts: Render list with counts not percentage
     """
 
-    # Initialize the arguments
+    # initialize the arguments
     above, below, issue_reservations = initialize_arguments(
         above, below, offline, hide_reserved, path
     )
@@ -226,10 +225,7 @@ def main():
     )
 
     parser.add_argument(
-        "-p",
-        "--path",
-        type=Path,
-        help="Execute Potodo in the given path"
+        "-p", "--path", type=Path, help="Execute Potodo in the given path"
     )
 
     parser.add_argument(
@@ -271,10 +267,13 @@ def main():
         "-c",
         "--counts",
         action="store_true",
-        help="Render list with the count of remaining entries (translate or review) rather than percentage done",
+        help="Render list with the count of remaining entries "
+        "(translate or review) rather than percentage done",
     )
 
-    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
+    parser.add_argument(
+        "--version", action="version", version="%(prog)s " + __version__
+    )
 
     args = parser.parse_args()
     # If no path is specified, then use the current path

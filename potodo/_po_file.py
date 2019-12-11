@@ -1,7 +1,7 @@
-import polib
-
 from typing import Mapping, Sequence
 from pathlib import Path
+
+import polib
 
 
 class PoFileStats:
@@ -50,8 +50,9 @@ class PoFileStats:
 
 
 def get_po_files_from_repo(repo_path: str) -> Mapping[str, Sequence[PoFileStats]]:
-    """Gets all the po files from a given repository.
-    Will return a list with all directories and PoFile instances of `.po` files in those directories
+    """Gets all the po files from a given repository.  Will return a list
+    with all directories and PoFile instances of `.po` files in those
+    directories.
     """
 
     # Get all the files matching `**/*.po` and not being `.git/` in the given path
