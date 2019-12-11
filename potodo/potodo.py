@@ -4,7 +4,7 @@ import sys
 import argparse
 import statistics
 
-from typing import Tuple
+from typing import Tuple, Mapping
 from pathlib import Path
 
 try:
@@ -22,7 +22,7 @@ from potodo._po_file import PoFileStats, get_po_files_from_repo
 
 def initialize_arguments(
     above: int, below: int, offline: bool, hide_reserved: bool
-) -> Tuple[int, int, dict]:
+) -> Tuple[int, int, Mapping[str, str]]:
     """Will initialize the arguments as necessary
     """
     if not above:
@@ -64,7 +64,7 @@ def buffer_add(
     folder_stats: list,
     printed_list: list,
     po_file_stats: PoFileStats,
-    issue_reservations: dict,
+    issue_reservations: Mapping[str, str],
     above: int,
     below: int,
 ) -> None:
@@ -122,9 +122,6 @@ def buffer_add(
     # Indicate to print the file
     printed_list.append(True)
 
-    # Return the updated vars with the new file
-    return
-
 
 def exec_potodo(
     path: str, above: int, below: int, fuzzy: bool, offline: bool, hide_reserved: bool
@@ -140,7 +137,6 @@ def exec_potodo(
     """
 
     # Initialize the arguments
-    issue_reservations: dict
     above, below, issue_reservations = initialize_arguments(
         above, below, offline, hide_reserved
     )
