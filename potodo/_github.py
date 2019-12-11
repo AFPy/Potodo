@@ -26,9 +26,11 @@ def get_repo_name() -> str:
     """
     repo_url: str = get_repo_url()
     # Removes useless stuff. If it isn't there then nothing happens
-    repo_name = re.sub("https://github.com/", "", repo_url)
-    repo_name = re.sub("git@github.com:", "", repo_name)
-    repo_name = re.sub(".git", "", repo_name)
+
+    repo_name = repo_url.replace("https://github.com/", "")
+    repo_name = repo_name.replace("git@github.com:", "")
+    repo_name = repo_name.replace(".git", "")
+
     return repo_name
 
 
