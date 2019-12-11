@@ -58,10 +58,14 @@ def get_po_files_from_repo(repo_path: str) -> dict:
     """
 
     # Get all the files matching `**/*.po` and not being `.git/` in the given path
-    all_po_files: list = [file for file in Path(repo_path).glob("**/*.po") if ".git/" not in str(file)]
+    all_po_files: list = [
+        file for file in Path(repo_path).glob("**/*.po") if ".git/" not in str(file)
+    ]
 
     # Separates each directory and places all pofiles for each directory accordingly
-    po_files_per_directory: dict = {path.parent.name: set(path.parent.glob("*.po")) for path in all_po_files}
+    po_files_per_directory: dict = {
+        path.parent.name: set(path.parent.glob("*.po")) for path in all_po_files
+    }
     end_dict: dict = {}
     for directory, po_files in sorted(po_files_per_directory.items()):
         # For each file in each directory, gets a PoFile instance then add it to a dict

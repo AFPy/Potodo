@@ -20,7 +20,9 @@ from potodo._po_file import PoFile, get_po_files_from_repo
 # TODO: Sort the functions (maybe in different files ?
 
 
-def initialize_arguments(above: int, below: int, offline: bool, hide_reserved: bool) -> Tuple[int, int, dict]:
+def initialize_arguments(
+    above: int, below: int, offline: bool, hide_reserved: bool
+) -> Tuple[int, int, dict]:
     """
     Will initialize the arguments as necessary
     """
@@ -45,7 +47,9 @@ def initialize_arguments(above: int, below: int, offline: bool, hide_reserved: b
     return above, below, issue_reservations
 
 
-def print_dir_stats(directory_name: str, buffer: list, folder_stats: list, printed_list: list):
+def print_dir_stats(
+    directory_name: str, buffer: list, folder_stats: list, printed_list: list
+):
     """
     This function prints the directory name, its stats and the buffer
     """
@@ -124,7 +128,9 @@ def buffer_add(
     return buffer, folder_stats, printed_list
 
 
-def exec_potodo(path: str, above: int, below: int, fuzzy: bool, offline: bool, hide_reserved: bool):
+def exec_potodo(
+    path: str, above: int, below: int, fuzzy: bool, offline: bool, hide_reserved: bool
+):
     """
     Will run everything based on the given parameters
 
@@ -138,7 +144,9 @@ def exec_potodo(path: str, above: int, below: int, fuzzy: bool, offline: bool, h
 
     # Initialize the arguments
     issue_reservations: dict
-    above, below, issue_reservations = initialize_arguments(above, below, offline, hide_reserved)
+    above, below, issue_reservations = initialize_arguments(
+        above, below, offline, hide_reserved
+    )
 
     # Get a dict with the directory name and all po files.
     po_files_and_dirs: dict = get_po_files_from_repo(path)
@@ -155,32 +163,73 @@ def exec_potodo(path: str, above: int, below: int, fuzzy: bool, offline: bool, h
                 # Ignore files without fuzzies
                 if len(po_file.fuzzy_entries) > 0:
                     buffer, folder_stats, printed_list = buffer_add(
-                        buffer, folder_stats, printed_list, po_file, issue_reservations, above, below
+                        buffer,
+                        folder_stats,
+                        printed_list,
+                        po_file,
+                        issue_reservations,
+                        above,
+                        below,
                     )
                 else:
                     pass
             else:
                 # All files, with and without fuzzies
                 buffer, folder_stats, printed_list = buffer_add(
-                    buffer, folder_stats, printed_list, po_file, issue_reservations, above, below
+                    buffer,
+                    folder_stats,
+                    printed_list,
+                    po_file,
+                    issue_reservations,
+                    above,
+                    below,
                 )
         # Once all files have been processed, print the dir and the files
         print_dir_stats(directory_name, buffer, folder_stats, printed_list)
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="potodo", description="List and prettify the po files left to translate")
+    parser = argparse.ArgumentParser(
+        prog="potodo", description="List and prettify the po files left to translate"
+    )
 
-    parser.add_argument("-p", "--path", type=Path, help="Execute Potodo in the given path")
+    parser.add_argument(
+        "-p", "--path", type=Path, help="Execute Potodo in the given path"
+    )
 
-    parser.add_argument("-f", "--fuzzy", action="store_true", help="Will only print files marked as fuzzys")
+    parser.add_argument(
+        "-f",
+        "--fuzzy",
+        action="store_true",
+        help="Will only print files marked as fuzzys",
+    )
 
-    parser.add_argument("-o", "--offline", action="store_true", help="Will not do any fetch to GitHub/online if given")
+    parser.add_argument(
+        "-o",
+        "--offline",
+        action="store_true",
+        help="Will not do any fetch to GitHub/online if given",
+    )
 
-    parser.add_argument("-n", "--no-reserved", action="store_true", help="Will not print the info about reserved files")
+    parser.add_argument(
+        "-n",
+        "--no-reserved",
+        action="store_true",
+        help="Will not print the info about reserved files",
+    )
 
-    parser.add_argument("-a", "--above", type=int, help="Will list all TODOs ABOVE given INT%% completion")
-    parser.add_argument("-b", "--below", type=int, help="Will list all TODOs BELOW given INT%% completion")
+    parser.add_argument(
+        "-a",
+        "--above",
+        type=int,
+        help="Will list all TODOs ABOVE given INT%% completion",
+    )
+    parser.add_argument(
+        "-b",
+        "--below",
+        type=int,
+        help="Will list all TODOs BELOW given INT%% completion",
+    )
 
     args = parser.parse_args()
     # If no path is specified, then use the current path
@@ -189,4 +238,6 @@ def main():
     else:
         path = str(args.path)
 
-    exec_potodo(path, args.above, args.below, args.fuzzy, args.offline, args.no_reserved)
+    exec_potodo(
+        path, args.above, args.below, args.fuzzy, args.offline, args.no_reserved
+    )
