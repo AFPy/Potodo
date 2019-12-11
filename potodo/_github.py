@@ -24,7 +24,7 @@ def get_repo_url() -> str:
 def get_repo_name() -> str:
     """Will get the repository url from git commands then remove useless stuff to get ORG/NAME
     """
-    repo_url: str = get_repo_url()
+    repo_url = get_repo_url()
     # Removes useless stuff. If it isn't there then nothing happens
 
     repo_name = repo_url.replace("https://github.com/", "")
