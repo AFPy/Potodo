@@ -1,5 +1,6 @@
 import polib
 
+from typing import Mapping
 from pathlib import Path
 
 
@@ -48,7 +49,7 @@ class PoFileStats:
         return self.filename < other.filename
 
 
-def get_po_files_from_repo(repo_path: str) -> dict:
+def get_po_files_from_repo(repo_path: str) -> Mapping[str, list]:
     """Gets all the po files from a given repository.
     Will return a list with all directories and PoFile instances of `.po` files in those directories
     """
