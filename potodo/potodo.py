@@ -108,15 +108,15 @@ def buffer_add(
             f"- {po_file_stats.filename:<30} "
             # The number of entries translated / the file size
             + f"{po_file_stats.translated_nb:3d} / {po_file_stats.po_file_size:3d} "
-            # The percent of the file translated
+            # The percentage of the file translated
             + f"({po_file_stats.percent_translated:5.1f}% translated)"
-            # The fuzzies in the file IF fuzzies exists in the file
+            # The fuzzies in the file IF fuzzies exist in the file
             + (
                 f", {po_file_stats.fuzzy_nb} fuzzy"
                 if po_file_stats.fuzzy_entries
                 else ""
             )
-            # The `reserved by` if the file is reserved unless if the offline/hide_reservation are enabled
+            # The `reserved by` if the file is reserved unless the offline/hide_reservation are enabled
             + (
                 f", réservé par {issue_reservations[po_file_stats.filename_dir.lower()]}"
                 if po_file_stats.filename_dir.lower() in issue_reservations
@@ -131,13 +131,13 @@ def buffer_add(
             # The filename
             f"- {po_file_stats.filename:<30} "
             + f"{todonum:3d} to do"
-            # The fuzzies in the file IF fuzzies exists in the file
+            # The fuzzies in the file IF fuzzies exist in the file
             + (
                 f", including {po_file_stats.fuzzy_nb} fuzzies."
                 if po_file_stats.fuzzy_entries
                 else ""
             )
-            # The `reserved by` if the file is reserved unless if the offline/hide_reservation are enabled
+            # The `reserved by` if the file is reserved unless the offline/hide_reservation are enabled
             + (
                 f", réservé par {issue_reservations[po_file_stats.filename_dir.lower()]}"
                 if po_file_stats.filename_dir.lower() in issue_reservations
