@@ -41,7 +41,7 @@ def get_reservation_list(repo_path: str) -> Mapping[str, str]:
     next_url = "https://api.github.com/repos/" + get_repo_name() + "/issues?state=open"
     while next_url:
         resp = requests.get(next_url)
-        issues += issues
+        issues.append(resp.json)
         next_url = resp.links.get("next", {}).get("url")
 
     reservations = {}
