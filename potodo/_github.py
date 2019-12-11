@@ -15,7 +15,7 @@ def get_repo_url() -> str:
         url = check_output("git remote get-url --all origin", universal_newlines=True)
     if "fatal" in url:
         # If the commands didn't work
-        raise ValueError(
+        raise RuntimeError(
             f"Unknown error. `git get-url --all upstream|origin` returned {url}"
         )
     return url
