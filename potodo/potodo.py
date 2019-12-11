@@ -105,32 +105,32 @@ def buffer_add(
     if not counts:
         buffer.append(
             # The filename
-            f"- {po_file.filename:<30} "
+            f"- {po_file_stats.filename:<30} "
             # The number of entries translated / the file size
-            + f"{po_file.translated_nb:3d} / {po_file.po_file_size:3d} "
+            + f"{po_file_stats.translated_nb:3d} / {po_file_stats.po_file_size:3d} "
             # The percent of the file translated
-            + f"({po_file.percent_translated:5.1f}% translated)"
+            + f"({po_file_stats.percent_translated:5.1f}% translated)"
             # The fuzzies in the file IF fuzzies exists in the file
-            + (f", {po_file.fuzzy_nb} fuzzy" if po_file.fuzzy_entries else "")
+            + (f", {po_file_stats.fuzzy_nb} fuzzy" if po_file_stats.fuzzy_entries else "")
             # The `reserved by` if the file is reserved unless if the offline/hide_reservation are enabled
             + (
-                f", réservé par {issue_reservations[po_file.filename_dir.lower()]}"
-                if po_file.filename_dir.lower() in issue_reservations
+                f", réservé par {issue_reservations[po_file_stats.filename_dir.lower()]}"
+                if po_file_stats.filename_dir.lower() in issue_reservations
                 else ""
             )
         )
     else:
-        todonum = len(po_file.fuzzy_entries) + len(po_file.untranslated_entries)
+        todonum = len(po_file_stats.fuzzy_entries) + len(po_file_stats.untranslated_entries)
         buffer.append(
             # The filename
-            f"- {po_file.filename:<30} "
+            f"- {po_file_stats.filename:<30} "
             + f"{todonum:3d} to do"
             # The fuzzies in the file IF fuzzies exists in the file
-            + (f", including {po_file.fuzzy_nb} fuzzies." if po_file.fuzzy_entries else "")
+            + (f", including {po_file_stats.fuzzy_nb} fuzzies." if po_file_stats.fuzzy_entries else "")
             # The `reserved by` if the file is reserved unless if the offline/hide_reservation are enabled
             + (
-                f", réservé par {issue_reservations[po_file.filename_dir.lower()]}"
-                if po_file.filename_dir.lower() in issue_reservations
+                f", réservé par {issue_reservations[po_file_stats.filename_dir.lower()]}"
+                if po_file_stats.filename_dir.lower() in issue_reservations
                 else ""
             )
         )
