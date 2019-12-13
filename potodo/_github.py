@@ -1,21 +1,26 @@
 import re
 import requests
+import subprocess
 
 from typing import Mapping
-from subprocess import check_output
 
 
 def get_repo_url(repo_path: str) -> str:
     """Tries to get the repository url from git commands
     """
-    url = check_output("git remote get-url --all upstream".split(), universal_newlines=True, cwd=repo_path)
-    if "fatal" in url:
-        url = check_output("git remote get-url --all upstream".split(), universal_newlines=True, cwd=repo_path)
-    if "fatal" in url:
-        # If the commands didn't work
-        raise RuntimeError(
-            f"Unknown error. `git get-url --all upstream|origin` returned {url}"
-        )
+    try:
+        url = subprocess.check_output("git remote get-url --all upstream".split(),
+                                      universal_newlines=True, cwd=repo_path,
+                                      stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError:
+        try:
+            url = subprocess.check_output("git remote get-url --all origin".split(),
+                                          universal_newlines=True, cwd=repo_path,
+                                          stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(
+                f"Unknown error. `git get-url --all upstream|origin` returned \"{e.output.rstrip()}\"."
+            )
     return url
 
 
