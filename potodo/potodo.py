@@ -172,7 +172,7 @@ def exec_potodo(
     :param counts: Render list with counts not percentage
     """
 
-    # initialize the arguments
+    # Initialize the arguments
     above, below, issue_reservations = initialize_arguments(
         above, below, offline, hide_reserved, path
     )
