@@ -1,4 +1,4 @@
-from typing import Dict, Mapping, Sequence, Set
+from typing import Dict, Mapping, Sequence, Set, List
 from pathlib import Path
 
 import polib
@@ -16,10 +16,13 @@ class PoFileStats:
         self.pofile: polib.POFile = polib.pofile(self.path)
         self.directory: str = self.path.parent.name
 
-        self.fuzzy_entries: Sequence[polib.POEntry] = self.pofile.fuzzy_entries()
-        self.fuzzy_nb: int = len(self.fuzzy_entries)
+        self.obsolete_entries: Sequence[polib.POEntry] = self.pofile.obsolete_entries()
+        self.obsolete_nb: int = len(self.pofile.obsolete_entries())
 
-        self.percent_translated: int = self.pofile.percent_translated()
+        self.fuzzy_entries: List[polib.POEntry] = [
+            entry for entry in self.pofile if entry.fuzzy and not entry.obsolete
+        ]
+        self.fuzzy_nb: int = len(self.fuzzy_entries)
 
         self.translated_entries: Sequence[
             polib.POEntry
@@ -31,11 +34,8 @@ class PoFileStats:
         ] = self.pofile.untranslated_entries()
         self.untranslated_nb: int = len(self.untranslated_entries)
 
-        self.obsolete_entries: Sequence[polib.POEntry] = self.pofile.obsolete_entries()
-        self.obsolete_nb: int = len(self.pofile.obsolete_entries())
-
+        self.percent_translated: int = self.pofile.percent_translated()
         self.po_file_size = len(self.pofile) - self.obsolete_nb
-
         self.filename_dir: str = self.directory + "/" + self.filename
 
     def __str__(self) -> str:
