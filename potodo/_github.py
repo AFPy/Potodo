@@ -1,31 +1,38 @@
 import re
-import requests
 import subprocess
-
 from typing import Mapping
+
+import requests
 
 
 def get_repo_url(repo_path: str) -> str:
     """Tries to get the repository url from git commands
     """
     try:
-        url = subprocess.check_output("git remote get-url --all upstream".split(),
-                                      universal_newlines=True, cwd=repo_path,
-                                      stderr=subprocess.STDOUT)
+        url = subprocess.check_output(
+            "git remote get-url --all upstream".split(),
+            universal_newlines=True,
+            cwd=repo_path,
+            stderr=subprocess.STDOUT,
+        )
     except subprocess.CalledProcessError:
         try:
-            url = subprocess.check_output("git remote get-url --all origin".split(),
-                                          universal_newlines=True, cwd=repo_path,
-                                          stderr=subprocess.STDOUT)
+            url = subprocess.check_output(
+                "git remote get-url --all origin".split(),
+                universal_newlines=True,
+                cwd=repo_path,
+                stderr=subprocess.STDOUT,
+            )
         except subprocess.CalledProcessError as e:
             raise RuntimeError(
-                f"Unknown error. `git get-url --all upstream|origin` returned \"{e.output.rstrip()}\"."
+                f'Unknown error. `{" ".join(e.cmd)}` returned "{e.output.rstrip()}".'
             )
     return url
 
 
 def get_repo_name(repo_path: str) -> str:
-    """Will get the repository url from git commands then remove useless stuff to get ORG/NAME
+    """Will get the repository url from git commands then remove useless
+    stuff to get ORG/NAME.
     """
     repo_url = get_repo_url(repo_path)
     # Removes useless stuff. If it isn't there then nothing happens
@@ -33,7 +40,7 @@ def get_repo_name(repo_path: str) -> str:
     repo_name = repo_url.replace("https://github.com/", "")
     repo_name = repo_name.replace("git@github.com:", "")
     repo_name = repo_name.replace(".git", "")
-    repo_name = repo_name.strip('\n')
+    repo_name = repo_name.strip("\n")
 
     return repo_name
 
@@ -43,7 +50,11 @@ def get_reservation_list(repo_path: str) -> Mapping[str, str]:
     """
 
     issues: list = []
-    next_url = "https://api.github.com/repos/" + get_repo_name(repo_path) + "/issues?state=open"
+    next_url = (
+        "https://api.github.com/repos/"
+        + get_repo_name(repo_path)
+        + "/issues?state=open"
+    )
     while next_url:
         resp = requests.get(next_url)
         issues.extend(resp.json())
@@ -53,8 +64,8 @@ def get_reservation_list(repo_path: str) -> Mapping[str, str]:
 
     for issue in issues:
         # Maybe find a better way for not using python 3.8 ?
-        yes = re.search(r'\w*/\w*\.po', issue['title'])
+        yes = re.search(r"\w*/\w*\.po", issue["title"])
         if yes:
-            reservations[yes.group()] = issue['user']['login']
+            reservations[yes.group()] = issue["user"]["login"]
 
     return reservations

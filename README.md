@@ -26,3 +26,20 @@ optional arguments:
   -b BELOW, --below BELOW
                         Will list all TODOs BELOW given INT% completion
 ```
+
+## Contributing
+
+You can run the tests using `tox` locally like:
+
+    tox -p auto
+
+before commiting.
+
+A pre-commit hook like:
+```sh
+cat <<EOF > .git/hooks/pre-commit
+#!/bin/sh
+exec tox -s -p all
+EOF
+```
+may help.
