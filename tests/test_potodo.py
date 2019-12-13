@@ -18,4 +18,7 @@ def test_potodo(capsys):
     )
     captured = capsys.readouterr()
     assert "bugs.po" in captured.out
+    assert "# library" in captured.out
+    assert "token.po" in captured.out
+    assert "glossary.po" not in captured.out
     assert "sphinx.po" not in captured.out
