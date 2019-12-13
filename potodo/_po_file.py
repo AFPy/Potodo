@@ -1,4 +1,4 @@
-from typing import Mapping, Sequence
+from typing import Dict, Mapping, Sequence, Set
 from pathlib import Path
 
 import polib
@@ -16,18 +16,22 @@ class PoFileStats:
         self.pofile: polib.POFile = polib.pofile(self.path)
         self.directory: str = self.path.parent.name
 
-        self.fuzzy_entries: list = self.pofile.fuzzy_entries()
+        self.fuzzy_entries: Sequence[polib.POEntry] = self.pofile.fuzzy_entries()
         self.fuzzy_nb: int = len(self.fuzzy_entries)
 
         self.percent_translated: int = self.pofile.percent_translated()
 
-        self.translated_entries: list = self.pofile.translated_entries()
+        self.translated_entries: Sequence[
+            polib.POEntry
+        ] = self.pofile.translated_entries()
         self.translated_nb: int = len(self.translated_entries)
 
-        self.untranslated_entries: list = self.pofile.untranslated_entries()
+        self.untranslated_entries: Sequence[
+            polib.POEntry
+        ] = self.pofile.untranslated_entries()
         self.untranslated_nb: int = len(self.untranslated_entries)
 
-        self.obsolete_entries: list = self.pofile.obsolete_entries()
+        self.obsolete_entries: Sequence[polib.POEntry] = self.pofile.obsolete_entries()
         self.obsolete_nb: int = len(self.pofile.obsolete_entries())
 
         self.po_file_size = len(self.pofile) - self.obsolete_nb
@@ -56,15 +60,15 @@ def get_po_files_from_repo(repo_path: str) -> Mapping[str, Sequence[PoFileStats]
     """
 
     # Get all the files matching `**/*.po` and not being `.git/` in the given path
-    all_po_files: list = [
+    all_po_files: Sequence[Path] = [
         file for file in Path(repo_path).glob("**/*.po") if ".git/" not in str(file)
     ]
 
     # Separates each directory and places all pofiles for each directory accordingly
-    po_files_per_directory: dict = {
+    po_files_per_directory: Mapping[str, Set[Path]] = {
         path.parent.name: set(path.parent.glob("*.po")) for path in all_po_files
     }
-    end_dict: dict = {}
+    end_dict: Dict[str, Sequence[PoFileStats]] = {}
     for directory, po_files in sorted(po_files_per_directory.items()):
         # For each file in each directory, gets a PoFile instance then add it to a dict
         end_dict[directory] = [PoFileStats(po_file) for po_file in po_files]

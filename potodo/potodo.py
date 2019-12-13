@@ -4,7 +4,7 @@ import os
 import argparse
 import statistics
 
-from typing import Tuple, Mapping
+from typing import Tuple, Mapping, Sequence, List
 from pathlib import Path
 
 from potodo import __version__
@@ -42,8 +42,11 @@ def initialize_arguments(
 
 
 def print_dir_stats(
-    directory_name: str, buffer: list, folder_stats: list, printed_list: list
-):
+    directory_name: str,
+    buffer: Sequence[str],
+    folder_stats: Sequence[int],
+    printed_list: Sequence[bool],
+) -> None:
     """This function prints the directory name, its stats and the buffer
     """
     if True in printed_list:
@@ -56,9 +59,9 @@ def print_dir_stats(
 
 
 def buffer_add(
-    buffer: list,
-    folder_stats: list,
-    printed_list: list,
+    buffer: List[str],
+    folder_stats: List[int],
+    printed_list: List[bool],
     po_file_stats: PoFileStats,
     issue_reservations: Mapping[str, str],
     above: int,
@@ -159,7 +162,7 @@ def exec_potodo(
     offline: bool,
     hide_reserved: bool,
     counts: bool,
-):
+) -> None:
     """
     Will run everything based on the given parameters
 
@@ -182,9 +185,9 @@ def exec_potodo(
 
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
         # For each directory and files in this directory
-        buffer: list = []
-        folder_stats: list = []
-        printed_list: list = []
+        buffer: List[str] = []
+        folder_stats: List[int] = []
+        printed_list: List[bool] = []
 
         for po_file in sorted(po_files):
             # For each file in those files from that directory
@@ -219,9 +222,10 @@ def exec_potodo(
         print_dir_stats(directory_name, buffer, folder_stats, printed_list)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="potodo", description="List and prettify the po files left to translate"
+        prog="potodo",
+        description="Sequence and prettify the po files left to translate",
     )
 
     parser.add_argument(

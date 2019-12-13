@@ -1,6 +1,6 @@
 import re
 import subprocess
-from typing import Mapping
+from typing import Mapping, List, Dict, Any
 
 import requests
 
@@ -49,7 +49,7 @@ def get_reservation_list(repo_path: str) -> Mapping[str, str]:
     """Will get the repository name then request all the issues and put them in a dict
     """
 
-    issues: list = []
+    issues: List[Dict[Any, Any]] = []
     next_url = (
         "https://api.github.com/repos/"
         + get_repo_name(repo_path)
