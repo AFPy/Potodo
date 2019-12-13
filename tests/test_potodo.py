@@ -22,3 +22,5 @@ def test_potodo(capsys):
     assert "token.po" in captured.out
     assert "glossary.po" not in captured.out
     assert "sphinx.po" not in captured.out
+    assert "2 fuzzy" not in captured.out
+    assert "3 fuzzy" in captured.out
