@@ -153,13 +153,14 @@ def buffer_add(
 
 
 def exec_potodo(
-    above: int,
-    below: int,
-    counts: bool,
-    fuzzy: bool,
-    hide_reserved: bool,
-    offline: bool,
     path: str,
+    *,
+    above: int = 0,
+    below: int = 100,
+    counts: bool = False,
+    fuzzy: bool = False,
+    hide_reserved: bool = False,
+    offline: bool = False,
 ):
     """
     Will run everything based on the given parameters
@@ -268,13 +269,12 @@ def main():
     )
 
     parser.add_argument(
-        "-p",
-        "--path",
-        type=Path,
-        help="Execute Potodo in the given path"
+        "-p", "--path", type=Path, help="Execute Potodo in the given path"
     )
 
-    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
+    parser.add_argument(
+        "--version", action="version", version="%(prog)s " + __version__
+    )
 
     args = parser.parse_args()
     # If no path is specified, then use the current path
@@ -284,11 +284,11 @@ def main():
         path = os.getcwd()
 
     exec_potodo(
-        args.above,
-        args.below,
-        args.counts,
-        args.fuzzy,
-        args.no_reserved,
-        args.offline,
         path,
+        above=args.above,
+        below=args.below,
+        counts=args.counts,
+        fuzzy=args.fuzzy,
+        hide_reserved=args.no_reserved,
+        offline=args.offline,
     )
