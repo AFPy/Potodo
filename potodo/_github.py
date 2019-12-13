@@ -25,7 +25,7 @@ def get_repo_url(repo_path: str) -> str:
             )
         except subprocess.CalledProcessError as e:
             raise RuntimeError(
-                f'Unknown error. `{e.cmd}` returned "{e.output.rstrip()}".'
+                f'Unknown error. `{" ".join(e.cmd)}` returned "{e.output.rstrip()}".'
             )
     return url
 
