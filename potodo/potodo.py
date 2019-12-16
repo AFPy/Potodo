@@ -60,14 +60,23 @@ def print_dir_stats(
 
 
 def add_dir_stats(
-    directory_name: str, buffer: list, folder_stats: list, printed_list: list, all_stats: list
-):
+    directory_name: str,
+    buffer: List[dict],
+    folder_stats: Sequence[int],
+    printed_list: Sequence[bool],
+    all_stats: List[dict],
+) -> None:
     """Appends directory name, its stats and the buffer to stats
     """
     if any(printed_list):
-        all_stats.append(dict(name=f"{directory_name}/",
-                              pc_translated=float(f"{statistics.mean(folder_stats):.2f}"),
-                              files=buffer))
+        pc_translated = statistics.mean(folder_stats)
+        all_stats.append(
+            dict(
+                name=f"{directory_name}/",
+                pc_translated=float(f"{pc_translated:.2f}"),
+                files=buffer,
+            )
+        )
 
 
 def exec_potodo(
@@ -79,7 +88,7 @@ def exec_potodo(
     hide_reserved: bool,
     counts: bool,
     json_format: bool,
-):
+) -> None:
     """
     Will run everything based on the given parameters
 
@@ -104,7 +113,7 @@ def exec_potodo(
     dir_stats: list = []
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
         # For each directory and files in this directory
-        buffer: List[str] = []
+        buffer: List = []
         folder_stats: List[int] = []
         printed_list: List[bool] = []
 
@@ -120,7 +129,7 @@ def exec_potodo(
                     above,
                     below,
                     counts,
-                    json_format
+                    json_format,
                 )
 
         # Once all files have been processed, print the dir and the files
@@ -132,7 +141,7 @@ def exec_potodo(
             print_dir_stats(directory_name, buffer, folder_stats, printed_list)
 
     if json_format:
-        print(json.dumps(dir_stats, indent=4, separators=(',', ': '), sort_keys=False))
+        print(json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False))
 
 
 def buffer_add(
@@ -153,9 +162,11 @@ def buffer_add(
     # If the file is completely translated,
     # or is translated below what's requested
     # or is translated above what's requested
-    if po_file_stats.percent_translated == 100 or \
-            po_file_stats.percent_translated < above or \
-            po_file_stats.percent_translated > below:
+    if (
+        po_file_stats.percent_translated == 100
+        or po_file_stats.percent_translated < above
+        or po_file_stats.percent_translated > below
+    ):
 
         # add the percentage of the file to the stats of the folder
         folder_stats.append(po_file_stats.percent_translated)
@@ -175,20 +186,33 @@ def buffer_add(
     po_file_size = po_file_stats.po_file_size
     # percentage of the file already translated
     percent_translated = po_file_stats.percent_translated
-    # `reserved by` if the file is reserved unless the offline/hide_reservation are enabled
+    # `reserved by` if the file is reserved
+    # unless the offline/hide_reservation are enabled
     reserved_by = issue_reservations.get(po_file_stats.filename_dir.lower(), None)
 
+    directory = po_file_stats.directory
+    filename = po_file_stats.filename
+    path = po_file_stats.path
+
     if json_format:
+
         # the order of the keys is the display order
-        desc = dict(name=f"{po_file_stats.directory}/{po_file_stats.filename.strip('.po')}",
-                    path=str(po_file_stats.path), entries=po_file_size, fuzzies=fuzzy_nb,
-                    translated=translated_nb, pc_translated=percent_translated, reserved_by=reserved_by)
+        desc = dict(
+            name=f"{directory}/{filename.strip('.po')}",
+            path=str(path),
+            entries=po_file_size,
+            fuzzies=fuzzy_nb,
+            translated=translated_nb,
+            pc_translated=percent_translated,
+            reserved_by=reserved_by,
+        )
 
     else:
-        desc = f"- {po_file_stats.filename:<30} "  # The filename
+        desc = f"- {filename:<30} "  # The filename
 
         if counts:
-            missing = len(po_file_stats.fuzzy_entries) + len(po_file_stats.untranslated_entries)
+            missing = len(po_file_stats.fuzzy_entries) + \
+                      len(po_file_stats.untranslated_entries)
             desc += f"{missing:3d} to do"
             desc += f", including {fuzzy_nb} fuzzies." if fuzzy_nb else ""
 
@@ -215,10 +239,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "-p",
-        "--path",
-        type=Path,
-        help="Execute Potodo in the given path"
+        "-p", "--path", type=Path, help="Execute Potodo in the given path"
     )
 
     parser.add_argument(
@@ -265,10 +286,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "-j",
-        "--json",
-        action="store_true",
-        help="Format output as JSON.",
+        "-j", "--json", action="store_true", help="Format output as JSON.",
     )
 
     parser.add_argument(

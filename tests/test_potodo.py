@@ -15,6 +15,7 @@ def test_potodo(capsys):
         hide_reserved=False,
         counts=False,
         offline=True,
+        json_format=False,
     )
     captured = capsys.readouterr()
     assert "bugs.po" in captured.out
