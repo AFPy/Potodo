@@ -21,6 +21,7 @@ optional arguments:
   -f, --fuzzy           Will only print files marked as fuzzys
   -o, --offline         Will not do any fetch to GitHub/online if given
   -n, --no-reserved     Will not print the info about reserved files
+  -j, --json            Will produce JSON-formatted output
   -a ABOVE, --above ABOVE
                         Will list all TODOs ABOVE given INT% completion
   -b BELOW, --below BELOW
