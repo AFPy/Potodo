@@ -1,0 +1,20 @@
+#: /un/chemin/idiot.rst:69
+msgid "This is a dummy sentence."
+msgstr "Ceci est une phrase bateau."
+
+#, fuzzy
+#: /un/chemin/idiot.rst:420
+msgid "Incredibly useful as a tool, this potodo"
+msgstr "Incroyablement inutile comme outil, ce potodo"
+
+#: /un/chemin/idiot.rst:666
+msgid "We should translate this eventually"
+msgstr ""
+
+#~ msgid "Hello darkness my old friend"
+#~ msgstr "Vous qui lisez cette ligne, vous êtes très beau."
+
+#, fuzzy
+#~ msgid "I am only there to make sure"
+#~ msgstr "I don't get counted as a fuzzy entry"
+

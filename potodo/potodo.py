@@ -200,7 +200,7 @@ def buffer_add(
 
         # the order of the keys is the display order
         d = dict(
-            name=f"{directory}/{filename.strip('.po')}",
+            name=f"{directory}/{filename.replace('.po', '')}",
             path=str(path),
             entries=po_file_size,
             fuzzies=fuzzy_nb,

@@ -1,0 +1,3 @@
+#: /un/chemin/idiot.rst:666
+msgid "We should also translate this eventually"
+msgstr ""
