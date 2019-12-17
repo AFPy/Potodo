@@ -5,7 +5,7 @@ import os
 import json
 import statistics
 
-from typing import Tuple, Mapping, Sequence, List
+from typing import Any, Dict, List, Mapping, Sequence, Tuple
 from pathlib import Path
 
 from potodo import __version__
@@ -61,10 +61,10 @@ def print_dir_stats(
 
 def add_dir_stats(
     directory_name: str,
-    buffer: List[dict],
+    buffer: List[Dict[str, str]],
     folder_stats: Sequence[int],
     printed_list: Sequence[bool],
-    all_stats: List[dict],
+    all_stats: List[Dict[str, Any]],
 ) -> None:
     """Appends directory name, its stats and the buffer to stats
     """
@@ -110,10 +110,10 @@ def exec_potodo(
     # Get a dict with the directory name and all po files.
     po_files_and_dirs = get_po_files_from_repo(path)
 
-    dir_stats: list = []
+    dir_stats: List[Any] = []
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
         # For each directory and files in this directory
-        buffer: List = []
+        buffer: List[Any] = []
         folder_stats: List[int] = []
         printed_list: List[bool] = []
 
@@ -145,7 +145,7 @@ def exec_potodo(
 
 
 def buffer_add(
-    buffer: list,
+    buffer: List[Any],
     folder_stats: List[int],
     printed_list: List[bool],
     po_file_stats: PoFileStats,
@@ -178,8 +178,10 @@ def buffer_add(
         # return without adding anything to the buffer
         return
 
+    fuzzy_entries = po_file_stats.fuzzy_entries
+    untranslated_entries = po_file_stats.untranslated_entries
     # nb of fuzzies in the file IF there are some fuzzies in the file
-    fuzzy_nb = po_file_stats.fuzzy_nb if po_file_stats.fuzzy_entries else 0
+    fuzzy_nb = po_file_stats.fuzzy_nb if fuzzy_entries else 0
     # number of entries translated
     translated_nb = po_file_stats.translated_nb
     # file size
@@ -197,7 +199,7 @@ def buffer_add(
     if json_format:
 
         # the order of the keys is the display order
-        desc = dict(
+        d = dict(
             name=f"{directory}/{filename.strip('.po')}",
             path=str(path),
             entries=po_file_size,
@@ -207,24 +209,25 @@ def buffer_add(
             reserved_by=reserved_by,
         )
 
+        buffer.append(d)
+
     else:
-        desc = f"- {filename:<30} "  # The filename
+        s = f"- {filename:<30} "  # The filename
 
         if counts:
-            missing = len(po_file_stats.fuzzy_entries) + \
-                      len(po_file_stats.untranslated_entries)
-            desc += f"{missing:3d} to do"
-            desc += f", including {fuzzy_nb} fuzzies." if fuzzy_nb else ""
+            missing = len(fuzzy_entries) + len(untranslated_entries)
+            s += f"{missing:3d} to do"
+            s += f", including {fuzzy_nb} fuzzies." if fuzzy_nb else ""
 
         else:
-            desc += f"{translated_nb:3d} / {po_file_size:3d} "
-            desc += f"({percent_translated:5.1f}% translated)"
-            desc += f", {fuzzy_nb} fuzzy" if fuzzy_nb else ""
+            s += f"{translated_nb:3d} / {po_file_size:3d} "
+            s += f"({percent_translated:5.1f}% translated)"
+            s += f", {fuzzy_nb} fuzzy" if fuzzy_nb else ""
 
         if reserved_by is not None:
-            desc += f", réservé par {reserved_by}"
+            s += f", réservé par {reserved_by}"
 
-    buffer.append(desc)
+        buffer.append(s)
 
     # Add the percent translated to the folder statistics
     folder_stats.append(po_file_stats.percent_translated)
