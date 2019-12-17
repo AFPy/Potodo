@@ -73,7 +73,7 @@ def add_dir_stats(
         all_stats.append(
             dict(
                 name=f"{directory_name}/",
-                pc_translated=float(f"{pc_translated:.2f}"),
+                percent_translated=float(f"{pc_translated:.2f}"),
                 files=buffer,
             )
         )
@@ -205,7 +205,7 @@ def buffer_add(
             entries=po_file_size,
             fuzzies=fuzzy_nb,
             translated=translated_nb,
-            pc_translated=percent_translated,
+            percent_translated=percent_translated,
             reserved_by=reserved_by,
         )
 
