@@ -4,7 +4,7 @@ from pathlib import Path
 from potodo.potodo import exec_potodo
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures"
-REPO_DIR = "python-docs-fr"
+REPO_DIR = "repository"
 
 
 def test_potodo(capsys):
@@ -57,11 +57,11 @@ def test_json_output(capsys):
             ],
         },
         {
-            "name": "python-docs-fr/",
+            "name": f"{REPO_DIR}/",
             "percent_translated": 16.5,
             "files": [
                 {
-                    "name": "python-docs-fr/file1",
+                    "name": f"{REPO_DIR}/file1",
                     "path": str(FIXTURE_DIR / REPO_DIR / "file1.po"),
                     "entries": 3,
                     "fuzzies": 1,
@@ -70,7 +70,7 @@ def test_json_output(capsys):
                     "reserved_by": None,
                 },
                 {
-                    "name": "python-docs-fr/file2",
+                    "name": f"{REPO_DIR}/file2",
                     "path": str(FIXTURE_DIR / REPO_DIR / "file2.po"),
                     "entries": 1,
                     "fuzzies": 0,
