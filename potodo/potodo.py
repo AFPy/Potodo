@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import os
 import argparse
+import os
+import json
 import statistics
 
-from typing import Tuple, Mapping, Sequence, List
+from typing import Any, Dict, List, Mapping, Sequence, Tuple
 from pathlib import Path
 
 from potodo import __version__
@@ -58,100 +59,24 @@ def print_dir_stats(
         print("\n".join(buffer))
 
 
-def buffer_add(
-    buffer: List[str],
-    folder_stats: List[int],
-    printed_list: List[bool],
-    po_file_stats: PoFileStats,
-    issue_reservations: Mapping[str, str],
-    above: int,
-    below: int,
-    counts: bool,
+def add_dir_stats(
+    directory_name: str,
+    buffer: List[Dict[str, str]],
+    folder_stats: Sequence[int],
+    printed_list: Sequence[bool],
+    all_stats: List[Dict[str, Any]],
 ) -> None:
-    """Will add to the buffer the information to print about the file is
-    the file isn't translated entirely or above or below requested
-    values.
+    """Appends directory name, its stats and the buffer to stats
     """
-    if po_file_stats.percent_translated == 100:
-        # If the file is completely translated
-
-        # Add the percentage of the file to the stats of the folder
-        folder_stats.append(po_file_stats.percent_translated)
-        # Indicate not to print that file
-        printed_list.append(False)
-        # End the function call without adding anything to the buffer
-        return
-
-    if po_file_stats.percent_translated < above:
-        # If the file's percent translated is below what is requested
-
-        # Add the percentage of the file to the stats of the folder
-        folder_stats.append(po_file_stats.percent_translated)
-        # Indicate not to print that file
-        printed_list.append(False)
-        # End the function call without adding anything to the buffer
-        return
-
-    if po_file_stats.percent_translated > below:
-        # If the file's percent translated is above what is requested
-
-        # Add the percentage of the file to the stats of the folder
-        folder_stats.append(po_file_stats.percent_translated)
-        # Indicate not to print that file
-        printed_list.append(False)
-        # End the function call without adding anything to the buffer
-        return
-
-    if not counts:
-        buffer.append(
-            # The filename
-            f"- {po_file_stats.filename:<30} "
-            # The number of entries translated / the file size
-            + f"{po_file_stats.translated_nb:3d} / {po_file_stats.po_file_size:3d} "
-            # The percentage of the file translated
-            + f"({po_file_stats.percent_translated:5.1f}% translated)"
-            # The fuzzies in the file IF fuzzies exist in the file
-            + (
-                f", {po_file_stats.fuzzy_nb} fuzzy"
-                if po_file_stats.fuzzy_entries
-                else ""
-            )
-            # The `reserved by` if the file is reserved unless the
-            # offline/hide_reservation are enabled
-            + (
-                f", réservé par "
-                f"{issue_reservations[po_file_stats.filename_dir.lower()]}"
-                if po_file_stats.filename_dir.lower() in issue_reservations
-                else ""
+    if any(printed_list):
+        pc_translated = statistics.mean(folder_stats)
+        all_stats.append(
+            dict(
+                name=f"{directory_name}/",
+                percent_translated=float(f"{pc_translated:.2f}"),
+                files=buffer,
             )
         )
-    else:
-        todonum = len(po_file_stats.fuzzy_entries) + len(
-            po_file_stats.untranslated_entries
-        )
-        buffer.append(
-            # The filename
-            f"- {po_file_stats.filename:<30} "
-            + f"{todonum:3d} to do"
-            # The fuzzies in the file IF fuzzies exist in the file
-            + (
-                f", including {po_file_stats.fuzzy_nb} fuzzies."
-                if po_file_stats.fuzzy_entries
-                else ""
-            )
-            # The `reserved by` if the file is reserved unless the
-            # offline/hide_reservation are enabled
-            + (
-                f", réservé par "
-                f"{issue_reservations[po_file_stats.filename_dir.lower()]}"
-                if po_file_stats.filename_dir.lower() in issue_reservations
-                else ""
-            )
-        )
-    # Add the percent translated to the folder statistics
-    folder_stats.append(po_file_stats.percent_translated)
-    # Indicate to print the file
-    printed_list.append(True)
 
 
 def exec_potodo(
@@ -162,6 +87,7 @@ def exec_potodo(
     offline: bool,
     hide_reserved: bool,
     counts: bool,
+    json_format: bool,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -173,6 +99,7 @@ def exec_potodo(
     :param offline: Will not connect to internet
     :param hide_reserved: Will not show the reserved files
     :param counts: Render list with counts not percentage
+    :param json_format: Format output as JSON.
     """
 
     # Initialize the arguments
@@ -183,31 +110,16 @@ def exec_potodo(
     # Get a dict with the directory name and all po files.
     po_files_and_dirs = get_po_files_from_repo(path)
 
+    dir_stats: List[Any] = []
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
         # For each directory and files in this directory
-        buffer: List[str] = []
+        buffer: List[Any] = []
         folder_stats: List[int] = []
         printed_list: List[bool] = []
 
         for po_file in sorted(po_files):
             # For each file in those files from that directory
-            if fuzzy:
-                # Ignore files without fuzzies
-                if len(po_file.fuzzy_entries) > 0:
-                    buffer_add(
-                        buffer,
-                        folder_stats,
-                        printed_list,
-                        po_file,
-                        issue_reservations,
-                        above,
-                        below,
-                        counts,
-                    )
-                else:
-                    pass
-            else:
-                # All files, with and without fuzzies
+            if not fuzzy or po_file.fuzzy_entries:
                 buffer_add(
                     buffer,
                     folder_stats,
@@ -217,9 +129,110 @@ def exec_potodo(
                     above,
                     below,
                     counts,
+                    json_format,
                 )
+
         # Once all files have been processed, print the dir and the files
-        print_dir_stats(directory_name, buffer, folder_stats, printed_list)
+        # or store them into a dict to print them once all directories have
+        # been processed.
+        if json_format:
+            add_dir_stats(directory_name, buffer, folder_stats, printed_list, dir_stats)
+        else:
+            print_dir_stats(directory_name, buffer, folder_stats, printed_list)
+
+    if json_format:
+        print(json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False))
+
+
+def buffer_add(
+    buffer: List[Any],
+    folder_stats: List[int],
+    printed_list: List[bool],
+    po_file_stats: PoFileStats,
+    issue_reservations: Mapping[str, str],
+    above: int,
+    below: int,
+    counts: bool,
+    json_format: bool,
+) -> None:
+    """Will add to the buffer the information to print about the file is
+    the file isn't translated entirely or above or below requested
+    values.
+    """
+    # If the file is completely translated,
+    # or is translated below what's requested
+    # or is translated above what's requested
+    if (
+        po_file_stats.percent_translated == 100
+        or po_file_stats.percent_translated < above
+        or po_file_stats.percent_translated > below
+    ):
+
+        # add the percentage of the file to the stats of the folder
+        folder_stats.append(po_file_stats.percent_translated)
+
+        if not json_format:
+            # don't print that file
+            printed_list.append(False)
+
+        # return without adding anything to the buffer
+        return
+
+    fuzzy_entries = po_file_stats.fuzzy_entries
+    untranslated_entries = po_file_stats.untranslated_entries
+    # nb of fuzzies in the file IF there are some fuzzies in the file
+    fuzzy_nb = po_file_stats.fuzzy_nb if fuzzy_entries else 0
+    # number of entries translated
+    translated_nb = po_file_stats.translated_nb
+    # file size
+    po_file_size = po_file_stats.po_file_size
+    # percentage of the file already translated
+    percent_translated = po_file_stats.percent_translated
+    # `reserved by` if the file is reserved
+    # unless the offline/hide_reservation are enabled
+    reserved_by = issue_reservations.get(po_file_stats.filename_dir.lower(), None)
+
+    directory = po_file_stats.directory
+    filename = po_file_stats.filename
+    path = po_file_stats.path
+
+    if json_format:
+
+        # the order of the keys is the display order
+        d = dict(
+            name=f"{directory}/{filename.replace('.po', '')}",
+            path=str(path),
+            entries=po_file_size,
+            fuzzies=fuzzy_nb,
+            translated=translated_nb,
+            percent_translated=percent_translated,
+            reserved_by=reserved_by,
+        )
+
+        buffer.append(d)
+
+    else:
+        s = f"- {filename:<30} "  # The filename
+
+        if counts:
+            missing = len(fuzzy_entries) + len(untranslated_entries)
+            s += f"{missing:3d} to do"
+            s += f", including {fuzzy_nb} fuzzies." if fuzzy_nb else ""
+
+        else:
+            s += f"{translated_nb:3d} / {po_file_size:3d} "
+            s += f"({percent_translated:5.1f}% translated)"
+            s += f", {fuzzy_nb} fuzzy" if fuzzy_nb else ""
+
+        if reserved_by is not None:
+            s += f", réservé par {reserved_by}"
+
+        buffer.append(s)
+
+    # Add the percent translated to the folder statistics
+    folder_stats.append(po_file_stats.percent_translated)
+    # Indicate to print the file
+    printed_list.append(True)
 
 
 def main() -> None:
@@ -276,6 +289,10 @@ def main() -> None:
     )
 
     parser.add_argument(
+        "-j", "--json", action="store_true", help="Format output as JSON.",
+    )
+
+    parser.add_argument(
         "--version", action="version", version="%(prog)s " + __version__
     )
 
@@ -294,4 +311,5 @@ def main() -> None:
         args.offline,
         args.no_reserved,
         args.counts,
+        args.json,
     )
