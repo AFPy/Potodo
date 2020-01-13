@@ -6,7 +6,6 @@ import json
 import statistics
 
 from typing import Any, Dict, List, Mapping, Sequence, Tuple
-from pathlib import Path
 
 from potodo import __version__
 from potodo._github import get_reservation_list
@@ -238,58 +237,56 @@ def buffer_add(
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="potodo",
-        description="Sequence and prettify the po files left to translate",
+        description="Sequence and prettify the po files left to translate.",
     )
 
-    parser.add_argument(
-        "-p", "--path", type=Path, help="Execute Potodo in the given path"
-    )
+    parser.add_argument("-p", "--path", help="execute Potodo in PATH")
 
     parser.add_argument(
         "-a",
         "--above",
+        metavar="X",
         type=int,
-        help="Will list all TODOs ABOVE given INT%% completion",
+        help="list all TODOs above given X%% completion",
     )
 
     parser.add_argument(
         "-b",
         "--below",
+        metavar="X",
         type=int,
-        help="Will list all TODOs BELOW given INT%% completion",
+        help="list all TODOs below given X%% completion",
     )
 
     parser.add_argument(
-        "-f",
-        "--fuzzy",
-        action="store_true",
-        help="Will only print files marked as fuzzys",
+        "-f", "--fuzzy", action="store_true", help="print only files marked as fuzzys",
     )
 
     parser.add_argument(
         "-o",
         "--offline",
         action="store_true",
-        help="Will not do any fetch to GitHub/online if given",
+        help="don't perform any fetching to GitHub/online",
     )
 
     parser.add_argument(
         "-n",
         "--no-reserved",
+        dest="hide_reserved",
         action="store_true",
-        help="Will not print the info about reserved files",
+        help="don't print info about reserved files",
     )
 
     parser.add_argument(
         "-c",
         "--counts",
         action="store_true",
-        help="Render list with the count of remaining entries "
+        help="render list with the count of remaining entries "
         "(translate or review) rather than percentage done",
     )
 
     parser.add_argument(
-        "-j", "--json", action="store_true", help="Format output as JSON.",
+        "-j", "--json", action="store_true", help="format output as JSON.",
     )
 
     parser.add_argument(
@@ -297,19 +294,9 @@ def main() -> None:
     )
 
     args = parser.parse_args()
-    # If no path is specified, then use the current path
-    if args.path:
-        path = str(args.path)
-    else:
-        path = os.getcwd()
 
-    exec_potodo(
-        path,
-        args.above,
-        args.below,
-        args.fuzzy,
-        args.offline,
-        args.no_reserved,
-        args.counts,
-        args.json,
-    )
+    # If no path is specified, use current directory
+    if not args.path:
+        args.path = os.getcwd()
+
+    exec_potodo(**vars(args))
