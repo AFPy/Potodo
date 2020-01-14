@@ -13,7 +13,7 @@ pip install potodo
 usage: potodo [-h] [-p PATH] [-a X] [-b X] [-f] [-o] [-n] [-c] [-j]
               [--version]
 
-Sequence and prettify the po files left to translate.
+List and prettify the po files left to translate.
 
 optional arguments:
   -h, --help            show this help message and exit
