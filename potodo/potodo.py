@@ -236,8 +236,7 @@ def buffer_add(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="potodo",
-        description="Sequence and prettify the po files left to translate.",
+        prog="potodo", description="List and prettify the po files left to translate.",
     )
 
     parser.add_argument("-p", "--path", help="execute Potodo in PATH")
