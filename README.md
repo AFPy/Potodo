@@ -1,5 +1,5 @@
 # Potodo
-Potodo, a (almost) flawless TODO/progress listing CLI tool for po files
+Potodo, a (almost) flawless TODO/progress listing CLI tool for po files.
 
 ## Installation
 
@@ -10,22 +10,23 @@ pip install potodo
 ## Usage
 
 ```
-usage: potodo [-h] [-p PATH] [-l] [-f] [-o] [-n] [-a ABOVE] [-b BELOW]
+usage: potodo [-h] [-p PATH] [-a X] [-b X] [-f] [-o] [-n] [-c] [-j]
+              [--version]
 
-List and prettify the po files left to translate
+List and prettify the po files left to translate.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -p PATH, --path PATH  Execute Potodo in the given path
-  -l, --matching-files  Suppress normal output; instead print the name of each matching po file from which output would normally have been printed.
-  -f, --fuzzy           Will only print files marked as fuzzys
-  -o, --offline         Will not do any fetch to GitHub/online if given
-  -n, --no-reserved     Will not print the info about reserved files
-  -j, --json            Will produce JSON-formatted output
-  -a ABOVE, --above ABOVE
-                        Will list all TODOs ABOVE given INT% completion
-  -b BELOW, --below BELOW
-                        Will list all TODOs BELOW given INT% completion
+  -p PATH, --path PATH  execute Potodo in PATH
+  -a X, --above X       list all TODOs above given X% completion
+  -b X, --below X       list all TODOs below given X% completion
+  -f, --fuzzy           print only files marked as fuzzys
+  -o, --offline         don't perform any fetching to GitHub/online
+  -n, --no-reserved     don't print info about reserved files
+  -c, --counts          render list with the count of remaining entries
+                        (translate or review) rather than percentage done
+  -j, --json            format output as JSON.
+  --version             show program's version number and exit
 ```
 
 ## Contributing
