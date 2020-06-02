@@ -64,9 +64,9 @@ def is_within(file: Path, folder: Path) -> bool:
 def get_po_files_from_repo(
     repo_path: str, exclude: List[str]
 ) -> Mapping[str, Sequence[PoFileStats]]:
-    """Gets all the po files recursively from 'repo_path', excluding those in 'exclude'
-    Return a list with all directories and PoFile instances of `.po` files in those
-    directories.
+    """Gets all the po files recursively from 'repo_path', excluding those in
+    'exclude'. Return a list with all directories and PoFile instances of
+    `.po` files in those directories.
     """
 
     # Get all the files matching `**/*.po`
