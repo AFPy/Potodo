@@ -1,0 +1,3 @@
+#: /I/am/excluded.rst:333
+msgid "Whatever"
+msgstr "Peu importe"

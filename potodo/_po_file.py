@@ -53,15 +53,28 @@ class PoFileStats:
         return self.filename < other.filename
 
 
-def get_po_files_from_repo(repo_path: str) -> Mapping[str, Sequence[PoFileStats]]:
-    """Gets all the po files from a given repository.  Will return a list
-    with all directories and PoFile instances of `.po` files in those
+def is_within(file: Path, folder: Path) -> bool:
+    """ Check if `file` is within `folder`'s tree.
+    """
+    folder = folder.resolve()
+    file = file.resolve()
+    return any(parent == folder for parent in file.parents)
+
+
+def get_po_files_from_repo(
+    repo_path: str, exclude: List[str]
+) -> Mapping[str, Sequence[PoFileStats]]:
+    """Gets all the po files recursively from 'repo_path', excluding those in 'exclude'
+    Return a list with all directories and PoFile instances of `.po` files in those
     directories.
     """
 
-    # Get all the files matching `**/*.po` and not being `.git/` in the given path
+    # Get all the files matching `**/*.po`
+    # not being in any (sub)folder from the exclusion list
     all_po_files: Sequence[Path] = [
-        file for file in Path(repo_path).glob("**/*.po") if ".git/" not in str(file)
+        file
+        for file in Path(repo_path).rglob("*.po")
+        if not any(is_within(file, Path(excluded)) for excluded in exclude)
     ]
 
     # Separates each directory and places all pofiles for each directory accordingly
