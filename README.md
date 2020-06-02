@@ -18,6 +18,8 @@ Sequence and prettify the po files left to translate.
 optional arguments:
   -h, --help            show this help message and exit
   -p PATH, --path PATH  execute Potodo in PATH
+  -e EXCLUDE [EXCLUDE ...], --exclude EXCLUDE [EXCLUDE ...]
+                        exclude folders
   -a X, --above X       list all TODOs above given X% completion
   -b X, --below X       list all TODOs below given X% completion
   -f, --fuzzy           print only files marked as fuzzys
