@@ -1,3 +1,4 @@
+import itertools
 from typing import Dict, Mapping, Sequence, Set, List, Iterable
 from pathlib import Path
 
@@ -58,6 +59,7 @@ def is_within(file: Path, excluded: Path) -> bool:
     """
     excluded = excluded.resolve()
     file = file.resolve()
+
     return excluded in file.parents or file == excluded
 
 
@@ -80,8 +82,10 @@ def get_po_files_from_repo(
 
     # Separates each directory and places all pofiles for each directory accordingly
     po_files_per_directory: Mapping[str, Set[Path]] = {
-        path.parent.name: set(path.parent.glob("*.po")) for path in all_po_files
+        name: set(files) for name, files in
+        itertools.groupby(all_po_files, key=lambda path: path.parent.name)
     }
+
     end_dict: Dict[str, Sequence[PoFileStats]] = {}
     for directory, po_files in sorted(po_files_per_directory.items()):
         # For each file in each directory, gets a PoFile instance then add it to a dict

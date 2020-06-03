@@ -3,42 +3,41 @@ from pathlib import Path
 
 from potodo.potodo import exec_potodo
 
-FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures"
 REPO_DIR = "repository"
+ABS_REPO_DIR = Path(__file__).resolve().parent / "fixtures" / REPO_DIR
+
+config = {
+    "path": f"{ABS_REPO_DIR}",
+    "exclude": [f"{ABS_REPO_DIR}/excluded", f"{ABS_REPO_DIR}/folder/excluded.po"],
+    "above": 0,
+    "below": 100,
+    "fuzzy": False,
+    "hide_reserved": False,
+    "counts": False,
+    "offline": True,
+}
 
 
 def test_txt_output(capsys):
     exec_potodo(
-        path=FIXTURE_DIR / REPO_DIR,
-        exclude=[],
-        above=0,
-        below=100,
-        fuzzy=False,
-        hide_reserved=False,
-        counts=False,
-        offline=True,
         json_format=False,
+        **config
     )
     captured = capsys.readouterr()
+
     assert "file1.po" in captured.out
     assert "file2.po" in captured.out
     assert "# folder" in captured.out
     assert "file3.po" in captured.out
     assert "1 fuzzy" in captured.out
     assert "2 fuzzy" not in captured.out
+    assert "excluded" not in captured.out
 
 
 def test_output(capsys):
     exec_potodo(
-        path=FIXTURE_DIR / REPO_DIR,
-        exclude=["excluded"],
-        above=0,
-        below=100,
-        fuzzy=False,
-        hide_reserved=False,
-        counts=False,
-        offline=True,
         json_format=True,
+        **config
     )
     output = json.loads(capsys.readouterr().out)
 
@@ -49,7 +48,7 @@ def test_output(capsys):
             "files": [
                 {
                     "name": "folder/file3",
-                    "path": str(FIXTURE_DIR / REPO_DIR / "folder" / "file3.po"),
+                    "path": f"{ABS_REPO_DIR}/folder/file3.po",
                     "entries": 1,
                     "fuzzies": 0,
                     "translated": 0,
@@ -64,7 +63,7 @@ def test_output(capsys):
             "files": [
                 {
                     "name": f"{REPO_DIR}/file1",
-                    "path": str(FIXTURE_DIR / REPO_DIR / "file1.po"),
+                    "path": f"{ABS_REPO_DIR}/file1.po",
                     "entries": 3,
                     "fuzzies": 1,
                     "translated": 1,
@@ -73,7 +72,7 @@ def test_output(capsys):
                 },
                 {
                     "name": f"{REPO_DIR}/file2",
-                    "path": str(FIXTURE_DIR / REPO_DIR / "file2.po"),
+                    "path": f"{ABS_REPO_DIR}/file2.po",
                     "entries": 1,
                     "fuzzies": 0,
                     "translated": 0,
@@ -84,4 +83,4 @@ def test_output(capsys):
         },
     ]
 
-    assert expected == output
+    assert output == expected
