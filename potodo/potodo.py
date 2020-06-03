@@ -285,7 +285,11 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "-j", "--json", action="store_true", help="format output as JSON.",
+        "-j",
+        "--json",
+        action="store_true",
+        dest="json_format",
+        help="format output as JSON.",
     )
 
     parser.add_argument(
