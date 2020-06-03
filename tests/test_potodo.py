@@ -10,7 +10,7 @@ REPO_DIR = "repository"
 def test_txt_output(capsys):
     exec_potodo(
         path=FIXTURE_DIR / REPO_DIR,
-        exclude=list(),
+        exclude=[],
         above=0,
         below=100,
         fuzzy=False,

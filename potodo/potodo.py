@@ -245,7 +245,7 @@ def main() -> None:
     parser.add_argument("-p", "--path", help="execute Potodo in PATH")
 
     parser.add_argument(
-        "-e", "--exclude", nargs="+", default=list(), help="exclude folders"
+        "-e", "--exclude", nargs="+", default=[], help="exclude folders"
     )
 
     parser.add_argument(
