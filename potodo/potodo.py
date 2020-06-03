@@ -290,13 +290,7 @@ def main() -> None:
         "(translate or review) rather than percentage done",
     )
 
-    parser.add_argument(
-        "-j",
-        "--json",
-        action="store_true",
-        dest="json_format",
-        help="format output as JSON.",
-    )
+    parser.add_argument("-j", "--json", action="store_true", help="format output as JSON.")
 
     parser.add_argument(
         "--version", action="version", version="%(prog)s " + __version__
