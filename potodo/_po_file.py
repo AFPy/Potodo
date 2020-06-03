@@ -58,7 +58,7 @@ def is_within(file: Path, folder: Path) -> bool:
     """
     folder = folder.resolve()
     file = file.resolve()
-    return any(parent == folder for parent in file.parents)
+    return folder in file.parents
 
 
 def get_po_files_from_repo(
