@@ -1,4 +1,4 @@
-from typing import Dict, Mapping, Sequence, Set, List
+from typing import Dict, Mapping, Sequence, Set, List, Iterable
 from pathlib import Path
 
 import polib
@@ -53,16 +53,16 @@ class PoFileStats:
         return self.filename < other.filename
 
 
-def is_within(file: Path, folder: Path) -> bool:
-    """ Check if `file` is within `folder`'s tree.
+def is_within(file: Path, excluded: Path) -> bool:
+    """ Check if `file` is `excluded` or within `excluded`'s tree.
     """
-    folder = folder.resolve()
+    excluded = excluded.resolve()
     file = file.resolve()
-    return folder in file.parents
+    return excluded in file.parents or file == excluded
 
 
 def get_po_files_from_repo(
-    repo_path: str, exclude: List[str]
+    repo_path: str, exclude: Iterable[str]
 ) -> Mapping[str, Sequence[PoFileStats]]:
     """Gets all the po files recursively from 'repo_path', excluding those in
     'exclude'. Return a list with all directories and PoFile instances of
@@ -70,7 +70,8 @@ def get_po_files_from_repo(
     """
 
     # Get all the files matching `**/*.po`
-    # not being in any (sub)folder from the exclusion list
+    # not being in the exclusion list or in
+    # any (sub)folder from the exclusion list
     all_po_files: Sequence[Path] = [
         file
         for file in Path(repo_path).rglob("*.po")

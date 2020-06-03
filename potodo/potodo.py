@@ -241,10 +241,17 @@ def main() -> None:
         prog="potodo", description="List and prettify the po files left to translate.",
     )
 
-    parser.add_argument("-p", "--path", help="execute Potodo in PATH")
+    parser.add_argument(
+        "-p", "--path", help="execute Potodo in path", metavar="path",
+    )
 
     parser.add_argument(
-        "-e", "--exclude", nargs="+", default=[], help="exclude folders"
+        "-e",
+        "--exclude",
+        nargs="+",
+        default=[],
+        help="exclude from search",
+        metavar="path",
     )
 
     parser.add_argument(
@@ -290,7 +297,9 @@ def main() -> None:
         "(translate or review) rather than percentage done",
     )
 
-    parser.add_argument("-j", "--json", action="store_true", help="format output as JSON.")
+    parser.add_argument(
+        "-j", "--json", action="store_true", help="format output as JSON."
+    )
 
     parser.add_argument(
         "--version", action="version", version="%(prog)s " + __version__
