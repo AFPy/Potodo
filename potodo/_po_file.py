@@ -83,7 +83,7 @@ def get_po_files_from_repo(
     # Group files by directory
     po_files_per_directory: Mapping[str, Set[Path]] = {
         name: set(files)
-        # We assume the ouput of rglob to be sorted,
+        # We assume the output of rglob to be sorted,
         # so each 'name' is unique within groupby
         for name, files in itertools.groupby(
             all_po_files, key=lambda path: path.parent.name
