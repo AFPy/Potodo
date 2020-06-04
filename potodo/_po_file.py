@@ -74,11 +74,11 @@ def get_po_files_from_repo(
     # Get all the files matching `**/*.po`
     # not being in the exclusion list or in
     # any (sub)folder from the exclusion list
-    all_po_files: Sequence[Path] = (
+    all_po_files: Sequence[Path] = [
         file
         for file in Path(repo_path).rglob("*.po")
         if not any(is_within(file, Path(excluded)) for excluded in exclude)
-    )
+    ]
 
     # Group files by directory
     po_files_per_directory: Mapping[str, Set[Path]] = {
