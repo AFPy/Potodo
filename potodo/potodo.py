@@ -93,7 +93,7 @@ def exec_potodo(
     Will run everything based on the given parameters
 
     :param path: The path to search into
-    :param exclude: folders within 'path' to be ignored
+    :param exclude: folders or files to be ignored
     :param above: The above threshold
     :param below: The below threshold
     :param fuzzy: Should only fuzzies be printed

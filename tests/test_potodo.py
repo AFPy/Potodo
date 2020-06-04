@@ -19,10 +19,7 @@ config = {
 
 
 def test_txt_output(capsys):
-    exec_potodo(
-        json_format=False,
-        **config
-    )
+    exec_potodo(json_format=False, **config)
     captured = capsys.readouterr()
 
     assert "file1.po" in captured.out
@@ -35,10 +32,7 @@ def test_txt_output(capsys):
 
 
 def test_output(capsys):
-    exec_potodo(
-        json_format=True,
-        **config
-    )
+    exec_potodo(json_format=True, **config)
     output = json.loads(capsys.readouterr().out)
 
     expected = [

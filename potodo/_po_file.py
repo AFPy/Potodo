@@ -67,23 +67,27 @@ def get_po_files_from_repo(
     repo_path: str, exclude: Iterable[str]
 ) -> Mapping[str, Sequence[PoFileStats]]:
     """Gets all the po files recursively from 'repo_path', excluding those in
-    'exclude'. Return a list with all directories and PoFile instances of
+    'exclude'. Return a dict with all directories and PoFile instances of
     `.po` files in those directories.
     """
 
     # Get all the files matching `**/*.po`
     # not being in the exclusion list or in
     # any (sub)folder from the exclusion list
-    all_po_files: Sequence[Path] = [
+    all_po_files: Sequence[Path] = (
         file
         for file in Path(repo_path).rglob("*.po")
         if not any(is_within(file, Path(excluded)) for excluded in exclude)
-    ]
+    )
 
-    # Separates each directory and places all pofiles for each directory accordingly
+    # Group files by directory
     po_files_per_directory: Mapping[str, Set[Path]] = {
-        name: set(files) for name, files in
-        itertools.groupby(all_po_files, key=lambda path: path.parent.name)
+        name: set(files)
+        # We assume the ouput of rglob to be sorted,
+        # so each 'name' is unique within groupby
+        for name, files in itertools.groupby(
+            all_po_files, key=lambda path: path.parent.name
+        )
     }
 
     end_dict: Dict[str, Sequence[PoFileStats]] = {}
