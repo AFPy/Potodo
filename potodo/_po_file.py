@@ -55,7 +55,7 @@ class PoFileStats:
 
 
 def is_within(file: Path, excluded: Path) -> bool:
-    """ Check if `file` is `excluded` or within `excluded`'s tree.
+    """Check if `file` is `excluded` or within `excluded`'s tree.
     """
     excluded = excluded.resolve()
     file = file.resolve()
