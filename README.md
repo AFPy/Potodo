@@ -10,14 +10,15 @@ pip install potodo
 ## Usage
 
 ```
-usage: potodo [-h] [-p PATH] [-a X] [-b X] [-f] [-o] [-n] [-c] [-j]
-              [--version]
+usage: potodo [-h] [-p path] [-e path [path ...]] [-a X] [-b X] [-f] [-o] [-n] [-c] [-j] [--version]
 
 List and prettify the po files left to translate.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -p PATH, --path PATH  execute Potodo in PATH
+  -p path, --path path  execute Potodo in path
+  -e path [path ...], --exclude path [path ...]
+                        exclude from search
   -a X, --above X       list all TODOs above given X% completion
   -b X, --below X       list all TODOs below given X% completion
   -f, --fuzzy           print only files marked as fuzzys

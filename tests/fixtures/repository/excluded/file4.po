@@ -1,0 +1,7 @@
+#: /I/am/excluded.rst:111
+msgid "I don't care"
+msgstr "Peu me chaut"
+
+#: /I/am/excluded.rst:333
+msgid "Whatever"
+msgstr ""

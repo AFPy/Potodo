@@ -2,12 +2,14 @@
 
 import setuptools
 
+import potodo
+
 with open("README.md") as readme:
     long_description = readme.read()
 
 setuptools.setup(
     name="potodo",
-    version="0.5.0",
+    version=potodo.__version__,
     description="Will list all .po files that are to be transated",
     long_description=long_description,
     long_description_content_type="text/markdown",  # This is important!
@@ -31,4 +33,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
+    python_requires=">=3.6",
 )

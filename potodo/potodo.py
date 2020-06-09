@@ -80,6 +80,7 @@ def add_dir_stats(
 
 def exec_potodo(
     path: str,
+    exclude: List[str],
     above: int,
     below: int,
     fuzzy: bool,
@@ -92,6 +93,7 @@ def exec_potodo(
     Will run everything based on the given parameters
 
     :param path: The path to search into
+    :param exclude: folders or files to be ignored
     :param above: The above threshold
     :param below: The below threshold
     :param fuzzy: Should only fuzzies be printed
@@ -107,7 +109,7 @@ def exec_potodo(
     )
 
     # Get a dict with the directory name and all po files.
-    po_files_and_dirs = get_po_files_from_repo(path)
+    po_files_and_dirs = get_po_files_from_repo(path, exclude)
 
     dir_stats: List[Any] = []
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
@@ -239,7 +241,18 @@ def main() -> None:
         prog="potodo", description="List and prettify the po files left to translate.",
     )
 
-    parser.add_argument("-p", "--path", help="execute Potodo in PATH")
+    parser.add_argument(
+        "-p", "--path", help="execute Potodo in path", metavar="path",
+    )
+
+    parser.add_argument(
+        "-e",
+        "--exclude",
+        nargs="+",
+        default=[],
+        help="exclude from search",
+        metavar="path",
+    )
 
     parser.add_argument(
         "-a",
