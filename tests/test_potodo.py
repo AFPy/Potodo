@@ -7,8 +7,8 @@ REPO_DIR = "repository"
 ABS_REPO_DIR = Path(__file__).resolve().parent / "fixtures" / REPO_DIR
 
 config = {
-    "path": f"{ABS_REPO_DIR}",
-    "exclude": [f"{ABS_REPO_DIR}/excluded", f"{ABS_REPO_DIR}/folder/excluded.po"],
+    "path": ABS_REPO_DIR,
+    "exclude": [ABS_REPO_DIR / "excluded", ABS_REPO_DIR / "folder" / "excluded.po"],
     "above": 0,
     "below": 100,
     "fuzzy": False,
