@@ -34,9 +34,9 @@ def get_issue_reservations(
 def check_args(
     path: str, exclude: List[str], below: int, above: int, **kwargs: Any
 ) -> Mapping[str, Any]:
-    # If below is superior to above, raise an error
+    # If below is lower than above, raise an error
     if below < above:
-        raise ValueError("Below must be inferior to above")
+        raise ValueError("'below' must be greater than 'above'.")
 
     # If no path is specified, use current directory
     if not path:
@@ -46,8 +46,6 @@ def check_args(
     return {
         "path": Path(path).resolve(),
         "exclude": [Path(path).resolve() for path in exclude],
-        "below": below,
-        "above": above,
     }
 
 
