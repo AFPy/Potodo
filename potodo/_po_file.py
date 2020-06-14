@@ -57,14 +57,11 @@ class PoFileStats:
 def is_within(file: Path, excluded: Path) -> bool:
     """Check if `file` is `excluded` or within `excluded`'s tree.
     """
-    excluded = excluded.resolve()
-    file = file.resolve()
-
     return excluded in file.parents or file == excluded
 
 
-def get_po_files_from_repo(
-    repo_path: str, exclude: Iterable[str]
+def get_po_stats_from_repo(
+    repo_path: Path, exclude: Iterable[Path]
 ) -> Mapping[str, Sequence[PoFileStats]]:
     """Gets all the po files recursively from 'repo_path', excluding those in
     'exclude'. Return a dict with all directories and PoFile instances of
@@ -76,8 +73,8 @@ def get_po_files_from_repo(
     # any (sub)folder from the exclusion list
     all_po_files: Sequence[Path] = [
         file
-        for file in Path(repo_path).rglob("*.po")
-        if not any(is_within(file, Path(excluded)) for excluded in exclude)
+        for file in repo_path.rglob("*.po")
+        if not any(is_within(file, excluded) for excluded in exclude)
     ]
 
     # Group files by directory
@@ -90,8 +87,10 @@ def get_po_files_from_repo(
         )
     }
 
-    end_dict: Dict[str, Sequence[PoFileStats]] = {}
-    for directory, po_files in sorted(po_files_per_directory.items()):
-        # For each file in each directory, gets a PoFile instance then add it to a dict
-        end_dict[directory] = [PoFileStats(po_file) for po_file in po_files]
-    return end_dict
+    # Turn paths into stat objects
+    po_stats_per_directory: Dict[str, Sequence[PoFileStats]] = {
+        directory: [PoFileStats(po_file) for po_file in po_files]
+        for directory, po_files in po_files_per_directory.items()
+    }
+
+    return po_stats_per_directory

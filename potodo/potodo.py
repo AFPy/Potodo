@@ -5,32 +5,22 @@ import os
 import json
 import statistics
 
-from typing import Any, Dict, List, Mapping, Sequence, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Mapping, Sequence
 
 from potodo import __version__
 from potodo._github import get_reservation_list
-from potodo._po_file import PoFileStats, get_po_files_from_repo
+from potodo._po_file import PoFileStats, get_po_stats_from_repo
+
 
 # TODO: Sort the functions (maybe in different files ?
 
 
-def initialize_arguments(
-    above: int, below: int, offline: bool, hide_reserved: bool, repo_path: str
-) -> Tuple[int, int, Mapping[str, str]]:
-    """Will initialize the arguments as necessary
+def get_issue_reservations(
+    offline: bool, hide_reserved: bool, repo_path: Path
+) -> Mapping[str, str]:
+    """Retrieve info about reservation if needed.
     """
-    if not above:
-        # If above isn't specified, then print all files above 0% (all of them)
-        above = 0
-    if not below:
-        # If below isn't specified, then print all files below 100% (all of them)
-        below = 100
-
-    if above and below:
-        if below < above:
-            # If above and below are specified and that below is superior to above,
-            # raise an error
-            raise ValueError("Below must be inferior to above")
 
     if not offline and not hide_reserved:
         # If the reservations are to be displayed, then get them
@@ -38,7 +28,25 @@ def initialize_arguments(
     else:
         # Otherwise, an empty list will do the trick
         issue_reservations = {}
-    return above, below, issue_reservations
+    return issue_reservations
+
+
+def check_args(
+    path: str, exclude: List[str], below: int, above: int, **kwargs: Any
+) -> Mapping[str, Any]:
+    # If below is lower than above, raise an error
+    if below < above:
+        raise ValueError("'below' must be greater than 'above'.")
+
+    # If no path is specified, use current directory
+    if not path:
+        path = os.getcwd()
+
+    # Convert strings to `Path` objects and make them absolute
+    return {
+        "path": Path(path).resolve(),
+        "exclude": [Path(path).resolve() for path in exclude],
+    }
 
 
 def print_dir_stats(
@@ -79,8 +87,8 @@ def add_dir_stats(
 
 
 def exec_potodo(
-    path: str,
-    exclude: List[str],
+    path: Path,
+    exclude: List[Path],
     above: int,
     below: int,
     fuzzy: bool,
@@ -104,12 +112,11 @@ def exec_potodo(
     """
 
     # Initialize the arguments
-    above, below, issue_reservations = initialize_arguments(
-        above, below, offline, hide_reserved, path
-    )
+    issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
-    # Get a dict with the directory name and all po files.
-    po_files_and_dirs = get_po_files_from_repo(path, exclude)
+    # Dict whose keys are directory names and values are
+    # stats for each file within the directory.
+    po_files_and_dirs = get_po_stats_from_repo(path, exclude)
 
     dir_stats: List[Any] = []
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
@@ -257,6 +264,7 @@ def main() -> None:
     parser.add_argument(
         "-a",
         "--above",
+        default=0,
         metavar="X",
         type=int,
         help="list all TODOs above given X%% completion",
@@ -265,6 +273,7 @@ def main() -> None:
     parser.add_argument(
         "-b",
         "--below",
+        default=100,
         metavar="X",
         type=int,
         help="list all TODOs below given X%% completion",
@@ -309,10 +318,9 @@ def main() -> None:
         "--version", action="version", version="%(prog)s " + __version__
     )
 
-    args = parser.parse_args()
+    # Initialize args and check consistency
+    args = vars(parser.parse_args())
+    args.update(check_args(**args))
 
-    # If no path is specified, use current directory
-    if not args.path:
-        args.path = os.getcwd()
-
-    exec_potodo(**vars(args))
+    # Launch the processing itself
+    exec_potodo(**args)

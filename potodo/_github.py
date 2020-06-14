@@ -1,18 +1,19 @@
 import re
 import subprocess
+from pathlib import Path
 from typing import Mapping, List, Dict, Any
 
 import requests
 
 
-def get_repo_url(repo_path: str) -> str:
+def get_repo_url(repo_path: Path) -> str:
     """Tries to get the repository url from git commands
     """
     try:
         url = subprocess.check_output(
             "git remote get-url --all upstream".split(),
             universal_newlines=True,
-            cwd=repo_path,
+            cwd=str(repo_path),
             stderr=subprocess.STDOUT,
         )
     except subprocess.CalledProcessError:
@@ -20,7 +21,7 @@ def get_repo_url(repo_path: str) -> str:
             url = subprocess.check_output(
                 "git remote get-url --all origin".split(),
                 universal_newlines=True,
-                cwd=repo_path,
+                cwd=str(repo_path),
                 stderr=subprocess.STDOUT,
             )
         except subprocess.CalledProcessError as e:
@@ -30,7 +31,7 @@ def get_repo_url(repo_path: str) -> str:
     return url
 
 
-def get_repo_name(repo_path: str) -> str:
+def get_repo_name(repo_path: Path) -> str:
     """Will get the repository url from git commands then remove useless
     stuff to get ORG/NAME.
     """
@@ -45,7 +46,7 @@ def get_repo_name(repo_path: str) -> str:
     return repo_name
 
 
-def get_reservation_list(repo_path: str) -> Mapping[str, str]:
+def get_reservation_list(repo_path: Path) -> Mapping[str, str]:
     """Will get the repository name then request all the issues and put them in a dict
     """
 
