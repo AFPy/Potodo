@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "JulienPalard",
+      "name": "Julien Palard",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/239510?v=4",
+      "profile": "https://mdk.fr",
+      "contributions": [
+        "review",
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "Potodo",
+  "projectOwner": "Seluj78",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
