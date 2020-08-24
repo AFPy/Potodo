@@ -103,16 +103,11 @@ def exec_potodo(
 
     dir_stats: List[Any] = []
     if is_interactive:
-        # TODO: Add go back and quit options
-        # TODO: Check all available options passable to TerminalMenu
+        from potodo._interactive import _directory_list_menu, _file_list_menu
         directory_options = list(po_files_and_dirs.keys())
-        dir_menu = TerminalMenu(directory_options)
-        selected_dir_index = dir_menu.show()
-        file_options = []
-        for file in po_files_and_dirs[directory_options[selected_dir_index]]:
-            file_options.append(file.filename)
-        file_menu = TerminalMenu(file_options)
-        file_menu.show()
+        selected_dir = _directory_list_menu(directory_options)
+        selected_file = _file_list_menu(selected_dir, po_files_and_dirs[directory_options[selected_dir]])
+        print(selected_file)
     else:
         for directory_name, po_files in sorted(po_files_and_dirs.items()):
             # For each directory and files in this directory
