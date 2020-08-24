@@ -10,6 +10,8 @@ from typing import List
 from typing import Sequence
 from typing import Tuple
 
+from simple_term_menu import TerminalMenu
+
 from potodo import __version__
 from potodo._github import get_issue_reservations
 from potodo._po_file import get_po_stats_from_repo_or_cache
@@ -100,11 +102,23 @@ def exec_potodo(
     po_files_and_dirs = get_po_stats_from_repo_or_cache(path, exclude, no_cache)
 
     dir_stats: List[Any] = []
-    for directory_name, po_files in sorted(po_files_and_dirs.items()):
-        # For each directory and files in this directory
-        buffer: List[Any] = []
-        folder_stats: List[int] = []
-        printed_list: List[bool] = []
+    if is_interactive:
+        # TODO: Add go back and quit options
+        # TODO: Check all available options passable to TerminalMenu
+        directory_options = list(po_files_and_dirs.keys())
+        dir_menu = TerminalMenu(directory_options)
+        selected_dir_index = dir_menu.show()
+        file_options = []
+        for file in po_files_and_dirs[directory_options[selected_dir_index]]:
+            file_options.append(file.filename)
+        file_menu = TerminalMenu(file_options)
+        file_menu.show()
+    else:
+        for directory_name, po_files in sorted(po_files_and_dirs.items()):
+            # For each directory and files in this directory
+            buffer: List[Any] = []
+            folder_stats: List[int] = []
+            printed_list: List[bool] = []
 
         for po_file in sorted(po_files):
             # For each file in those files from that directory
@@ -125,19 +139,13 @@ def exec_potodo(
                     only_reserved,
                     show_reservation_dates,
                 )
-
-        # Once all files have been processed, print the dir and the files
-        # or store them into a dict to print them once all directories have
-        # been processed.
-        if json_format:
-            add_dir_stats(directory_name, buffer, folder_stats, printed_list, dir_stats)
-            print(
-                json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False)
-            )
-        if is_interactive:
-            pass
-        else:
-            print_dir_stats(directory_name, buffer, folder_stats, printed_list)
+                print(
+                    json.dumps(
+                        dir_stats, indent=4, separators=(",", ": "), sort_keys=False
+                    )
+                )
+            else:
+                print_dir_stats(directory_name, buffer, folder_stats, printed_list)
 
 
 def buffer_add(
