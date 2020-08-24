@@ -72,6 +72,7 @@ def exec_potodo(
     only_reserved: bool,
     show_reservation_dates: bool,
     no_cache: bool,
+    is_interactive: bool,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -129,11 +130,11 @@ def exec_potodo(
         # been processed.
         if json_format:
             add_dir_stats(directory_name, buffer, folder_stats, printed_list, dir_stats)
+            print(json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False))
+        if is_interactive:
+            pass
         else:
             print_dir_stats(directory_name, buffer, folder_stats, printed_list)
-
-    if json_format:
-        print(json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False))
 
 
 def buffer_add(
@@ -355,6 +356,14 @@ def main() -> None:
     )
 
     parser.add_argument(
+        "-i",
+        "--interactive",
+        action="store_true",
+        dest="is_interactive",
+        help="Activates the interactive menu",
+    )
+
+    parser.add_argument(
         "--version", action="version", version="%(prog)s " + __version__
     )
 
@@ -365,6 +374,9 @@ def main() -> None:
     # Initialize args and check consistency
     args = vars(parser.parse_args())
     args.update(check_args(**args))
+    
+    # TODO: Check that json and interactive options arent both on or else error and out
+    # TODO: Check that the os isn't windows. If it is, throw an error because term menu doesn't work with windows
 
     if args.get("exclude_fuzzy") and args.get("only_fuzzy"):
         print("Cannot pass --exclude-fuzzy and --only-fuzzy at the same time")
