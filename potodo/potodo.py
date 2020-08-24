@@ -130,7 +130,9 @@ def exec_potodo(
         # been processed.
         if json_format:
             add_dir_stats(directory_name, buffer, folder_stats, printed_list, dir_stats)
-            print(json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False))
+            print(
+                json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False)
+            )
         if is_interactive:
             pass
         else:
@@ -374,7 +376,7 @@ def main() -> None:
     # Initialize args and check consistency
     args = vars(parser.parse_args())
     args.update(check_args(**args))
-    
+
     # TODO: Check that json and interactive options arent both on or else error and out
     # TODO: Check that the os isn't windows. If it is, throw an error because term menu doesn't work with windows
 
