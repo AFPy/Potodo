@@ -91,6 +91,7 @@ def exec_potodo(
     :param only_reserved: Will print only reserved fils
     :param show_reservation_dates: Will show the reservation dates
     :param no_cache: Disables cache (Cache is disabled when files are modified)
+    :param is_interactive: Switches output to an interactive CLI menu
     """
 
     # Initialize the arguments

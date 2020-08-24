@@ -15,6 +15,7 @@ config = {
     "hide_reserved": False,
     "counts": False,
     "offline": True,
+    "is_interactive": False,
     "exclude_fuzzy": False,
     "only_reserved": False,
     "exclude_reserved": False,
