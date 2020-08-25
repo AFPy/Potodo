@@ -10,12 +10,11 @@ from typing import List
 from typing import Sequence
 from typing import Tuple
 
-from simple_term_menu import TerminalMenu
-
 from potodo import __version__
 from potodo._github import get_issue_reservations
 from potodo._po_file import get_po_stats_from_repo_or_cache
 from potodo._po_file import PoFileStats
+import webbrowser
 from potodo._utils import check_args
 from potodo._utils import setup_logging
 
@@ -23,10 +22,10 @@ from potodo._utils import setup_logging
 
 
 def print_dir_stats(
-    directory_name: str,
-    buffer: Sequence[str],
-    folder_stats: Sequence[int],
-    printed_list: Sequence[bool],
+        directory_name: str,
+        buffer: Sequence[str],
+        folder_stats: Sequence[int],
+        printed_list: Sequence[bool],
 ) -> None:
     """This function prints the directory name, its stats and the buffer"""
     if True in printed_list:
@@ -41,11 +40,11 @@ def print_dir_stats(
 
 
 def add_dir_stats(
-    directory_name: str,
-    buffer: List[Dict[str, str]],
-    folder_stats: Sequence[int],
-    printed_list: Sequence[bool],
-    all_stats: List[Dict[str, Any]],
+        directory_name: str,
+        buffer: List[Dict[str, str]],
+        folder_stats: Sequence[int],
+        printed_list: Sequence[bool],
+        all_stats: List[Dict[str, Any]],
 ) -> None:
     """Appends directory name, its stats and the buffer to stats"""
     if any(printed_list):
@@ -95,7 +94,7 @@ def exec_potodo(
     :param no_cache: Disables cache (Cache is disabled when files are modified)
     :param is_interactive: Switches output to an interactive CLI menu
     """
-
+    
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
@@ -103,11 +102,19 @@ def exec_potodo(
 
     dir_stats: List[Any] = []
     if is_interactive:
-        from potodo._interactive import _directory_list_menu, _file_list_menu
         directory_options = list(po_files_and_dirs.keys())
         selected_dir = _directory_list_menu(directory_options)
-        selected_file = _file_list_menu(selected_dir, po_files_and_dirs[directory_options[selected_dir]])
-        print(selected_file)
+        directory = directory_options[selected_dir]
+        # TODO: Add stats on files and also add reservations
+        selected_file = _file_list_menu(directory, po_files_and_dirs[directory])
+        file = po_files_and_dirs[directory][selected_file].filename
+        final_choice = _confirmation_menu(file, directory)
+        if final_choice == 0:
+            webbrowser.open(f"https://github.com/python/python-docs-fr/issues/new?title=Je%20travaille%20sur%20"
+                            f"{directory}/{file}"
+                            f"&body=%0A%0A%0A---%0AThis+issue+was+created+using+potodo+interactive+mode.")
+        else:
+            exit()
     else:
         for directory_name, po_files in sorted(po_files_and_dirs.items()):
             # For each directory and files in this directory
@@ -165,21 +172,21 @@ def buffer_add(
     # or is translated below what's requested
     # or is translated above what's requested
     if (
-        po_file_stats.percent_translated == 100
-        or po_file_stats.percent_translated < above
-        or po_file_stats.percent_translated > below
+            po_file_stats.percent_translated == 100
+            or po_file_stats.percent_translated < above
+            or po_file_stats.percent_translated > below
     ):
-
+        
         # add the percentage of the file to the stats of the folder
         folder_stats.append(po_file_stats.percent_translated)
-
+        
         if not json_format:
             # don't print that file
             printed_list.append(False)
-
+        
         # return without adding anything to the buffer
         return
-
+    
     fuzzy_entries = po_file_stats.fuzzy_entries
     untranslated_entries = po_file_stats.untranslated_entries
     # nb of fuzzies in the file IF there are some fuzzies in the file
@@ -204,9 +211,9 @@ def buffer_add(
     directory = po_file_stats.directory
     filename = po_file_stats.filename
     path = po_file_stats.path
-
+    
     if json_format:
-
+        
         # the order of the keys is the display order
         d = dict(
             name=f"{directory}/{filename.replace('.po', '')}",
@@ -218,29 +225,29 @@ def buffer_add(
             reserved_by=reserved_by,
             reservation_date=reservation_date,
         )
-
+        
         buffer.append(d)
-
+    
     else:
         s = f"- {filename:<30} "  # The filename
-
+        
         if counts:
             missing = len(fuzzy_entries) + len(untranslated_entries)
             s += f"{missing:3d} to do"
             s += f", including {fuzzy_nb} fuzzies." if fuzzy_nb else ""
-
+        
         else:
             s += f"{translated_nb:3d} / {po_file_size:3d} "
             s += f"({percent_translated:5.1f}% translated)"
             s += f", {fuzzy_nb} fuzzy" if fuzzy_nb else ""
-
+        
         if reserved_by is not None:
             s += f", réservé par {reserved_by}"
             if show_reservation_dates:
                 s += f" ({reservation_date})"
 
         buffer.append(s)
-
+    
     # Add the percent translated to the folder statistics
     folder_stats.append(po_file_stats.percent_translated)
     # Indicate to print the file
@@ -252,14 +259,14 @@ def main() -> None:
         prog="potodo",
         description="List and prettify the po files left to translate.",
     )
-
+    
     parser.add_argument(
         "-p",
         "--path",
         help="execute Potodo in path",
         metavar="path",
     )
-
+    
     parser.add_argument(
         "-e",
         "--exclude",
@@ -268,7 +275,7 @@ def main() -> None:
         help="exclude from search",
         metavar="path",
     )
-
+    
     parser.add_argument(
         "-a",
         "--above",
@@ -277,7 +284,7 @@ def main() -> None:
         type=int,
         help="list all TODOs above given X%% completion",
     )
-
+    
     parser.add_argument(
         "-b",
         "--below",
@@ -286,7 +293,7 @@ def main() -> None:
         type=int,
         help="list all TODOs below given X%% completion",
     )
-
+    
     parser.add_argument(
         "-f",
         "--only-fuzzy",
@@ -294,14 +301,14 @@ def main() -> None:
         action="store_true",
         help="print only files marked as fuzzys",
     )
-
+    
     parser.add_argument(
         "-o",
         "--offline",
         action="store_true",
         help="don't perform any fetching to GitHub/online",
     )
-
+    
     parser.add_argument(
         "-n",
         "--no-reserved",
@@ -309,15 +316,15 @@ def main() -> None:
         action="store_true",
         help="don't print info about reserved files",
     )
-
+    
     parser.add_argument(
         "-c",
         "--counts",
         action="store_true",
         help="render list with the count of remaining entries "
-        "(translate or review) rather than percentage done",
+             "(translate or review) rather than percentage done",
     )
-
+    
     parser.add_argument(
         "-j",
         "--json",
@@ -325,7 +332,7 @@ def main() -> None:
         dest="json_format",
         help="format output as JSON",
     )
-
+    
     parser.add_argument(
         "--exclude-fuzzy",
         action="store_true",
@@ -368,7 +375,7 @@ def main() -> None:
         dest="is_interactive",
         help="Activates the interactive menu",
     )
-
+    
     parser.add_argument(
         "--version", action="version", version="%(prog)s " + __version__
     )
@@ -380,7 +387,7 @@ def main() -> None:
     # Initialize args and check consistency
     args = vars(parser.parse_args())
     args.update(check_args(**args))
-
+    
     # TODO: Check that json and interactive options arent both on or else error and out
     # TODO: Check that the os isn't windows. If it is, throw an error because term menu doesn't work with windows
 

@@ -31,7 +31,7 @@ def _file_list_menu(directory: str, file_list: Sequence[PoFileStats], excluded: 
     final_file_list = [file.filename for file in file_list]
     file_list_menu = TerminalMenu(
         menu_entries=final_file_list,
-        title=f"Choose a file from directory {directory}",
+        title=f"Choose a file from {directory}",
         cycle_cursor=IS_CURSOR_CYCLING,
         clear_screen=IS_SCREEN_CLEARED,
         # preview_command="",
@@ -39,3 +39,15 @@ def _file_list_menu(directory: str, file_list: Sequence[PoFileStats], excluded: 
     )
     selected_file = file_list_menu.show()
     return selected_file
+
+
+def _confirmation_menu(choosen_file: str, directory: str):
+    confimation_menu = TerminalMenu(
+        title=f"Are you sure you want to choose {directory}/{choosen_file}?"
+              f" (This will open a web browser tab to open a new issue)",
+        menu_entries=["YES", "NO"],
+        cycle_cursor=IS_CURSOR_CYCLING,
+        clear_screen=IS_SCREEN_CLEARED,
+    )
+    choice = confimation_menu.show()
+    return choice
