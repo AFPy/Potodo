@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import logging
 import os
 import statistics
 from pathlib import Path
@@ -33,8 +34,19 @@ def get_issue_reservations(
     return issue_reservations
 
 
+def setup_logging(logging_level):
+    logging.basicConfig(
+        level=logging_level,
+        format="%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s",
+        datefmt="%d-%m-%Y:%H:%M:%S",
+    )
+    # Silencing some loggers
+    logging.getLogger("requests").setLevel(logging.WARNING)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+
 def check_args(
-    path: str, exclude: List[str], below: int, above: int, **kwargs: Any
+    path: str, exclude: List[str], below: int, above: int, verbose: int, **kwargs: Any
 ) -> Mapping[str, Any]:
     # If below is lower than above, raise an error
     if below < above:
@@ -44,10 +56,26 @@ def check_args(
     if not path:
         path = os.getcwd()
 
+    logging_level = None
+    if verbose:
+        if verbose == 1:
+            # Will only show ERROR and CRITICAL
+            logging_level = logging.ERROR
+        if verbose == 2:
+            # Will only show ERROR, CRITICAL and WARNING
+            logging_level = logging.WARNING
+        if verbose >= 3:
+            # Will show INFO WARNING ERROR DEBUG CRITICAL
+            logging_level = logging.DEBUG
+    else:
+        # Disable all logging
+        logging.disable(logging.CRITICAL)
+
     # Convert strings to `Path` objects and make them absolute
     return {
         "path": Path(path).resolve(),
         "exclude": [Path(path).resolve() for path in exclude],
+        "logging_level": logging_level,
     }
 
 
@@ -387,6 +415,10 @@ def main() -> None:
         "--version", action="version", version="%(prog)s " + __version__
     )
 
+    parser.add_argument(
+        "-v", "--verbose", action="count", default=0, help="Increases output verbosity"
+    )
+
     # Initialize args and check consistency
     args = vars(parser.parse_args())
     args.update(check_args(**args))
@@ -398,6 +430,12 @@ def main() -> None:
     if args.get("exclude_reserved") and args.get("only_reserved"):
         print("Cannot pass --exclude-reserved and --only-reserved at the same time")
         exit(1)
+
+    if args["logging_level"]:
+        setup_logging(args["logging_level"])
+
+    del args["verbose"]
+    del args["logging_level"]
 
     # Launch the processing itself
     exec_potodo(**args)
