@@ -26,9 +26,11 @@ def get_issue_reservations(
     """Retrieve info about reservation if needed."""
 
     if not offline and not hide_reserved:
+        logging.debug("Getting issue reservations from github.com")
         # If the reservations are to be displayed, then get them
         issue_reservations = get_reservation_list(repo_path)
     else:
+        logging.debug("Reservation list set to be empty because Potodo was started offline or hiding the reservations.")
         # Otherwise, an empty list will do the trick
         issue_reservations = {}
     return issue_reservations
@@ -37,7 +39,7 @@ def get_issue_reservations(
 def setup_logging(logging_level):
     logging.basicConfig(
         level=logging_level,
-        format="%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s",
+        format="%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d %(funcName)s()] %(message)s",
         datefmt="%d-%m-%Y:%H:%M:%S",
     )
     # Silencing some loggers
@@ -87,12 +89,14 @@ def print_dir_stats(
 ) -> None:
     """This function prints the directory name, its stats and the buffer"""
     if True in printed_list:
+        logging.debug("Printing directory %s", directory_name)
         # If at least one of the files isn't done then print the
         # folder stats and file(s) Each time a file is went over True
         # or False is placed in the printed_list list.  If False is
         # placed it means it doesnt need to be printed
         print(f"\n\n# {directory_name} ({statistics.mean(folder_stats):.2f}% done)\n")
         print("\n".join(buffer))
+    logging.debug("Not printing directory %s", directory_name)
 
 
 def add_dir_stats(
@@ -434,6 +438,10 @@ def main() -> None:
     if args["logging_level"]:
         setup_logging(args["logging_level"])
 
+    logging.info("Logging activated.")
+    logging.debug("Executing potodo with args %s", args)
+
+    # Removing useless args before running the process
     del args["verbose"]
     del args["logging_level"]
 
