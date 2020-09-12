@@ -103,13 +103,27 @@ def exec_potodo(
 
     dir_stats: List[Any] = []
     if is_interactive:
+        # TODO: if interactive mode, then list directories then only get info from files in this dir so it's faster
         directory_options = list(po_files_and_dirs.keys())
-        selected_dir = _directory_list_menu(directory_options)
-        directory = directory_options[selected_dir]
-        # TODO: Add stats on files and also add reservations
-        selected_file = _file_list_menu(directory, po_files_and_dirs[directory])
-        file = po_files_and_dirs[directory][selected_file].filename
-        final_choice = _confirmation_menu(file, directory)
+        while True:
+            selected_dir = _directory_list_menu(directory_options)
+            if selected_dir == 0:
+                exit(0)
+            directory = directory_options[selected_dir]
+            # TODO: Add stats on files and also add reservations
+            selected_file = _file_list_menu(directory, po_files_and_dirs[directory])
+            if selected_file == 1:
+                exit(0)
+            elif selected_file == 0:
+                continue
+            file = po_files_and_dirs[directory][selected_file].filename
+            final_choice = _confirmation_menu(file, directory)
+            if final_choice == 3:
+                exit(0)
+            elif final_choice == 2:
+                continue
+            else:
+                break
         if final_choice == 0:
             webbrowser.open(
                 f"https://github.com/python/python-docs-fr/issues/new?title=Je%20travaille%20sur%20"

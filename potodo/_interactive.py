@@ -17,6 +17,8 @@ def _directory_list_menu(directory_list: List[str], excluded: List[str] = list):
     # TODO: Think about and do the exclusions
     # final_dir_list = [directory for directory in directory_list if directory not in excluded]
     final_dir_list = directory_list
+    if final_dir_list[0] != "[q] Quit":
+        final_dir_list.insert(0, "[q] Quit")
     directory_list_menu = TerminalMenu(
         menu_entries=final_dir_list,
         title="Choose a directory",
@@ -35,6 +37,9 @@ def _file_list_menu(
 ):
     # final_file_list = [file.filename for file in file_list if file not in excluded]
     final_file_list = [file.filename for file in file_list]
+    if final_file_list[0] != "[;] Back":
+        final_file_list.insert(0, "[q] Quit")
+        final_file_list.insert(0, "[;] Back")
     file_list_menu = TerminalMenu(
         menu_entries=final_file_list,
         title=f"Choose a file from {directory}",
@@ -51,7 +56,7 @@ def _confirmation_menu(choosen_file: str, directory: str):
     confimation_menu = TerminalMenu(
         title=f"Are you sure you want to choose {directory}/{choosen_file}?"
         f" (This will open a web browser tab to open a new issue)",
-        menu_entries=["YES", "NO"],
+        menu_entries=["YES", "NO", "[;] Back", "[q] Quit"],
         cycle_cursor=IS_CURSOR_CYCLING,
         clear_screen=IS_SCREEN_CLEARED,
     )
