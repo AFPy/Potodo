@@ -107,14 +107,15 @@ def exec_potodo(
         directory_options = list(po_files_and_dirs.keys())
         while True:
             selected_dir = _directory_list_menu(directory_options)
-            if selected_dir == 0:
+            if selected_dir == (len(directory_options) - 1):
                 exit(0)
             directory = directory_options[selected_dir]
+            file_options = po_files_and_dirs[directory]
             # TODO: Add stats on files and also add reservations
-            selected_file = _file_list_menu(directory, po_files_and_dirs[directory])
-            if selected_file == 1:
+            selected_file = _file_list_menu(directory, file_options)
+            if selected_file == (len(file_options) + 1):
                 exit(0)
-            elif selected_file == 0:
+            elif selected_file == len(file_options):
                 continue
             file = po_files_and_dirs[directory][selected_file].filename
             final_choice = _confirmation_menu(file, directory)

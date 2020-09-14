@@ -17,8 +17,8 @@ def _directory_list_menu(directory_list: List[str], excluded: List[str] = list):
     # TODO: Think about and do the exclusions
     # final_dir_list = [directory for directory in directory_list if directory not in excluded]
     final_dir_list = directory_list
-    if final_dir_list[0] != "[q] Quit":
-        final_dir_list.insert(0, "[q] Quit")
+    if "[q] Quit" not in final_dir_list:
+        final_dir_list.append("[q] Quit")
     directory_list_menu = TerminalMenu(
         menu_entries=final_dir_list,
         title="Choose a directory",
@@ -26,6 +26,8 @@ def _directory_list_menu(directory_list: List[str], excluded: List[str] = list):
         clear_screen=IS_SCREEN_CLEARED,
         # preview_command="",
         # preview_size=0,
+        show_search_hint=True,
+        show_shortcut_hints=True
     )
     selected_directory = directory_list_menu.show()
     return selected_directory
@@ -37,9 +39,9 @@ def _file_list_menu(
 ):
     # final_file_list = [file.filename for file in file_list if file not in excluded]
     final_file_list = [file.filename for file in file_list]
-    if final_file_list[0] != "[;] Back":
-        final_file_list.insert(0, "[q] Quit")
-        final_file_list.insert(0, "[;] Back")
+    if "[;] Back" not in final_file_list:
+        final_file_list.append("[;] Back")
+        final_file_list.append("[q] Quit")
     file_list_menu = TerminalMenu(
         menu_entries=final_file_list,
         title=f"Choose a file from {directory}",
@@ -47,6 +49,8 @@ def _file_list_menu(
         clear_screen=IS_SCREEN_CLEARED,
         # preview_command="",
         # preview_size=0,
+        show_search_hint=True,
+        show_shortcut_hints=True
     )
     selected_file = file_list_menu.show()
     return selected_file
@@ -59,6 +63,8 @@ def _confirmation_menu(choosen_file: str, directory: str):
         menu_entries=["YES", "NO", "[;] Back", "[q] Quit"],
         cycle_cursor=IS_CURSOR_CYCLING,
         clear_screen=IS_SCREEN_CLEARED,
+        show_search_hint=True,
+        show_shortcut_hints=True
     )
     choice = confimation_menu.show()
     return choice
