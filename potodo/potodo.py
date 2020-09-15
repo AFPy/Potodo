@@ -15,7 +15,9 @@ from potodo import __version__
 from potodo._github import get_reservation_list
 from potodo._po_file import get_po_stats_from_repo
 from potodo._po_file import PoFileStats
-
+from potodo._po_file import PoFileStats, get_po_stats_from_repo
+from potodo._cache import _get_cache_file_content, _set_cache_content
+from datetime import datetime, timedelta
 
 # TODO: Sort the functions (maybe in different files ?
 
@@ -104,6 +106,7 @@ def exec_potodo(
     exclude_reserved: bool,
     only_reserved: bool,
     show_reservation_dates: bool,
+    no_cache: bool,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -121,14 +124,27 @@ def exec_potodo(
     :param exclude_reserved: Will print out only files that aren't reserved
     :param only_reserved: Will print only reserved fils
     :param show_reservation_dates: Will show the reservation dates
+    :param no_cache: Disables cache
     """
 
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
-    # Dict whose keys are directory names and values are
-    # stats for each file within the directory.
-    po_files_and_dirs = get_po_stats_from_repo(path, exclude)
+    if not no_cache:
+        content = _get_cache_file_content()
+        if content:
+            if False:
+                pass
+                po_files_and_dirs = get_po_stats_from_repo(path, exclude)
+            else:
+                po_files_and_dirs = content
+                # load and print cache
+    else:
+        # Dict whose keys are directory names and values are
+        # stats for each file within the directory.
+        po_files_and_dirs = get_po_stats_from_repo(path, exclude)
+    
+    _set_cache_content(po_files_and_dirs)
 
     dir_stats: List[Any] = []
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
@@ -374,6 +390,13 @@ def main() -> None:
         action="store_true",
         dest="show_reservation_dates",
         help="show issue creation dates",
+    )
+
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        dest="no_cache",
+        help="Disables cache",
     )
 
     parser.add_argument(
