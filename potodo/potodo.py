@@ -339,9 +339,6 @@ def main() -> None:
     )
 
     parser.add_argument(
-        # "-x"
-        # Should we add a quick one dash option for not reserved ?
-        #  As it will be used a lot
         "--exclude-reserved",
         action="store_true",
         dest="exclude_reserved",
