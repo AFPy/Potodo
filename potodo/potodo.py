@@ -91,11 +91,12 @@ def exec_potodo(
     exclude: List[Path],
     above: int,
     below: int,
-    fuzzy: bool,
+    only_fuzzy: bool,
     offline: bool,
     hide_reserved: bool,
     counts: bool,
     json_format: bool,
+    exclude_fuzzy: bool,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -104,11 +105,12 @@ def exec_potodo(
     :param exclude: folders or files to be ignored
     :param above: The above threshold
     :param below: The below threshold
-    :param fuzzy: Should only fuzzies be printed
+    :param only_fuzzy: Should only fuzzies be printed
     :param offline: Will not connect to internet
     :param hide_reserved: Will not show the reserved files
     :param counts: Render list with counts not percentage
     :param json_format: Format output as JSON.
+    :param exclude_fuzzy: Will exclude files with fuzzies in output.
     """
 
     # Initialize the arguments
@@ -127,7 +129,9 @@ def exec_potodo(
 
         for po_file in sorted(po_files):
             # For each file in those files from that directory
-            if not fuzzy or po_file.fuzzy_entries:
+            if not only_fuzzy or po_file.fuzzy_entries:
+                if exclude_fuzzy and po_file.fuzzy_entries:
+                    continue
                 buffer_add(
                     buffer,
                     folder_stats,
@@ -280,7 +284,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "-f", "--fuzzy", action="store_true", help="print only files marked as fuzzys",
+        "-f", "--only-fuzzy", dest="only_fuzzy", action="store_true", help="print only files marked as fuzzys",
     )
 
     parser.add_argument(
@@ -315,12 +319,25 @@ def main() -> None:
     )
 
     parser.add_argument(
+        "--exclude-fuzzy",
+        action="store_true",
+        dest="exclude_fuzzy",
+        help="Will exclude files with fuzzies from output.",
+    )
+
+    parser.add_argument(
         "--version", action="version", version="%(prog)s " + __version__
     )
+
 
     # Initialize args and check consistency
     args = vars(parser.parse_args())
     args.update(check_args(**args))
+
+    if args.get("exclude_fuzzy") and args.get("only_fuzzy"):
+        print("Cannot pass --exclude-fuzzy and --only-fuzzy at the same time")
+        exit(1)
+
 
     # Launch the processing itself
     exec_potodo(**args)
