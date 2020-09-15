@@ -31,7 +31,7 @@ optional arguments:
   -j, --json            format output as JSON.
   --exclude-fuzzy       Will exclude files with fuzzies from output.
   --exclude-reserved    select only files that aren't reserved
-  --only-reserved       Will print out only reserved files
+  --only-reserved       select reserved files only
   --version             show program's version number and exit
 ```
 
