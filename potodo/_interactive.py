@@ -10,9 +10,6 @@ IS_CURSOR_CYCLING = True
 IS_SCREEN_CLEARED = True
 
 
-# TODO: Add go back and quit options
-
-
 def _directory_list_menu(directory_list: List[str], excluded: List[str] = list):
     # TODO: Think about and do the exclusions
     # final_dir_list = [directory for directory in directory_list if directory not in excluded]

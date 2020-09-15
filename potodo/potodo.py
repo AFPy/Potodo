@@ -406,8 +406,16 @@ def main() -> None:
     args = vars(parser.parse_args())
     args.update(check_args(**args))
 
-    # TODO: Check that json and interactive options arent both on or else error and out
-    # TODO: Check that the os isn't windows. If it is, throw an error because term menu doesn't work with windows
+    if args.get("json_format") and args.get("is_interactive"):
+        print("Json format and interactive modes cannot be activated at the same time.")
+        exit(1)
+
+    if args.get("is_interactive"):
+        try:
+            import termios
+        except ImportError:
+            import platform
+            raise NotImplementedError('"{}" is not supported for interactive mode'.format(platform.system()))
 
     if args.get("exclude_fuzzy") and args.get("only_fuzzy"):
         print("Cannot pass --exclude-fuzzy and --only-fuzzy at the same time")
