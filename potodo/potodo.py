@@ -9,6 +9,7 @@ from typing import Dict
 from typing import List
 from typing import Mapping
 from typing import Sequence
+from typing import Tuple
 
 from potodo import __version__
 from potodo._github import get_reservation_list
@@ -21,7 +22,7 @@ from potodo._po_file import PoFileStats
 
 def get_issue_reservations(
     offline: bool, hide_reserved: bool, repo_path: Path
-) -> Mapping[str, str]:
+) -> Dict[str, Tuple[Any, Any]]:
     """Retrieve info about reservation if needed.
     """
 
@@ -102,6 +103,7 @@ def exec_potodo(
     exclude_fuzzy: bool,
     exclude_reserved: bool,
     only_reserved: bool,
+    show_reservation_dates: bool,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -118,6 +120,7 @@ def exec_potodo(
     :param exclude_fuzzy: Will exclude files with fuzzies in output.
     :param exclude_reserved: Will print out only files that aren't reserved
     :param only_reserved: Will print only reserved fils
+    :param show_reservation_dates: Will show the reservation dates
     """
 
     # Initialize the arguments
@@ -151,6 +154,7 @@ def exec_potodo(
                     json_format,
                     exclude_reserved,
                     only_reserved,
+                    show_reservation_dates,
                 )
 
         # Once all files have been processed, print the dir and the files
@@ -170,13 +174,14 @@ def buffer_add(
     folder_stats: List[int],
     printed_list: List[bool],
     po_file_stats: PoFileStats,
-    issue_reservations: Mapping[str, str],
+    issue_reservations: Dict[str, Tuple[Any, Any]],
     above: int,
     below: int,
     counts: bool,
     json_format: bool,
     exclude_reserved: bool,
     only_reserved: bool,
+    show_reservation_dates: bool,
 ) -> None:
     """Will add to the buffer the information to print about the file is
     the file isn't translated entirely or above or below requested
@@ -211,9 +216,12 @@ def buffer_add(
     po_file_size = po_file_stats.po_file_size
     # percentage of the file already translated
     percent_translated = po_file_stats.percent_translated
+    
     # `reserved by` if the file is reserved
+    reserved_by, reservation_date = issue_reservations.get(
+        po_file_stats.filename_dir.lower(), (None, None)
+    )
     # unless the offline/hide_reservation are enabled
-    reserved_by = issue_reservations.get(po_file_stats.filename_dir.lower(), None)
     if exclude_reserved and reserved_by:
         return
     if only_reserved and not reserved_by:
@@ -234,6 +242,7 @@ def buffer_add(
             translated=translated_nb,
             percent_translated=percent_translated,
             reserved_by=reserved_by,
+            reservation_date=reservation_date,
         )
 
         buffer.append(d)
@@ -253,6 +262,8 @@ def buffer_add(
 
         if reserved_by is not None:
             s += f", réservé par {reserved_by}"
+            if show_reservation_dates:
+                s += f" ({reservation_date})"
 
         buffer.append(s)
 
@@ -356,6 +367,13 @@ def main() -> None:
         action="store_true",
         dest="only_reserved",
         help="Will print out only reserved files",
+    )
+
+    parser.add_argument(
+        "--show-reservation-dates",
+        action="store_true",
+        dest="show_reservation_dates",
+        help="Will show reservation_dates",
     )
 
     parser.add_argument(
