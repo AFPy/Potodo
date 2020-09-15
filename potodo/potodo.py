@@ -334,14 +334,14 @@ def main() -> None:
         "--json",
         action="store_true",
         dest="json_format",
-        help="format output as JSON.",
+        help="format output as JSON",
     )
 
     parser.add_argument(
         "--exclude-fuzzy",
         action="store_true",
         dest="exclude_fuzzy",
-        help="Will exclude files with fuzzies from output.",
+        help="select only files without fuzzy entries",
     )
 
     parser.add_argument(
