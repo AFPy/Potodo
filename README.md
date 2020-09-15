@@ -24,7 +24,7 @@ optional arguments:
                         exclude from search
   -a X, --above X       list all TODOs above given X% completion
   -b X, --below X       list all TODOs below given X% completion
-  -f, --only-fuzzy      print only files marked as fuzzys
+  -f, --only-fuzzy      select only files with fuzzy marks
   -o, --offline         don't perform any fetching to GitHub/online
   -n, --no-reserved     don't print info about reserved files
   -c, --counts          render list with the count of remaining entries (translate or review) rather than percentage done
