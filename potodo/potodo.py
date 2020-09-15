@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
-
 import argparse
-import os
 import json
+import os
 import statistics
-
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Sequence
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Mapping
+from typing import Sequence
 
 from potodo import __version__
 from potodo._github import get_reservation_list
-from potodo._po_file import PoFileStats, get_po_stats_from_repo
+from potodo._po_file import get_po_stats_from_repo
+from potodo._po_file import PoFileStats
 
 
 # TODO: Sort the functions (maybe in different files ?
@@ -284,7 +287,11 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "-f", "--only-fuzzy", dest="only_fuzzy", action="store_true", help="print only files marked as fuzzys",
+        "-f",
+        "--only-fuzzy",
+        dest="only_fuzzy",
+        action="store_true",
+        help="print only files marked as fuzzys",
     )
 
     parser.add_argument(
@@ -329,7 +336,6 @@ def main() -> None:
         "--version", action="version", version="%(prog)s " + __version__
     )
 
-
     # Initialize args and check consistency
     args = vars(parser.parse_args())
     args.update(check_args(**args))
@@ -337,7 +343,6 @@ def main() -> None:
     if args.get("exclude_fuzzy") and args.get("only_fuzzy"):
         print("Cannot pass --exclude-fuzzy and --only-fuzzy at the same time")
         exit(1)
-
 
     # Launch the processing itself
     exec_potodo(**args)

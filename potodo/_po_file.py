@@ -1,6 +1,11 @@
 import itertools
-from typing import Dict, Mapping, Sequence, Set, List, Iterable
 from pathlib import Path
+from typing import Dict
+from typing import Iterable
+from typing import List
+from typing import Mapping
+from typing import Sequence
+from typing import Set
 
 import polib
 
