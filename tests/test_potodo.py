@@ -16,6 +16,7 @@ config = {
     "counts": False,
     "offline": True,
     "exclude_fuzzy": False,
+    "only_reserved": False,
 }
 
 
