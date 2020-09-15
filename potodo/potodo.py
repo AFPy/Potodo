@@ -100,6 +100,7 @@ def exec_potodo(
     counts: bool,
     json_format: bool,
     exclude_fuzzy: bool,
+    exclude_reserved: bool,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -114,6 +115,7 @@ def exec_potodo(
     :param counts: Render list with counts not percentage
     :param json_format: Format output as JSON.
     :param exclude_fuzzy: Will exclude files with fuzzies in output.
+    :param exclude_reserved: Will print out only files that aren't reserved
     """
 
     # Initialize the arguments
@@ -145,6 +147,7 @@ def exec_potodo(
                     below,
                     counts,
                     json_format,
+                    exclude_reserved,
                 )
 
         # Once all files have been processed, print the dir and the files
@@ -169,6 +172,7 @@ def buffer_add(
     below: int,
     counts: bool,
     json_format: bool,
+    exclude_reserved: bool,
 ) -> None:
     """Will add to the buffer the information to print about the file is
     the file isn't translated entirely or above or below requested
@@ -206,6 +210,8 @@ def buffer_add(
     # `reserved by` if the file is reserved
     # unless the offline/hide_reservation are enabled
     reserved_by = issue_reservations.get(po_file_stats.filename_dir.lower(), None)
+    if exclude_reserved and reserved_by:
+        return
 
     directory = po_file_stats.directory
     filename = po_file_stats.filename
@@ -330,6 +336,15 @@ def main() -> None:
         action="store_true",
         dest="exclude_fuzzy",
         help="Will exclude files with fuzzies from output.",
+    )
+
+    parser.add_argument(
+        # "-x"
+        # Should we add a quick one dash option for not reserved ? As it will be used a lot
+        "--exclude-reserved",
+        action="store_true",
+        dest="exclude_reserved",
+        help="Will print out only files that arent reserved",
     )
 
     parser.add_argument(
