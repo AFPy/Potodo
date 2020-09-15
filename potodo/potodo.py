@@ -366,7 +366,7 @@ def main() -> None:
         "--only-reserved",
         action="store_true",
         dest="only_reserved",
-        help="Will print out only reserved files",
+        help="select only only reserved files",
     )
 
     parser.add_argument(
@@ -386,6 +386,10 @@ def main() -> None:
 
     if args.get("exclude_fuzzy") and args.get("only_fuzzy"):
         print("Cannot pass --exclude-fuzzy and --only-fuzzy at the same time")
+        exit(1)
+
+    if args.get("exclude_reserved") and args.get("only_reserved"):
+        print("Cannot pass --exclude-reserved and --only-reserved at the same time")
         exit(1)
 
     # Launch the processing itself

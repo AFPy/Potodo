@@ -31,9 +31,9 @@ optional arguments:
   -j, --json            format output as JSON
   --exclude-fuzzy       select only files without fuzzy entries
   --exclude-reserved    select only files that aren't reserved
-  --only-reserved       Will print out only reserved files
+  --only-reserved       select only only reserved files
   --show-reservation-dates
-                        show issue creation dates 
+                        show issue creation dates
   --version             show program's version number and exit
 ```
 
