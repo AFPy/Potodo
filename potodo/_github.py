@@ -1,10 +1,11 @@
 import re
 import subprocess
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 from typing import Dict
 from typing import List
-from typing import Mapping
+from typing import Tuple
 
 import requests
 
@@ -49,7 +50,7 @@ def get_repo_name(repo_path: Path) -> str:
     return repo_name
 
 
-def get_reservation_list(repo_path: Path) -> Mapping[str, str]:
+def get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
     """Will get the repository name then request all the issues and put them in a dict
     """
 
@@ -70,6 +71,9 @@ def get_reservation_list(repo_path: Path) -> Mapping[str, str]:
         # Maybe find a better way for not using python 3.8 ?
         yes = re.search(r"\w*/\w*\.po", issue["title"])
         if yes:
-            reservations[yes.group()] = issue["user"]["login"]
+            creation_date = datetime.strptime(
+                issue["created_at"].split("T")[0], "%Y-%m-%d"
+            ).date()
+            reservations[yes.group()] = (issue["user"]["login"], creation_date)
 
     return reservations
