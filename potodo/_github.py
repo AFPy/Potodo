@@ -71,9 +71,9 @@ def get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
         # Maybe find a better way for not using python 3.8 ?
         yes = re.search(r"\w*/\w*\.po", issue["title"])
         if yes:
-            datetime_object = datetime.strptime(
+            creation_date = datetime.strptime(
                 issue["created_at"].split("T")[0], "%Y-%m-%d"
             ).date()
-            reservations[yes.group()] = (issue["user"]["login"], datetime_object)
+            reservations[yes.group()] = (issue["user"]["login"], creation_date)
 
     return reservations

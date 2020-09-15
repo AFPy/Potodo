@@ -33,7 +33,7 @@ optional arguments:
   --exclude-reserved    select only files that aren't reserved
   --only-reserved       Will print out only reserved files
   --show-reservation-dates
-                        Will show reservation_dates
+                        show issue creation dates 
   --version             show program's version number and exit
 ```
 

@@ -373,7 +373,7 @@ def main() -> None:
         "--show-reservation-dates",
         action="store_true",
         dest="show_reservation_dates",
-        help="Will show reservation_dates",
+        help="show issue creation dates",
     )
 
     parser.add_argument(
