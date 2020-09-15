@@ -345,7 +345,7 @@ def main() -> None:
         "--exclude-reserved",
         action="store_true",
         dest="exclude_reserved",
-        help="Will print out only files that arent reserved",
+        help="select only files that aren't reserved",
     )
 
     parser.add_argument(
