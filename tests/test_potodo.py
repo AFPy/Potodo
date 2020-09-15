@@ -11,10 +11,11 @@ config = {
     "exclude": [ABS_REPO_DIR / "excluded", ABS_REPO_DIR / "folder" / "excluded.po"],
     "above": 0,
     "below": 100,
-    "fuzzy": False,
+    "only_fuzzy": False,
     "hide_reserved": False,
     "counts": False,
     "offline": True,
+    "exclude_fuzzy": False,
 }
 
 
