@@ -1,22 +1,27 @@
-import pickle
-import json
-from typing import Optional
-from datetime import datetime
 import os
+import pickle
+from datetime import datetime
+from datetime import timedelta
+from typing import Optional
+from typing import Tuple
 
 
-def _get_cache_file_content(path: str = ".potodo/cache.json") -> Optional[str]:
+def _get_cache_file_content(
+    path: str = ".potodo/cache.pickle",
+) -> Optional[Tuple[datetime, dict]]:
     try:
         with open(path, "rb") as handle:
             data = pickle.load(handle)
     except FileNotFoundError:
-        return None
+        return None, None
     else:
-        # data["dt"] = datetime.strptime(data["dt"], "%Y-%m-%d %H:%M:%S.%f")
-        return data
+        return data["dt_expiry"], data["data"]
 
 
-def _set_cache_content(obj, path: str = ".potodo/cache.json"):
+def _set_cache_content(obj, path: str = ".potodo/cache.pickle"):
     os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    to_dump = {"dt_expiry": datetime.utcnow() + timedelta(weeks=1), "data": obj}
+
     with open(path, "wb") as handle:
-        pickle.dump(obj, handle)
+        pickle.dump(to_dump, handle)

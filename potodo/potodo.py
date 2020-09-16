@@ -3,6 +3,8 @@ import argparse
 import json
 import os
 import statistics
+from datetime import datetime
+from datetime import timedelta
 from pathlib import Path
 from typing import Any
 from typing import Dict
@@ -12,12 +14,11 @@ from typing import Sequence
 from typing import Tuple
 
 from potodo import __version__
+from potodo._cache import _get_cache_file_content
+from potodo._cache import _set_cache_content
 from potodo._github import get_reservation_list
 from potodo._po_file import get_po_stats_from_repo
 from potodo._po_file import PoFileStats
-from potodo._po_file import PoFileStats, get_po_stats_from_repo
-from potodo._cache import _get_cache_file_content, _set_cache_content
-from datetime import datetime, timedelta
 
 # TODO: Sort the functions (maybe in different files ?
 
@@ -130,21 +131,24 @@ def exec_potodo(
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
-    if not no_cache:
-        content = _get_cache_file_content()
+    update_cache = False
+
+    if no_cache:
+        po_files_and_dirs = get_po_stats_from_repo(path, exclude)
+    else:
+        dt_expiry, content = _get_cache_file_content()
         if content:
-            if False:
-                pass
+            if dt_expiry < datetime.utcnow():
+                update_cache = True
                 po_files_and_dirs = get_po_stats_from_repo(path, exclude)
             else:
                 po_files_and_dirs = content
-                # load and print cache
-    else:
-        # Dict whose keys are directory names and values are
-        # stats for each file within the directory.
-        po_files_and_dirs = get_po_stats_from_repo(path, exclude)
-    
-    _set_cache_content(po_files_and_dirs)
+        else:
+            update_cache = True
+            po_files_and_dirs = get_po_stats_from_repo(path, exclude)
+
+    if update_cache:
+        _set_cache_content(po_files_and_dirs)
 
     dir_stats: List[Any] = []
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
@@ -232,7 +236,7 @@ def buffer_add(
     po_file_size = po_file_stats.po_file_size
     # percentage of the file already translated
     percent_translated = po_file_stats.percent_translated
-    
+
     # `reserved by` if the file is reserved
     reserved_by, reservation_date = issue_reservations.get(
         po_file_stats.filename_dir.lower(), (None, None)
@@ -393,10 +397,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "--no-cache",
-        action="store_true",
-        dest="no_cache",
-        help="Disables cache",
+        "--no-cache", action="store_true", dest="no_cache", help="Disables cache",
     )
 
     parser.add_argument(
