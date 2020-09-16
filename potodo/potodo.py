@@ -4,8 +4,8 @@ import json
 import os
 import statistics
 from datetime import datetime
-from datetime import timedelta
 from pathlib import Path
+from subprocess import check_output
 from typing import Any
 from typing import Dict
 from typing import List
@@ -125,7 +125,7 @@ def exec_potodo(
     :param exclude_reserved: Will print out only files that aren't reserved
     :param only_reserved: Will print only reserved fils
     :param show_reservation_dates: Will show the reservation dates
-    :param no_cache: Disables cache
+    :param no_cache: Disables cache (Cache is disabled when files are modified in git)
     """
 
     # Initialize the arguments
@@ -133,7 +133,10 @@ def exec_potodo(
 
     update_cache = False
 
-    if no_cache:
+    if (
+        no_cache
+        or check_output(["git", "status", "--porcelain"], encoding="utf-8") != ""
+    ):
         po_files_and_dirs = get_po_stats_from_repo(path, exclude)
     else:
         dt_expiry, content = _get_cache_file_content()
@@ -397,7 +400,10 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "--no-cache", action="store_true", dest="no_cache", help="Disables cache",
+        "--no-cache",
+        action="store_true",
+        dest="no_cache",
+        help="Disables cache (Cache is disabled when files are modified in git)",
     )
 
     parser.add_argument(
