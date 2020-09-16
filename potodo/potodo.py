@@ -137,20 +137,20 @@ def exec_potodo(
         no_cache
         or check_output(["git", "status", "--porcelain"], encoding="utf-8") != ""
     ):
-        po_files_and_dirs = get_po_stats_from_repo(path, exclude)
+        update_cache = True
     else:
         dt_expiry, content = _get_cache_file_content()
         if content:
             if dt_expiry < datetime.utcnow():
                 update_cache = True
-                po_files_and_dirs = get_po_stats_from_repo(path, exclude)
             else:
+                update_cache = False
                 po_files_and_dirs = content
         else:
             update_cache = True
-            po_files_and_dirs = get_po_stats_from_repo(path, exclude)
 
     if update_cache:
+        po_files_and_dirs = get_po_stats_from_repo(path, exclude)
         _set_cache_content(po_files_and_dirs)
 
     dir_stats: List[Any] = []
