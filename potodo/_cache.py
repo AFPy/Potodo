@@ -3,19 +3,22 @@ import pickle
 from typing import cast
 from typing import Dict
 from pathlib import Path
-
+import logging
 from potodo._po_file import PoFileStats
 
 
 def _get_cache_file_content(
     path: str = ".potodo/cache.pickle",
 ) -> Dict[Path, PoFileStats]:
+    logging.debug("Trying to load cache from %s", path)
     try:
         with open(path, "rb") as handle:
             data = pickle.load(handle)
     except FileNotFoundError:
+        logging.warning("No cache found")
         return {}
     else:
+        logging.debug("Found cache")
         return cast(Dict[Path, PoFileStats], data)
 
 
@@ -26,3 +29,4 @@ def _set_cache_content(
 
     with open(path, "wb") as handle:
         pickle.dump(obj, handle)
+    logging.debug("Set cache to %s", path)

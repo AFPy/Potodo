@@ -31,6 +31,7 @@ def get_repo_url(repo_path: Path) -> str:
             raise RuntimeError(
                 f'Unknown error. `{" ".join(e.cmd)}` returned "{e.output.rstrip()}".'
             )
+    logging.debug("Found repo url %s from %s", url, repo_path)
     return url
 
 
@@ -46,6 +47,7 @@ def get_repo_name(repo_path: Path) -> str:
     repo_name = repo_name.replace(".git", "")
     repo_name = repo_name.strip("\n")
 
+    logging.debug("Found repo name %s from %s", repo_name, repo_path)
     return repo_name
 
 
@@ -59,9 +61,12 @@ def _get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
         + "/issues?state=open"
     )
     while next_url:
+        logging.debug("Getting %s", next_url)
         resp = requests.get(next_url)
         issues.extend(resp.json())
         next_url = resp.links.get("next", {}).get("url")
+
+    logging.debug("Found %s issues", len(issues))
 
     reservations = {}
 
@@ -74,6 +79,7 @@ def _get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
             ).date()
             reservations[yes.group()] = (issue["user"]["login"], creation_date)
 
+    logging.debug("Found %s reservations", len(reservations))
     return reservations
 
 
@@ -83,7 +89,7 @@ def get_issue_reservations(
     """Retrieve info about reservation if needed."""
 
     if not offline and not hide_reserved:
-        logging.debug("Getting issue reservations from github.com")
+        logging.info("Getting issue reservations from github.com")
         # If the reservations are to be displayed, then get them
         issue_reservations = _get_reservation_list(repo_path)
     else:
