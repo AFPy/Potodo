@@ -8,7 +8,7 @@ from typing import Tuple
 
 def _get_cache_file_content(
     path: str = ".potodo/cache.pickle",
-) -> Optional[Tuple[datetime, dict]]:
+) -> Tuple[Optional[datetime], Optional[dict]]:
     try:
         with open(path, "rb") as handle:
             data = pickle.load(handle)
