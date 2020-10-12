@@ -18,6 +18,7 @@ class PoFileStats:
         """Initializes the class with all the correct information"""
         self.path: Path = path
         self.filename: str = path.name
+        self.mtime = os.path.getmtime(path)
         self.pofile: polib.POFile = polib.pofile(self.path)
         self.directory: str = self.path.parent.name
 
@@ -104,27 +105,17 @@ def get_po_stats_from_repo_or_cache(
         cached_files = _get_cache_file_content(
             str(repo_path.resolve()) + "/.potodo/cache.pickle"
         )
-        if not cached_files:
-            cached_files = {}
         po_stats_per_directory = dict()
         for directory, po_files in po_files_per_directory.items():
             po_stats_per_directory[directory] = []
             for po_file in po_files:
                 cached_pofile = cached_files.get(po_file.resolve())
-                if (
+                if not (
                     cached_pofile
-                    and os.path.getmtime(po_file.resolve()) == cached_pofile["mtime"]
+                    and os.path.getmtime(po_file.resolve()) == cached_pofile.mtime
                 ):
-                    po_stats_per_directory[directory].append(
-                        cached_files[po_file.resolve()]["pofile"]
-                    )
-                else:
-                    po_object = PoFileStats(po_file)
-                    cached_files[po_file.resolve()] = {
-                        "pofile": po_object,
-                        "mtime": os.path.getmtime(po_file),
-                    }
-                    po_stats_per_directory[directory].append(po_object)
+                    cached_files[po_file.resolve()] = cached_file = PoFileStats(po_file)
+                po_stats_per_directory[directory].append(cached_file)
         _set_cache_content(
             cached_files, path=str(repo_path.resolve()) + "/.potodo/cache.pickle"
         )
