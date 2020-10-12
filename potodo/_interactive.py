@@ -12,8 +12,6 @@ IS_SCREEN_CLEARED = True
 def _directory_list_menu(
     directory_list: List[str], excluded: Sequence[str] = ()
 ) -> int:
-    # TODO: Think about and do the exclusions
-    # final_dir_list = [directory for directory in directory_list if directory not in excluded]
     final_dir_list = directory_list
     if "[q] Quit" not in final_dir_list:
         final_dir_list.append("[q] Quit")
@@ -31,11 +29,9 @@ def _directory_list_menu(
     return cast(int, selected_directory)
 
 
-# TODO: Think about and do the exclusions
 def _file_list_menu(
     directory: str, file_list: List[str], excluded: Sequence[str] = ()
 ) -> int:
-    # final_file_list = [file.filename for file in file_list if file not in excluded]
     if "[;] Back" not in file_list:
         file_list.append("[;] Back")
         file_list.append("[q] Quit")
