@@ -131,25 +131,37 @@ def exec_potodo(
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
-    update_cache = False
+    # update_cache = False
+    #
+    # if (
+    #     no_cache
+    #     or check_output(["git", "status", "--porcelain"], encoding="utf-8") != ""
+    # ):
+    #     update_cache = True
+    # else:
+    #     dt_expiry, content = _get_cache_file_content()
+    #     if content:
+    #         if dt_expiry < datetime.utcnow():
+    #             update_cache = True
+    #         else:
+    #             update_cache = False
+    #             po_files_and_dirs = content
+    #     else:
+    #         update_cache = True
+    #
+    # if update_cache:
+    #     po_files_and_dirs = get_po_stats_from_repo(path, exclude)
+    #     _set_cache_content(po_files_and_dirs)    # update_cache = False
 
     if (
         no_cache
         or check_output(["git", "status", "--porcelain"], encoding="utf-8") != ""
     ):
-        update_cache = True
+        po_files_and_dirs = None
     else:
-        dt_expiry, content = _get_cache_file_content()
-        if content:
-            if dt_expiry < datetime.utcnow():
-                update_cache = True
-            else:
-                update_cache = False
-                po_files_and_dirs = content
-        else:
-            update_cache = True
+        po_files_and_dirs = _get_cache_file_content()
 
-    if update_cache:
+    if not po_files_and_dirs:
         po_files_and_dirs = get_po_stats_from_repo(path, exclude)
         _set_cache_content(po_files_and_dirs)
 

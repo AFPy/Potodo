@@ -8,14 +8,22 @@ from typing import Tuple
 
 def _get_cache_file_content(
     path: str = ".potodo/cache.pickle",
-) -> Tuple[Optional[datetime], Optional[dict]]:
+) -> Optional[dict]:
     try:
         with open(path, "rb") as handle:
             data = pickle.load(handle)
     except FileNotFoundError:
-        return None, None
+        return None
     else:
-        return data["dt_expiry"], data["data"]
+        content = data["data"]
+        dt_expiry = data["dt_expiry"]
+        if content:
+            if dt_expiry < datetime.utcnow():
+                return None
+            else:
+                return content
+        else:
+            return None
 
 
 def _set_cache_content(obj, path: str = ".potodo/cache.pickle"):
