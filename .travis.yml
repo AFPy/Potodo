@@ -7,10 +7,17 @@ matrix:
   include:
     - python: "3.6"
       env: TOX_ENV=py36
+      name: 3.6 tests
     - python: "3.7"
       env: TOX_ENV=py37
+      name: 3.7 tests
     - python: "3.8"
-      env: TOX_ENV=py38,black,flake8,mypy
+      env: TOX_ENV=py38
+      name: 3.8 tests
+    - python: "3.8"
+      env: TOX_ENV=black,flake8,mypy
+      name: Linting
+
 install:
   - pip uninstall -y virtualenv
   - pip install tox
