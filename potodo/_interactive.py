@@ -1,6 +1,5 @@
 from typing import cast
 from typing import List
-from typing import Sequence
 
 from simple_term_menu import TerminalMenu
 
@@ -9,9 +8,7 @@ IS_CURSOR_CYCLING = True
 IS_SCREEN_CLEARED = True
 
 
-def _directory_list_menu(
-    directory_list: List[str], excluded: Sequence[str] = ()
-) -> int:
+def _directory_list_menu(directory_list: List[str]) -> int:
     final_dir_list = directory_list
     if "[q] Quit" not in final_dir_list:
         final_dir_list.append("[q] Quit")
@@ -29,9 +26,7 @@ def _directory_list_menu(
     return cast(int, selected_directory)
 
 
-def _file_list_menu(
-    directory: str, file_list: List[str], excluded: Sequence[str] = ()
-) -> int:
+def _file_list_menu(directory: str, file_list: List[str]) -> int:
     if "[;] Back" not in file_list:
         file_list.append("[;] Back")
         file_list.append("[q] Quit")
