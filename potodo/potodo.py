@@ -18,8 +18,13 @@ from potodo._po_file import PoFileStats
 import webbrowser
 from potodo._utils import check_args
 from potodo._utils import setup_logging
-from potodo._interactive import _confirmation_menu, _directory_list_menu, _file_list_menu
+from potodo._interactive import (
+    _confirmation_menu,
+    _directory_list_menu,
+    _file_list_menu,
+)
 from potodo._utils import json_dateconv
+
 # TODO: Sort the functions (maybe in different files ?
 
 
@@ -140,7 +145,7 @@ def exec_potodo(
             buffer: List[Any] = []
             folder_stats: List[int] = []
             printed_list: List[bool] = []
-        
+
             for po_file in sorted(po_files):
                 # For each file in those files from that directory
                 if not only_fuzzy or po_file.fuzzy_entries:
@@ -160,17 +165,27 @@ def exec_potodo(
                         only_reserved,
                         show_reservation_dates,
                     )
-        
+
             # Once all files have been processed, print the dir and the files
             # or store them into a dict to print them once all directories have
             # been processed.
             if json_format:
-                add_dir_stats(directory_name, buffer, folder_stats, printed_list, dir_stats)
+                add_dir_stats(
+                    directory_name, buffer, folder_stats, printed_list, dir_stats
+                )
             else:
                 print_dir_stats(directory_name, buffer, folder_stats, printed_list)
-    
+
         if json_format:
-            print(json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False, default=json_dateconv))
+            print(
+                json.dumps(
+                    dir_stats,
+                    indent=4,
+                    separators=(",", ": "),
+                    sort_keys=False,
+                    default=json_dateconv,
+                )
+            )
 
 
 def buffer_add(
@@ -417,10 +432,13 @@ def main() -> None:
 
     if args.get("is_interactive"):
         try:
-            import termios
+            import termios  # noqa
         except ImportError:
             import platform
-            raise NotImplementedError('"{}" is not supported for interactive mode'.format(platform.system()))
+
+            raise NotImplementedError(
+                '"{}" is not supported for interactive mode'.format(platform.system())
+            )
 
     if args.get("exclude_fuzzy") and args.get("only_fuzzy"):
         print("Cannot pass --exclude-fuzzy and --only-fuzzy at the same time")

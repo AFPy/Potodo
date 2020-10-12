@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, cast
 from typing import Sequence
 
 from simple_term_menu import TerminalMenu
@@ -10,7 +10,9 @@ IS_CURSOR_CYCLING = True
 IS_SCREEN_CLEARED = True
 
 
-def _directory_list_menu(directory_list: List[str], excluded: List[str] = list):
+def _directory_list_menu(
+    directory_list: List[str], excluded: Sequence[str] = ()
+) -> int:
     # TODO: Think about and do the exclusions
     # final_dir_list = [directory for directory in directory_list if directory not in excluded]
     final_dir_list = directory_list
@@ -24,16 +26,16 @@ def _directory_list_menu(directory_list: List[str], excluded: List[str] = list):
         # preview_command="",
         # preview_size=0,
         show_search_hint=True,
-        show_shortcut_hints=True
+        show_shortcut_hints=True,
     )
     selected_directory = directory_list_menu.show()
-    return selected_directory
+    return cast(int, selected_directory)
 
 
 # TODO: Think about and do the exclusions
 def _file_list_menu(
-    directory: str, file_list: Sequence[PoFileStats], excluded: List[str] = list
-):
+    directory: str, file_list: Sequence[PoFileStats], excluded: Sequence[str] = ()
+) -> int:
     # final_file_list = [file.filename for file in file_list if file not in excluded]
     final_file_list = [file.filename for file in file_list]
     if "[;] Back" not in final_file_list:
@@ -47,13 +49,13 @@ def _file_list_menu(
         # preview_command="",
         # preview_size=0,
         show_search_hint=True,
-        show_shortcut_hints=True
+        show_shortcut_hints=True,
     )
     selected_file = file_list_menu.show()
-    return selected_file
+    return cast(int, selected_file)
 
 
-def _confirmation_menu(choosen_file: str, directory: str):
+def _confirmation_menu(choosen_file: str, directory: str) -> int:
     confimation_menu = TerminalMenu(
         title=f"Are you sure you want to choose {directory}/{choosen_file}?"
         f" (This will open a web browser tab to open a new issue)",
@@ -61,7 +63,7 @@ def _confirmation_menu(choosen_file: str, directory: str):
         cycle_cursor=IS_CURSOR_CYCLING,
         clear_screen=IS_SCREEN_CLEARED,
         show_search_hint=True,
-        show_shortcut_hints=True
+        show_shortcut_hints=True,
     )
     choice = confimation_menu.show()
-    return choice
+    return cast(int, choice)

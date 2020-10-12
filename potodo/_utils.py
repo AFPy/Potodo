@@ -52,9 +52,11 @@ def check_args(
         "logging_level": logging_level,
     }
 
+from typing import Optional
 from datetime import date
 
 
-def json_dateconv(o):
+def json_dateconv(o: object) -> Optional[str]:
     if isinstance(o, date):
         return o.__str__()
+    return None
