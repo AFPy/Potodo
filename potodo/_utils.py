@@ -51,3 +51,10 @@ def check_args(
         "exclude": [Path(path).resolve() for path in exclude],
         "logging_level": logging_level,
     }
+
+from datetime import date
+
+
+def json_dateconv(o):
+    if isinstance(o, date):
+        return o.__str__()

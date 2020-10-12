@@ -18,7 +18,8 @@ from potodo._po_file import PoFileStats
 import webbrowser
 from potodo._utils import check_args
 from potodo._utils import setup_logging
-
+from potodo._interactive import _confirmation_menu, _directory_list_menu, _file_list_menu
+from potodo._utils import json_dateconv
 # TODO: Sort the functions (maybe in different files ?
 
 
@@ -90,7 +91,7 @@ def exec_potodo(
     :param json_format: Format output as JSON.
     :param exclude_fuzzy: Will exclude files with fuzzies in output.
     :param exclude_reserved: Will print out only files that aren't reserved
-    :param only_reserved: Will print only reserved fils
+    :param only_reserved: Will print only reserved files
     :param show_reservation_dates: Will show the reservation dates
     :param no_cache: Disables cache (Cache is disabled when files are modified)
     :param is_interactive: Switches output to an interactive CLI menu
@@ -139,33 +140,37 @@ def exec_potodo(
             buffer: List[Any] = []
             folder_stats: List[int] = []
             printed_list: List[bool] = []
-
-        for po_file in sorted(po_files):
-            # For each file in those files from that directory
-            if not only_fuzzy or po_file.fuzzy_entries:
-                if exclude_fuzzy and po_file.fuzzy_entries:
-                    continue
-                buffer_add(
-                    buffer,
-                    folder_stats,
-                    printed_list,
-                    po_file,
-                    issue_reservations,
-                    above,
-                    below,
-                    counts,
-                    json_format,
-                    exclude_reserved,
-                    only_reserved,
-                    show_reservation_dates,
-                )
-                print(
-                    json.dumps(
-                        dir_stats, indent=4, separators=(",", ": "), sort_keys=False
+        
+            for po_file in sorted(po_files):
+                # For each file in those files from that directory
+                if not only_fuzzy or po_file.fuzzy_entries:
+                    if exclude_fuzzy and po_file.fuzzy_entries:
+                        continue
+                    buffer_add(
+                        buffer,
+                        folder_stats,
+                        printed_list,
+                        po_file,
+                        issue_reservations,
+                        above,
+                        below,
+                        counts,
+                        json_format,
+                        exclude_reserved,
+                        only_reserved,
+                        show_reservation_dates,
                     )
-                )
+        
+            # Once all files have been processed, print the dir and the files
+            # or store them into a dict to print them once all directories have
+            # been processed.
+            if json_format:
+                add_dir_stats(directory_name, buffer, folder_stats, printed_list, dir_stats)
             else:
                 print_dir_stats(directory_name, buffer, folder_stats, printed_list)
+    
+        if json_format:
+            print(json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False, default=json_dateconv))
 
 
 def buffer_add(
