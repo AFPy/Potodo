@@ -23,6 +23,7 @@ from potodo._interactive import (
     _directory_list_menu,
     _file_list_menu,
 )
+from potodo._utils import get_po_files_per_directory_no_stats
 from potodo._utils import json_dateconv
 
 # TODO: Sort the functions (maybe in different files ?
@@ -105,25 +106,25 @@ def exec_potodo(
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
-    po_files_and_dirs = get_po_stats_from_repo_or_cache(path, exclude, no_cache)
-
     dir_stats: List[Any] = []
     if is_interactive:
-        # TODO: if interactive mode, then list directories then only get info from files in this dir so it's faster
-        directory_options = list(po_files_and_dirs.keys())
+        po_files_and_dirs_no_stats = get_po_files_per_directory_no_stats(
+            repo_path=path, exclude=exclude
+        )
+        directory_options = list(po_files_and_dirs_no_stats.keys())
         while True:
             selected_dir = _directory_list_menu(directory_options)
             if selected_dir == (len(directory_options) - 1):
                 exit(0)
             directory = directory_options[selected_dir]
-            file_options = po_files_and_dirs[directory]
+            file_options = po_files_and_dirs_no_stats[directory]
             # TODO: Add stats on files and also add reservations
             selected_file = _file_list_menu(directory, file_options)
             if selected_file == (len(file_options) + 1):
                 exit(0)
             elif selected_file == len(file_options):
                 continue
-            file = po_files_and_dirs[directory][selected_file].filename
+            file = po_files_and_dirs_no_stats[directory][selected_file]
             final_choice = _confirmation_menu(file, directory)
             if final_choice == 3:
                 exit(0)
@@ -140,6 +141,7 @@ def exec_potodo(
         else:
             exit()
     else:
+        po_files_and_dirs = get_po_stats_from_repo_or_cache(path, exclude, no_cache)
         for directory_name, po_files in sorted(po_files_and_dirs.items()):
             # For each directory and files in this directory
             buffer: List[Any] = []

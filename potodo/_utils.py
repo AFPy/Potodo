@@ -52,11 +52,40 @@ def check_args(
         "logging_level": logging_level,
     }
 
-from typing import Optional
+import itertools
 from datetime import date
+from pathlib import Path
+from typing import Dict
+from typing import Iterable
+from typing import List
+from typing import Optional
+
+from potodo._po_file import is_within
 
 
 def json_dateconv(o: object) -> Optional[str]:
     if isinstance(o, date):
         return o.__str__()
     return None
+
+
+def get_po_files_per_directory_no_stats(
+    repo_path: Path, exclude: Iterable[Path]
+) -> Dict[str, List[str]]:
+    all_po_files = [
+        file
+        for file in repo_path.rglob("*.po")
+        if not any(is_within(file, excluded) for excluded in exclude)
+    ]
+    files_per_dir = {
+        name: set(files)
+        # We assume the output of rglob to be sorted,
+        # so each 'name' is unique within groupby
+        for name, files in itertools.groupby(
+            all_po_files, key=lambda path: path.parent.name
+        )
+    }
+    return {
+        directory: [po_file.name for po_file in po_files]
+        for directory, po_files in files_per_dir.items()
+    }

@@ -1,9 +1,8 @@
-from typing import List, cast
+from typing import cast
+from typing import List
 from typing import Sequence
 
 from simple_term_menu import TerminalMenu
-
-from potodo._po_file import PoFileStats
 
 
 IS_CURSOR_CYCLING = True
@@ -34,15 +33,14 @@ def _directory_list_menu(
 
 # TODO: Think about and do the exclusions
 def _file_list_menu(
-    directory: str, file_list: Sequence[PoFileStats], excluded: Sequence[str] = ()
+    directory: str, file_list: List[str], excluded: Sequence[str] = ()
 ) -> int:
     # final_file_list = [file.filename for file in file_list if file not in excluded]
-    final_file_list = [file.filename for file in file_list]
-    if "[;] Back" not in final_file_list:
-        final_file_list.append("[;] Back")
-        final_file_list.append("[q] Quit")
+    if "[;] Back" not in file_list:
+        file_list.append("[;] Back")
+        file_list.append("[q] Quit")
     file_list_menu = TerminalMenu(
-        menu_entries=final_file_list,
+        menu_entries=file_list,
         title=f"Choose a file from {directory}",
         cycle_cursor=IS_CURSOR_CYCLING,
         clear_screen=IS_SCREEN_CLEARED,
