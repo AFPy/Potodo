@@ -13,10 +13,8 @@ from typing import Sequence
 from typing import Tuple
 
 from potodo import __version__
-from potodo._cache import _get_cache_file_content
-from potodo._cache import _set_cache_content
 from potodo._github import get_reservation_list
-from potodo._po_file import get_po_stats_from_repo
+from potodo._po_file import get_po_stats_from_repo_or_cache
 from potodo._po_file import PoFileStats
 
 # TODO: Sort the functions (maybe in different files ?
@@ -127,17 +125,7 @@ def exec_potodo(
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
-    if (
-        no_cache
-        or check_output(["git", "status", "--porcelain"], encoding="utf-8") != ""
-    ):
-        po_files_and_dirs = None
-    else:
-        po_files_and_dirs = _get_cache_file_content()
-
-    if not po_files_and_dirs:
-        po_files_and_dirs = get_po_stats_from_repo(path, exclude)
-        _set_cache_content(po_files_and_dirs)
+    po_files_and_dirs = get_po_stats_from_repo_or_cache(path, exclude, no_cache)
 
     dir_stats: List[Any] = []
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
@@ -284,15 +272,11 @@ def buffer_add(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="potodo",
-        description="List and prettify the po files left to translate.",
+        prog="potodo", description="List and prettify the po files left to translate.",
     )
 
     parser.add_argument(
-        "-p",
-        "--path",
-        help="execute Potodo in path",
-        metavar="path",
+        "-p", "--path", help="execute Potodo in path", metavar="path",
     )
 
     parser.add_argument(

@@ -1,4 +1,5 @@
 import itertools
+import os
 from pathlib import Path
 from typing import Dict
 from typing import Iterable
@@ -61,10 +62,15 @@ def is_within(file: Path, excluded: Path) -> bool:
     return excluded in file.parents or file == excluded
 
 
-def get_po_stats_from_repo(
-    repo_path: Path, exclude: Iterable[Path]
+from potodo._cache import _get_cache_file_content  # noqa
+from potodo._cache import _set_cache_content  # noqa
+
+
+def get_po_stats_from_repo_or_cache(
+    repo_path: Path, exclude: Iterable[Path], no_cache: bool = False
 ) -> Mapping[str, Sequence[PoFileStats]]:
-    """Gets all the po files recursively from 'repo_path', excluding those in
+    """Gets all the po files recursively from 'repo_path'
+    and cache if no_cache is set to False, excluding those in
     'exclude'. Return a dict with all directories and PoFile instances of
     `.po` files in those directories.
     """
@@ -88,10 +94,39 @@ def get_po_stats_from_repo(
         )
     }
 
-    # Turn paths into stat objects
-    po_stats_per_directory: Dict[str, Sequence[PoFileStats]] = {
-        directory: [PoFileStats(po_file) for po_file in po_files]
-        for directory, po_files in po_files_per_directory.items()
-    }
+    if no_cache:
+        # Turn paths into stat objects
+        po_stats_per_directory: Dict[str, Sequence[PoFileStats]] = {
+            directory: [PoFileStats(po_file) for po_file in po_files]
+            for directory, po_files in po_files_per_directory.items()
+        }
+    else:
+        cached_files = _get_cache_file_content(
+            str(repo_path.resolve()) + "/.potodo/cache.pickle"
+        )
+        if not cached_files:
+            cached_files = {}
+        po_stats_per_directory = dict()
+        for directory, po_files in po_files_per_directory.items():
+            po_stats_per_directory[directory] = []
+            for po_file in po_files:
+                cached_pofile = cached_files.get(po_file.resolve())
+                if (
+                    cached_pofile
+                    and os.path.getmtime(po_file.resolve()) == cached_pofile["mtime"]
+                ):
+                    po_stats_per_directory[directory].append(
+                        cached_files[po_file.resolve()]["pofile"]
+                    )
+                else:
+                    po_object = PoFileStats(po_file)
+                    cached_files[po_file.resolve()] = {
+                        "pofile": po_object,
+                        "mtime": os.path.getmtime(po_file),
+                    }
+                    po_stats_per_directory[directory].append(po_object)
+        _set_cache_content(
+            cached_files, path=str(repo_path.resolve()) + "/.potodo/cache.pickle"
+        )
 
     return po_stats_per_directory
