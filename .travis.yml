@@ -14,9 +14,10 @@ matrix:
     - python: "3.8"
       env: TOX_ENV=py38
       name: 3.8 tests
-    - python: "3.9"
-      env: TOX_ENV=py39
-      name: 3.9 tests
+# 3.9 is commented as travis doesn't have it as of October 2020
+#    - python: "3.9"
+#      env: TOX_ENV=py39
+#      name: 3.9 tests
     - python: "3.8"
       env: TOX_ENV=black,flake8,mypy
       name: Linting
