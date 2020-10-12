@@ -118,7 +118,7 @@ def exec_potodo(
     :param exclude_reserved: Will print out only files that aren't reserved
     :param only_reserved: Will print only reserved fils
     :param show_reservation_dates: Will show the reservation dates
-    :param no_cache: Disables cache (Cache is disabled when files are modified in git)
+    :param no_cache: Disables cache (Cache is disabled when files are modified)
     """
 
     # Initialize the arguments
@@ -380,7 +380,7 @@ def main() -> None:
         "--no-cache",
         action="store_true",
         dest="no_cache",
-        help="Disables cache (Cache is disabled when files are modified in git)",
+        help="Disables cache (Cache is disabled when files are modified)",
     )
 
     parser.add_argument(
