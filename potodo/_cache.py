@@ -1,15 +1,16 @@
 import os
 import pickle
-from typing import Mapping
+from typing import Dict
 from typing import Optional
-from typing import Sequence
+from typing import List
+from pathlib import Path
 
 from potodo._po_file import PoFileStats
 
 
 def _get_cache_file_content(
     path: str = ".potodo/cache.pickle",
-) -> Optional[Mapping[str, Sequence[PoFileStats]]]:
+) -> Optional[Dict[Path, List[PoFileStats]]]:
     try:
         with open(path, "rb") as handle:
             data = pickle.load(handle)
@@ -20,7 +21,7 @@ def _get_cache_file_content(
 
 
 def _set_cache_content(
-    obj: Mapping[str, Sequence[PoFileStats]], path: str = ".potodo/cache.pickle"
+    obj: Dict[Path, List[PoFileStats]], path: str = ".potodo/cache.pickle"
 ) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
 

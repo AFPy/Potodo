@@ -68,7 +68,7 @@ from potodo._cache import _set_cache_content  # noqa
 
 def get_po_stats_from_repo_or_cache(
     repo_path: Path, exclude: Iterable[Path], no_cache: bool = False
-) -> Mapping[str, Sequence[PoFileStats]]:
+) -> Mapping[str, List[PoFileStats]]:
     """Gets all the po files recursively from 'repo_path'
     and cache if no_cache is set to False, excluding those in
     'exclude'. Return a dict with all directories and PoFile instances of
@@ -78,7 +78,7 @@ def get_po_stats_from_repo_or_cache(
     # Get all the files matching `**/*.po`
     # not being in the exclusion list or in
     # any (sub)folder from the exclusion list
-    all_po_files: Sequence[Path] = [
+    all_po_files: List[Path] = [
         file
         for file in repo_path.rglob("*.po")
         if not any(is_within(file, excluded) for excluded in exclude)
@@ -96,7 +96,7 @@ def get_po_stats_from_repo_or_cache(
 
     if no_cache:
         # Turn paths into stat objects
-        po_stats_per_directory: Dict[str, Sequence[PoFileStats]] = {
+        po_stats_per_directory: Dict[str, List[PoFileStats]] = {
             directory: [PoFileStats(po_file) for po_file in po_files]
             for directory, po_files in po_files_per_directory.items()
         }
