@@ -2,83 +2,20 @@
 import argparse
 import json
 import logging
-import os
 import statistics
 from pathlib import Path
 from typing import Any
 from typing import Dict
 from typing import List
-from typing import Mapping
 from typing import Sequence
 from typing import Tuple
 
 from potodo import __version__
-from potodo._github import get_reservation_list
+from potodo._github import get_issue_reservations
 from potodo._po_file import get_po_stats_from_repo_or_cache
 from potodo._po_file import PoFileStats
-
+from potodo._utils import setup_logging, check_args
 # TODO: Sort the functions (maybe in different files ?
-
-
-def get_issue_reservations(
-    offline: bool, hide_reserved: bool, repo_path: Path
-) -> Dict[str, Tuple[Any, Any]]:
-    """Retrieve info about reservation if needed."""
-
-    if not offline and not hide_reserved:
-        logging.debug("Getting issue reservations from github.com")
-        # If the reservations are to be displayed, then get them
-        issue_reservations = get_reservation_list(repo_path)
-    else:
-        logging.debug("Reservation list set to be empty because Potodo was started offline or hiding the reservations.")
-        # Otherwise, an empty list will do the trick
-        issue_reservations = {}
-    return issue_reservations
-
-
-def setup_logging(logging_level):
-    logging.basicConfig(
-        level=logging_level,
-        format="%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d %(funcName)s()] %(message)s",
-        datefmt="%d-%m-%Y:%H:%M:%S",
-    )
-    # Silencing some loggers
-    logging.getLogger("requests").setLevel(logging.WARNING)
-    logging.getLogger("urllib3").setLevel(logging.WARNING)
-
-
-def check_args(
-    path: str, exclude: List[str], below: int, above: int, verbose: int, **kwargs: Any
-) -> Mapping[str, Any]:
-    # If below is lower than above, raise an error
-    if below < above:
-        raise ValueError("'below' must be greater than 'above'.")
-
-    # If no path is specified, use current directory
-    if not path:
-        path = os.getcwd()
-
-    logging_level = None
-    if verbose:
-        if verbose == 1:
-            # Will only show ERROR and CRITICAL
-            logging_level = logging.ERROR
-        if verbose == 2:
-            # Will only show ERROR, CRITICAL and WARNING
-            logging_level = logging.WARNING
-        if verbose >= 3:
-            # Will show INFO WARNING ERROR DEBUG CRITICAL
-            logging_level = logging.DEBUG
-    else:
-        # Disable all logging
-        logging.disable(logging.CRITICAL)
-
-    # Convert strings to `Path` objects and make them absolute
-    return {
-        "path": Path(path).resolve(),
-        "exclude": [Path(path).resolve() for path in exclude],
-        "logging_level": logging_level,
-    }
 
 
 def print_dir_stats(

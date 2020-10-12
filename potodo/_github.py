@@ -6,7 +6,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
-
+import logging
 import requests
 
 
@@ -49,7 +49,7 @@ def get_repo_name(repo_path: Path) -> str:
     return repo_name
 
 
-def get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
+def _get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
     """Will get the repository name then request all the issues and put them in a dict"""  # noqa
 
     issues: List[Dict[Any, Any]] = []
@@ -75,3 +75,19 @@ def get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
             reservations[yes.group()] = (issue["user"]["login"], creation_date)
 
     return reservations
+
+
+def get_issue_reservations(
+    offline: bool, hide_reserved: bool, repo_path: Path
+) -> Dict[str, Tuple[Any, Any]]:
+    """Retrieve info about reservation if needed."""
+
+    if not offline and not hide_reserved:
+        logging.debug("Getting issue reservations from github.com")
+        # If the reservations are to be displayed, then get them
+        issue_reservations = _get_reservation_list(repo_path)
+    else:
+        logging.debug("Reservation list set to be empty because Potodo was started offline or hiding the reservations.")
+        # Otherwise, an empty list will do the trick
+        issue_reservations = {}
+    return issue_reservations
