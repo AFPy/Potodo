@@ -1,3 +1,4 @@
+import logging
 import re
 import subprocess
 from datetime import datetime
@@ -6,7 +7,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
-import logging
+
 import requests
 
 
@@ -93,7 +94,9 @@ def get_issue_reservations(
         # If the reservations are to be displayed, then get them
         issue_reservations = _get_reservation_list(repo_path)
     else:
-        logging.debug("Reservation list set to be empty because Potodo was started offline or hiding the reservations.")
+        logging.debug(
+            "Reservation list set to be empty because Potodo was started offline or hiding the reservations."
+        )
         # Otherwise, an empty list will do the trick
         issue_reservations = {}
     return issue_reservations

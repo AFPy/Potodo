@@ -14,7 +14,9 @@ from potodo import __version__
 from potodo._github import get_issue_reservations
 from potodo._po_file import get_po_stats_from_repo_or_cache
 from potodo._po_file import PoFileStats
-from potodo._utils import setup_logging, check_args
+from potodo._utils import check_args
+from potodo._utils import setup_logging
+
 # TODO: Sort the functions (maybe in different files ?
 
 
@@ -240,15 +242,11 @@ def buffer_add(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="potodo",
-        description="List and prettify the po files left to translate.",
+        prog="potodo", description="List and prettify the po files left to translate.",
     )
 
     parser.add_argument(
-        "-p",
-        "--path",
-        help="execute Potodo in path",
-        metavar="path",
+        "-p", "--path", help="execute Potodo in path", metavar="path",
     )
 
     parser.add_argument(

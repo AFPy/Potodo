@@ -1,9 +1,10 @@
+import logging
 import os
 import pickle
+from pathlib import Path
 from typing import cast
 from typing import Dict
-from pathlib import Path
-import logging
+
 from potodo._po_file import PoFileStats
 
 

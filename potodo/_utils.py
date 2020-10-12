@@ -1,7 +1,9 @@
 import logging
-from typing import List, Any, Mapping
 import os
 from pathlib import Path
+from typing import Any
+from typing import List
+from typing import Mapping
 
 
 def setup_logging(logging_level):
