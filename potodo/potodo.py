@@ -4,7 +4,6 @@ import json
 import os
 import statistics
 from pathlib import Path
-from subprocess import check_output
 from typing import Any
 from typing import Dict
 from typing import List
