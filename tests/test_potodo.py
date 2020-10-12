@@ -53,6 +53,7 @@ def test_output(capsys):
                     "translated": 0,
                     "percent_translated": 0,
                     "reserved_by": None,
+                    "reservation_date": None,
                 },
             ],
         },
@@ -68,6 +69,7 @@ def test_output(capsys):
                     "translated": 1,
                     "percent_translated": 33,
                     "reserved_by": None,
+                    "reservation_date": None,
                 },
                 {
                     "name": f"{REPO_DIR}/file2",
@@ -77,6 +79,7 @@ def test_output(capsys):
                     "translated": 0,
                     "percent_translated": 0,
                     "reserved_by": None,
+                    "reservation_date": None,
                 },
             ],
         },
