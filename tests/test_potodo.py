@@ -17,6 +17,7 @@ config = {
     "offline": True,
     "exclude_fuzzy": False,
     "only_reserved": False,
+    "exclude_reserved": False,
     "show_reservation_dates": False,
     "no_cache": True,
 }
