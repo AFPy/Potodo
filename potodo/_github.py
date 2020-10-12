@@ -11,8 +11,7 @@ import requests
 
 
 def get_repo_url(repo_path: Path) -> str:
-    """Tries to get the repository url from git commands
-    """
+    """Tries to get the repository url from git commands"""
     try:
         url = subprocess.check_output(
             "git remote get-url --all upstream".split(),
@@ -51,8 +50,7 @@ def get_repo_name(repo_path: Path) -> str:
 
 
 def get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
-    """Will get the repository name then request all the issues and put them in a dict
-    """
+    """Will get the repository name then request all the issues and put them in a dict"""  # noqa
 
     issues: List[Dict[Any, Any]] = []
     next_url = (

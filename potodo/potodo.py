@@ -13,9 +13,8 @@ from typing import Tuple
 
 from potodo import __version__
 from potodo._github import get_reservation_list
-from potodo._po_file import get_po_stats_from_repo
+from potodo._po_file import get_po_stats_from_repo_or_cache
 from potodo._po_file import PoFileStats
-
 
 # TODO: Sort the functions (maybe in different files ?
 
@@ -23,8 +22,7 @@ from potodo._po_file import PoFileStats
 def get_issue_reservations(
     offline: bool, hide_reserved: bool, repo_path: Path
 ) -> Dict[str, Tuple[Any, Any]]:
-    """Retrieve info about reservation if needed.
-    """
+    """Retrieve info about reservation if needed."""
 
     if not offline and not hide_reserved:
         # If the reservations are to be displayed, then get them
@@ -59,8 +57,7 @@ def print_dir_stats(
     folder_stats: Sequence[int],
     printed_list: Sequence[bool],
 ) -> None:
-    """This function prints the directory name, its stats and the buffer
-    """
+    """This function prints the directory name, its stats and the buffer"""
     if True in printed_list:
         # If at least one of the files isn't done then print the
         # folder stats and file(s) Each time a file is went over True
@@ -77,8 +74,7 @@ def add_dir_stats(
     printed_list: Sequence[bool],
     all_stats: List[Dict[str, Any]],
 ) -> None:
-    """Appends directory name, its stats and the buffer to stats
-    """
+    """Appends directory name, its stats and the buffer to stats"""
     if any(printed_list):
         pc_translated = statistics.mean(folder_stats)
         all_stats.append(
@@ -104,6 +100,7 @@ def exec_potodo(
     exclude_reserved: bool,
     only_reserved: bool,
     show_reservation_dates: bool,
+    no_cache: bool,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -121,14 +118,13 @@ def exec_potodo(
     :param exclude_reserved: Will print out only files that aren't reserved
     :param only_reserved: Will print only reserved fils
     :param show_reservation_dates: Will show the reservation dates
+    :param no_cache: Disables cache (Cache is disabled when files are modified)
     """
 
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
-    # Dict whose keys are directory names and values are
-    # stats for each file within the directory.
-    po_files_and_dirs = get_po_stats_from_repo(path, exclude)
+    po_files_and_dirs = get_po_stats_from_repo_or_cache(path, exclude, no_cache)
 
     dir_stats: List[Any] = []
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
@@ -216,7 +212,7 @@ def buffer_add(
     po_file_size = po_file_stats.po_file_size
     # percentage of the file already translated
     percent_translated = po_file_stats.percent_translated
-    
+
     # `reserved by` if the file is reserved
     reserved_by, reservation_date = issue_reservations.get(
         po_file_stats.filename_dir.lower(), (None, None)
@@ -275,11 +271,15 @@ def buffer_add(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="potodo", description="List and prettify the po files left to translate.",
+        prog="potodo",
+        description="List and prettify the po files left to translate.",
     )
 
     parser.add_argument(
-        "-p", "--path", help="execute Potodo in path", metavar="path",
+        "-p",
+        "--path",
+        help="execute Potodo in path",
+        metavar="path",
     )
 
     parser.add_argument(
@@ -374,6 +374,13 @@ def main() -> None:
         action="store_true",
         dest="show_reservation_dates",
         help="show issue creation dates",
+    )
+
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        dest="no_cache",
+        help="Disables cache (Cache is disabled when files are modified)",
     )
 
     parser.add_argument(

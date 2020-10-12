@@ -1,4 +1,5 @@
 import itertools
+import os
 from pathlib import Path
 from typing import Dict
 from typing import Iterable
@@ -11,14 +12,13 @@ import polib
 
 
 class PoFileStats:
-    """Class for each `.po` file containing all the necessary information about its progress
-    """
+    """Class for each `.po` file containing all the necessary information about its progress"""  # noqa
 
     def __init__(self, path: Path):
-        """Initializes the class with all the correct information
-        """
+        """Initializes the class with all the correct information"""
         self.path: Path = path
         self.filename: str = path.name
+        self.mtime = os.path.getmtime(path)
         self.pofile: polib.POFile = polib.pofile(self.path)
         self.directory: str = self.path.parent.name
 
@@ -54,21 +54,24 @@ class PoFileStats:
         )
 
     def __lt__(self, other: "PoFileStats") -> bool:
-        """When two PoFiles are compared, their filenames are compared.
-        """
+        """When two PoFiles are compared, their filenames are compared."""
         return self.filename < other.filename
 
 
 def is_within(file: Path, excluded: Path) -> bool:
-    """Check if `file` is `excluded` or within `excluded`'s tree.
-    """
+    """Check if `file` is `excluded` or within `excluded`'s tree."""
     return excluded in file.parents or file == excluded
 
 
-def get_po_stats_from_repo(
-    repo_path: Path, exclude: Iterable[Path]
-) -> Mapping[str, Sequence[PoFileStats]]:
-    """Gets all the po files recursively from 'repo_path', excluding those in
+from potodo._cache import _get_cache_file_content  # noqa
+from potodo._cache import _set_cache_content  # noqa
+
+
+def get_po_stats_from_repo_or_cache(
+    repo_path: Path, exclude: Iterable[Path], no_cache: bool = False
+) -> Mapping[str, List[PoFileStats]]:
+    """Gets all the po files recursively from 'repo_path'
+    and cache if no_cache is set to False, excluding those in
     'exclude'. Return a dict with all directories and PoFile instances of
     `.po` files in those directories.
     """
@@ -76,7 +79,7 @@ def get_po_stats_from_repo(
     # Get all the files matching `**/*.po`
     # not being in the exclusion list or in
     # any (sub)folder from the exclusion list
-    all_po_files: Sequence[Path] = [
+    all_po_files: List[Path] = [
         file
         for file in repo_path.rglob("*.po")
         if not any(is_within(file, excluded) for excluded in exclude)
@@ -92,10 +95,29 @@ def get_po_stats_from_repo(
         )
     }
 
-    # Turn paths into stat objects
-    po_stats_per_directory: Dict[str, Sequence[PoFileStats]] = {
-        directory: [PoFileStats(po_file) for po_file in po_files]
-        for directory, po_files in po_files_per_directory.items()
-    }
+    if no_cache:
+        # Turn paths into stat objects
+        po_stats_per_directory: Dict[str, List[PoFileStats]] = {
+            directory: [PoFileStats(po_file) for po_file in po_files]
+            for directory, po_files in po_files_per_directory.items()
+        }
+    else:
+        cached_files = _get_cache_file_content(
+            str(repo_path.resolve()) + "/.potodo/cache.pickle"
+        )
+        po_stats_per_directory = dict()
+        for directory, po_files in po_files_per_directory.items():
+            po_stats_per_directory[directory] = []
+            for po_file in po_files:
+                cached_file = cached_files.get(po_file.resolve())
+                if not (
+                    cached_file
+                    and os.path.getmtime(po_file.resolve()) == cached_file.mtime
+                ):
+                    cached_files[po_file.resolve()] = cached_file = PoFileStats(po_file)
+                po_stats_per_directory[directory].append(cached_file)
+        _set_cache_content(
+            cached_files, path=str(repo_path.resolve()) + "/.potodo/cache.pickle"
+        )
 
     return po_stats_per_directory

@@ -17,7 +17,9 @@ config = {
     "offline": True,
     "exclude_fuzzy": False,
     "only_reserved": False,
+    "exclude_reserved": False,
     "show_reservation_dates": False,
+    "no_cache": True,
 }
 
 
@@ -51,6 +53,7 @@ def test_output(capsys):
                     "translated": 0,
                     "percent_translated": 0,
                     "reserved_by": None,
+                    "reservation_date": None,
                 },
             ],
         },
@@ -66,6 +69,7 @@ def test_output(capsys):
                     "translated": 1,
                     "percent_translated": 33,
                     "reserved_by": None,
+                    "reservation_date": None,
                 },
                 {
                     "name": f"{REPO_DIR}/file2",
@@ -75,6 +79,7 @@ def test_output(capsys):
                     "translated": 0,
                     "percent_translated": 0,
                     "reserved_by": None,
+                    "reservation_date": None,
                 },
             ],
         },
