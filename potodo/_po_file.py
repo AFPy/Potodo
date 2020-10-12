@@ -109,10 +109,10 @@ def get_po_stats_from_repo_or_cache(
         for directory, po_files in po_files_per_directory.items():
             po_stats_per_directory[directory] = []
             for po_file in po_files:
-                cached_pofile = cached_files.get(po_file.resolve())
+                cached_file = cached_files.get(po_file.resolve())
                 if not (
-                    cached_pofile
-                    and os.path.getmtime(po_file.resolve()) == cached_pofile.mtime
+                    cached_file
+                    and os.path.getmtime(po_file.resolve()) == cached_file.mtime
                 ):
                     cached_files[po_file.resolve()] = cached_file = PoFileStats(po_file)
                 po_stats_per_directory[directory].append(cached_file)
