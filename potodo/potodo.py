@@ -3,7 +3,6 @@ import argparse
 import json
 import os
 import statistics
-from datetime import datetime
 from pathlib import Path
 from subprocess import check_output
 from typing import Any
@@ -26,8 +25,7 @@ from potodo._po_file import PoFileStats
 def get_issue_reservations(
     offline: bool, hide_reserved: bool, repo_path: Path
 ) -> Dict[str, Tuple[Any, Any]]:
-    """Retrieve info about reservation if needed.
-    """
+    """Retrieve info about reservation if needed."""
 
     if not offline and not hide_reserved:
         # If the reservations are to be displayed, then get them
@@ -62,8 +60,7 @@ def print_dir_stats(
     folder_stats: Sequence[int],
     printed_list: Sequence[bool],
 ) -> None:
-    """This function prints the directory name, its stats and the buffer
-    """
+    """This function prints the directory name, its stats and the buffer"""
     if True in printed_list:
         # If at least one of the files isn't done then print the
         # folder stats and file(s) Each time a file is went over True
@@ -80,8 +77,7 @@ def add_dir_stats(
     printed_list: Sequence[bool],
     all_stats: List[Dict[str, Any]],
 ) -> None:
-    """Appends directory name, its stats and the buffer to stats
-    """
+    """Appends directory name, its stats and the buffer to stats"""
     if any(printed_list):
         pc_translated = statistics.mean(folder_stats)
         all_stats.append(
@@ -130,28 +126,6 @@ def exec_potodo(
 
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
-
-    # update_cache = False
-    #
-    # if (
-    #     no_cache
-    #     or check_output(["git", "status", "--porcelain"], encoding="utf-8") != ""
-    # ):
-    #     update_cache = True
-    # else:
-    #     dt_expiry, content = _get_cache_file_content()
-    #     if content:
-    #         if dt_expiry < datetime.utcnow():
-    #             update_cache = True
-    #         else:
-    #             update_cache = False
-    #             po_files_and_dirs = content
-    #     else:
-    #         update_cache = True
-    #
-    # if update_cache:
-    #     po_files_and_dirs = get_po_stats_from_repo(path, exclude)
-    #     _set_cache_content(po_files_and_dirs)    # update_cache = False
 
     if (
         no_cache
@@ -310,11 +284,15 @@ def buffer_add(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="potodo", description="List and prettify the po files left to translate.",
+        prog="potodo",
+        description="List and prettify the po files left to translate.",
     )
 
     parser.add_argument(
-        "-p", "--path", help="execute Potodo in path", metavar="path",
+        "-p",
+        "--path",
+        help="execute Potodo in path",
+        metavar="path",
     )
 
     parser.add_argument(

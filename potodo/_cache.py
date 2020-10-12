@@ -3,19 +3,21 @@ import pickle
 from datetime import datetime
 from datetime import timedelta
 from typing import Optional
-from typing import Tuple
+from typing import Mapping
+from typing import Sequence
+from potodo._po_file import PoFileStats
 
 
 def _get_cache_file_content(
     path: str = ".potodo/cache.pickle",
-) -> Optional[dict]:
+) -> Optional[Mapping[str, Sequence[PoFileStats]]]:
     try:
         with open(path, "rb") as handle:
             data = pickle.load(handle)
     except FileNotFoundError:
         return None
     else:
-        content = data["data"]
+        content: Optional[Mapping[str, Sequence[PoFileStats]]] = data["data"]
         dt_expiry = data["dt_expiry"]
         if content:
             if dt_expiry < datetime.utcnow():
@@ -26,7 +28,9 @@ def _get_cache_file_content(
             return None
 
 
-def _set_cache_content(obj, path: str = ".potodo/cache.pickle"):
+def _set_cache_content(
+    obj: Mapping[str, Sequence[PoFileStats]], path: str = ".potodo/cache.pickle"
+) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
 
     to_dump = {"dt_expiry": datetime.utcnow() + timedelta(weeks=1), "data": obj}

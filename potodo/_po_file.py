@@ -11,12 +11,10 @@ import polib
 
 
 class PoFileStats:
-    """Class for each `.po` file containing all the necessary information about its progress
-    """
+    """Class for each `.po` file containing all the necessary information about its progress"""  # noqa
 
     def __init__(self, path: Path):
-        """Initializes the class with all the correct information
-        """
+        """Initializes the class with all the correct information"""
         self.path: Path = path
         self.filename: str = path.name
         self.pofile: polib.POFile = polib.pofile(self.path)
@@ -54,14 +52,12 @@ class PoFileStats:
         )
 
     def __lt__(self, other: "PoFileStats") -> bool:
-        """When two PoFiles are compared, their filenames are compared.
-        """
+        """When two PoFiles are compared, their filenames are compared."""
         return self.filename < other.filename
 
 
 def is_within(file: Path, excluded: Path) -> bool:
-    """Check if `file` is `excluded` or within `excluded`'s tree.
-    """
+    """Check if `file` is `excluded` or within `excluded`'s tree."""
     return excluded in file.parents or file == excluded
 
 
