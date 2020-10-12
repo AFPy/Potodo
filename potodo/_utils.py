@@ -6,11 +6,12 @@ from typing import List
 from typing import Mapping
 
 
-def setup_logging(logging_level):
+def setup_logging(logging_level: int) -> None:
     print(logging_level)
     logging.basicConfig(
         level=logging_level,
-        format="%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d %(funcName)s()] %(message)s",
+        format="%(asctime)s %(levelname)-8s [%(filename)s:"
+        "%(lineno)d %(funcName)s()] %(message)s",
         datefmt="%d-%m-%Y:%H:%M:%S",
     )
     # Silencing some loggers

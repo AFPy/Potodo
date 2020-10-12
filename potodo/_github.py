@@ -95,7 +95,8 @@ def get_issue_reservations(
         issue_reservations = _get_reservation_list(repo_path)
     else:
         logging.debug(
-            "Reservation list set to be empty because Potodo was started offline or hiding the reservations."
+            "Reservation list set to be empty because Potodo was started offline"
+            " or hiding the reservations."
         )
         # Otherwise, an empty list will do the trick
         issue_reservations = {}
