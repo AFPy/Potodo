@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 import statistics
+import webbrowser
 from pathlib import Path
 from typing import Any
 from typing import Dict
@@ -12,9 +13,15 @@ from typing import Tuple
 
 from potodo import __version__
 from potodo._github import get_issue_reservations
+from potodo._interactive import _confirmation_menu
+from potodo._interactive import _directory_list_menu
+from potodo._interactive import _file_list_menu
 from potodo._po_file import get_po_stats_from_repo_or_cache
 from potodo._po_file import PoFileStats
 from potodo._utils import check_args
+from potodo._utils import get_dir_list
+from potodo._utils import get_files_from_dir
+from potodo._utils import json_dateconv
 from potodo._utils import setup_logging
 
 # TODO: Sort the functions (maybe in different files ?
@@ -72,6 +79,7 @@ def exec_potodo(
     only_reserved: bool,
     show_reservation_dates: bool,
     no_cache: bool,
+    is_interactive: bool,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -87,53 +95,96 @@ def exec_potodo(
     :param json_format: Format output as JSON.
     :param exclude_fuzzy: Will exclude files with fuzzies in output.
     :param exclude_reserved: Will print out only files that aren't reserved
-    :param only_reserved: Will print only reserved fils
+    :param only_reserved: Will print only reserved files
     :param show_reservation_dates: Will show the reservation dates
     :param no_cache: Disables cache (Cache is disabled when files are modified)
+    :param is_interactive: Switches output to an interactive CLI menu
     """
 
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
-    po_files_and_dirs = get_po_stats_from_repo_or_cache(path, exclude, no_cache)
-
     dir_stats: List[Any] = []
-    for directory_name, po_files in sorted(po_files_and_dirs.items()):
-        # For each directory and files in this directory
-        buffer: List[Any] = []
-        folder_stats: List[int] = []
-        printed_list: List[bool] = []
-
-        for po_file in sorted(po_files):
-            # For each file in those files from that directory
-            if not only_fuzzy or po_file.fuzzy_entries:
-                if exclude_fuzzy and po_file.fuzzy_entries:
-                    continue
-                buffer_add(
-                    buffer,
-                    folder_stats,
-                    printed_list,
-                    po_file,
-                    issue_reservations,
-                    above,
-                    below,
-                    counts,
-                    json_format,
-                    exclude_reserved,
-                    only_reserved,
-                    show_reservation_dates,
-                )
-
-        # Once all files have been processed, print the dir and the files
-        # or store them into a dict to print them once all directories have
-        # been processed.
-        if json_format:
-            add_dir_stats(directory_name, buffer, folder_stats, printed_list, dir_stats)
+    if is_interactive:
+        directory_options = get_dir_list(repo_path=path, exclude=exclude)
+        while True:
+            selected_dir = _directory_list_menu(directory_options)
+            if selected_dir == (len(directory_options) - 1):
+                exit(0)
+            directory = directory_options[selected_dir]
+            file_options = get_files_from_dir(
+                directory=directory, repo_path=path, exclude=exclude
+            )
+            # TODO: Add stats on files and also add reservations
+            selected_file = _file_list_menu(directory, file_options)
+            if selected_file == (len(file_options) + 1):
+                exit(0)
+            elif selected_file == len(file_options):
+                continue
+            file = file_options[selected_file]
+            final_choice = _confirmation_menu(file, directory)
+            if final_choice == 3:
+                exit(0)
+            elif final_choice == 2:
+                continue
+            else:
+                break
+        if final_choice == 0:
+            webbrowser.open(
+                f"https://github.com/python/python-docs-fr/issues/new?title=Je%20travaille%20sur%20"
+                f"{directory}/{file}"
+                f"&body=%0A%0A%0A---%0AThis+issue+was+created+using+potodo+interactive+mode."
+            )
         else:
-            print_dir_stats(directory_name, buffer, folder_stats, printed_list)
+            exit()
+    else:
+        po_files_and_dirs = get_po_stats_from_repo_or_cache(path, exclude, no_cache)
+        for directory_name, po_files in sorted(po_files_and_dirs.items()):
+            # For each directory and files in this directory
+            buffer: List[Any] = []
+            folder_stats: List[int] = []
+            printed_list: List[bool] = []
 
-    if json_format:
-        print(json.dumps(dir_stats, indent=4, separators=(",", ": "), sort_keys=False))
+            for po_file in sorted(po_files):
+                # For each file in those files from that directory
+                if not only_fuzzy or po_file.fuzzy_entries:
+                    if exclude_fuzzy and po_file.fuzzy_entries:
+                        continue
+                    buffer_add(
+                        buffer,
+                        folder_stats,
+                        printed_list,
+                        po_file,
+                        issue_reservations,
+                        above,
+                        below,
+                        counts,
+                        json_format,
+                        exclude_reserved,
+                        only_reserved,
+                        show_reservation_dates,
+                    )
+
+            # Once all files have been processed, print the dir and the files
+            # or store them into a dict to print them once all directories have
+            # been processed.
+            if json_format:
+                add_dir_stats(
+                    directory_name, buffer, folder_stats, printed_list, dir_stats
+                )
+            else:
+                print_dir_stats(directory_name, buffer, folder_stats, printed_list)
+
+        if json_format:
+            print(
+                json.dumps(
+                    dir_stats,
+                    indent=4,
+                    separators=(",", ": "),
+                    sort_keys=False,
+                    default=json_dateconv,
+                )
+            )
 
 
 def buffer_add(
@@ -355,6 +406,14 @@ def main() -> None:
     )
 
     parser.add_argument(
+        "-i",
+        "--interactive",
+        action="store_true",
+        dest="is_interactive",
+        help="Activates the interactive menu",
+    )
+
+    parser.add_argument(
         "--version", action="version", version="%(prog)s " + __version__
     )
 
@@ -365,6 +424,20 @@ def main() -> None:
     # Initialize args and check consistency
     args = vars(parser.parse_args())
     args.update(check_args(**args))
+
+    if args.get("json_format") and args.get("is_interactive"):
+        print("Json format and interactive modes cannot be activated at the same time.")
+        exit(1)
+
+    if args.get("is_interactive"):
+        try:
+            import termios  # noqa
+        except ImportError:
+            import platform
+
+            raise NotImplementedError(
+                '"{}" is not supported for interactive mode'.format(platform.system())
+            )
 
     if args.get("exclude_fuzzy") and args.get("only_fuzzy"):
         print("Cannot pass --exclude-fuzzy and --only-fuzzy at the same time")
