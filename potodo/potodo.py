@@ -13,20 +13,16 @@ from typing import Tuple
 
 from potodo import __version__
 from potodo._github import get_issue_reservations
+from potodo._interactive import _confirmation_menu
+from potodo._interactive import _directory_list_menu
+from potodo._interactive import _file_list_menu
 from potodo._po_file import get_po_stats_from_repo_or_cache
 from potodo._po_file import PoFileStats
-import webbrowser
 from potodo._utils import check_args
-from potodo._utils import setup_logging
-from potodo._interactive import (
-    _confirmation_menu,
-    _directory_list_menu,
-    _file_list_menu,
-)
-from potodo._utils import get_po_files_per_directory_no_stats
 from potodo._utils import get_dir_list
 from potodo._utils import get_files_from_dir
 from potodo._utils import json_dateconv
+from potodo._utils import setup_logging
 
 # TODO: Sort the functions (maybe in different files ?
 

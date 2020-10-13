@@ -1,9 +1,16 @@
+import itertools
 import logging
 import os
+from datetime import date
 from pathlib import Path
 from typing import Any
+from typing import Dict
+from typing import Iterable
 from typing import List
 from typing import Mapping
+from typing import Optional
+
+from potodo._po_file import is_within
 
 
 def setup_logging(logging_level: int) -> None:
@@ -17,6 +24,12 @@ def setup_logging(logging_level: int) -> None:
     # Silencing some loggers
     logging.getLogger("requests").setLevel(logging.WARNING)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+
+def json_dateconv(o: object) -> Optional[str]:
+    if isinstance(o, date):
+        return o.__str__()
+    return None
 
 
 def check_args(
@@ -51,22 +64,6 @@ def check_args(
         "exclude": [Path(path).resolve() for path in exclude],
         "logging_level": logging_level,
     }
-
-import itertools
-from datetime import date
-from pathlib import Path
-from typing import Dict
-from typing import Iterable
-from typing import List
-from typing import Optional
-
-from potodo._po_file import is_within
-
-
-def json_dateconv(o: object) -> Optional[str]:
-    if isinstance(o, date):
-        return o.__str__()
-    return None
 
 
 def get_po_files_per_directory_no_stats(
