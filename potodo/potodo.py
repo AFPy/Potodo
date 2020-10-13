@@ -22,7 +22,7 @@ from potodo.po_file import PoFileStats
 from potodo.arguments_handling import check_args
 from potodo.json import json_dateconv
 from potodo.logging import setup_logging
-
+from potodo.ignore import get_ignore_content
 
 def print_dir_stats(
     directory_name: str,
@@ -97,6 +97,9 @@ def exec_potodo(
     :param no_cache: Disables cache (Cache is disabled when files are modified)
     :param is_interactive: Switches output to an interactive CLI menu
     """
+
+    ignore_file_content = get_ignore_content(repo_path=path)
+    exclude.extend(ignore_file_content)
 
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
