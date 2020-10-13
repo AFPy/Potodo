@@ -1,54 +1,23 @@
 #!/usr/bin/env python3
 import argparse
 import json
-import os
+import logging
 import statistics
 from pathlib import Path
 from typing import Any
 from typing import Dict
 from typing import List
-from typing import Mapping
 from typing import Sequence
 from typing import Tuple
 
 from potodo import __version__
-from potodo._github import get_reservation_list
+from potodo._github import get_issue_reservations
 from potodo._po_file import get_po_stats_from_repo_or_cache
 from potodo._po_file import PoFileStats
+from potodo._utils import check_args
+from potodo._utils import setup_logging
 
 # TODO: Sort the functions (maybe in different files ?
-
-
-def get_issue_reservations(
-    offline: bool, hide_reserved: bool, repo_path: Path
-) -> Dict[str, Tuple[Any, Any]]:
-    """Retrieve info about reservation if needed."""
-
-    if not offline and not hide_reserved:
-        # If the reservations are to be displayed, then get them
-        issue_reservations = get_reservation_list(repo_path)
-    else:
-        # Otherwise, an empty list will do the trick
-        issue_reservations = {}
-    return issue_reservations
-
-
-def check_args(
-    path: str, exclude: List[str], below: int, above: int, **kwargs: Any
-) -> Mapping[str, Any]:
-    # If below is lower than above, raise an error
-    if below < above:
-        raise ValueError("'below' must be greater than 'above'.")
-
-    # If no path is specified, use current directory
-    if not path:
-        path = os.getcwd()
-
-    # Convert strings to `Path` objects and make them absolute
-    return {
-        "path": Path(path).resolve(),
-        "exclude": [Path(path).resolve() for path in exclude],
-    }
 
 
 def print_dir_stats(
@@ -59,12 +28,14 @@ def print_dir_stats(
 ) -> None:
     """This function prints the directory name, its stats and the buffer"""
     if True in printed_list:
+        logging.debug("Printing directory %s", directory_name)
         # If at least one of the files isn't done then print the
         # folder stats and file(s) Each time a file is went over True
         # or False is placed in the printed_list list.  If False is
         # placed it means it doesnt need to be printed
         print(f"\n\n# {directory_name} ({statistics.mean(folder_stats):.2f}% done)\n")
         print("\n".join(buffer))
+    logging.debug("Not printing directory %s", directory_name)
 
 
 def add_dir_stats(
@@ -387,6 +358,10 @@ def main() -> None:
         "--version", action="version", version="%(prog)s " + __version__
     )
 
+    parser.add_argument(
+        "-v", "--verbose", action="count", default=0, help="Increases output verbosity"
+    )
+
     # Initialize args and check consistency
     args = vars(parser.parse_args())
     args.update(check_args(**args))
@@ -398,6 +373,16 @@ def main() -> None:
     if args.get("exclude_reserved") and args.get("only_reserved"):
         print("Cannot pass --exclude-reserved and --only-reserved at the same time")
         exit(1)
+
+    if args["logging_level"]:
+        setup_logging(args["logging_level"])
+
+    logging.info("Logging activated.")
+    logging.debug("Executing potodo with args %s", args)
+
+    # Removing useless args before running the process
+    del args["verbose"]
+    del args["logging_level"]
 
     # Launch the processing itself
     exec_potodo(**args)

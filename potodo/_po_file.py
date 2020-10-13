@@ -1,4 +1,5 @@
 import itertools
+import logging
 import os
 from pathlib import Path
 from typing import Dict
@@ -79,6 +80,7 @@ def get_po_stats_from_repo_or_cache(
     # Get all the files matching `**/*.po`
     # not being in the exclusion list or in
     # any (sub)folder from the exclusion list
+    logging.debug("Finding all files matching **/*.po in %s", repo_path)
     all_po_files: List[Path] = [
         file
         for file in repo_path.rglob("*.po")
@@ -86,6 +88,7 @@ def get_po_stats_from_repo_or_cache(
     ]
 
     # Group files by directory
+    logging.debug("Grouping files per directory")
     po_files_per_directory: Mapping[str, Set[Path]] = {
         name: set(files)
         # We assume the output of rglob to be sorted,
@@ -97,6 +100,7 @@ def get_po_stats_from_repo_or_cache(
 
     if no_cache:
         # Turn paths into stat objects
+        logging.debug("Creating PoFileStats objects for each file without cache")
         po_stats_per_directory: Dict[str, List[PoFileStats]] = {
             directory: [PoFileStats(po_file) for po_file in po_files]
             for directory, po_files in po_files_per_directory.items()
