@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import cast
 from typing import Dict
 
-from potodo.po_file import PoFileStats
 from potodo import __version__ as VERSION
+from potodo.po_file import PoFileStats
 
 
 def get_cache_file_content(
