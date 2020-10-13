@@ -1,6 +1,6 @@
 # Potodo
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 Potodo, a (almost) flawless TODO/progress listing CLI tool for po files.
 
@@ -68,6 +68,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://mdk.fr"><img src="https://avatars2.githubusercontent.com/u/239510?v=4" width="100px;" alt=""/><br /><sub><b>Julien Palard</b></sub></a><br /><a href="https://github.com/Seluj78/Potodo/pulls?q=is%3Apr+reviewed-by%3AJulienPalard" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/Seluj78/Potodo/commits?author=JulienPalard" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/awecx"><img src="https://avatars1.githubusercontent.com/u/43954001?v=4" width="100px;" alt=""/><br /><sub><b>Antoine</b></sub></a><br /><a href="https://github.com/Seluj78/Potodo/pulls?q=is%3Apr+reviewed-by%3Aawecx" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/Seluj78/Potodo/commits?author=awecx" title="Code">💻</a></td>
+    <td align="center"><a href="https://juleslasne.com"><img src="https://avatars0.githubusercontent.com/u/4641317?v=4" width="100px;" alt=""/><br /><sub><b>Jules Lasne (jlasne)</b></sub></a><br /><a href="https://github.com/Seluj78/Potodo/pulls?q=is%3Apr+reviewed-by%3ASeluj78" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/Seluj78/Potodo/commits?author=Seluj78" title="Code">💻</a></td>
   </tr>
 </table>
 
