@@ -11,17 +11,18 @@ from typing import Sequence
 from typing import Tuple
 
 from potodo import __version__
+from potodo.arguments_handling import check_args
 from potodo.github import get_issue_reservations
+from potodo.ignore import get_ignore_content
 from potodo.interactive import _confirmation_menu
 from potodo.interactive import _directory_list_menu
 from potodo.interactive import _file_list_menu
 from potodo.interactive import get_dir_list
 from potodo.interactive import get_files_from_dir
-from potodo.po_file import get_po_stats_from_repo_or_cache
-from potodo.po_file import PoFileStats
-from potodo.arguments_handling import check_args
 from potodo.json import json_dateconv
 from potodo.logging import setup_logging
+from potodo.po_file import get_po_stats_from_repo_or_cache
+from potodo.po_file import PoFileStats
 
 
 def print_dir_stats(
@@ -97,6 +98,9 @@ def exec_potodo(
     :param no_cache: Disables cache (Cache is disabled when files are modified)
     :param is_interactive: Switches output to an interactive CLI menu
     """
+
+    ignore_file_content = get_ignore_content(repo_path=path)
+    exclude.extend(ignore_file_content)
 
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
