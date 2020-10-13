@@ -1,8 +1,9 @@
 from fnmatch import fnmatch
 from pathlib import Path
+from typing import List
 
 
-def get_ignore_content(repo_path: Path, file=".potodoignore"):
+def get_ignore_content(repo_path: Path, file: str = ".potodoignore") -> List[Path]:
     file_path = repo_path / file
     if not file_path.exists():
         return []
@@ -14,7 +15,6 @@ def get_ignore_content(repo_path: Path, file=".potodoignore"):
         if path.is_file() and path != file_path:
             for ignore_pattern in ignore_pattern_set:
                 relative_path = path.relative_to(repo_path)
-                if fnmatch(relative_path, ignore_pattern):
-                    # add in excludd list
+                if fnmatch(relative_path, ignore_pattern):  # type: ignore
                     excluded_path_list.append(path)
     return excluded_path_list
