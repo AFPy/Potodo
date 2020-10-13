@@ -26,4 +26,4 @@ install:
   - pip uninstall -y virtualenv
   - pip install tox
 script:
-  - tox -e $TOX_ENV
+  - tox -r -e $TOX_ENV
