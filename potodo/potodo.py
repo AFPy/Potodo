@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import argparse
 import json
 import logging
@@ -12,19 +11,17 @@ from typing import Sequence
 from typing import Tuple
 
 from potodo import __version__
-from potodo._github import get_issue_reservations
-from potodo._interactive import _confirmation_menu
-from potodo._interactive import _directory_list_menu
-from potodo._interactive import _file_list_menu
-from potodo._po_file import get_po_stats_from_repo_or_cache
-from potodo._po_file import PoFileStats
-from potodo._utils import check_args
-from potodo._utils import get_dir_list
-from potodo._utils import get_files_from_dir
-from potodo._utils import json_dateconv
-from potodo._utils import setup_logging
-
-# TODO: Sort the functions (maybe in different files ?
+from potodo.github import get_issue_reservations
+from potodo.interactive import _confirmation_menu
+from potodo.interactive import _directory_list_menu
+from potodo.interactive import _file_list_menu
+from potodo.interactive import get_dir_list
+from potodo.interactive import get_files_from_dir
+from potodo.po_file import get_po_stats_from_repo_or_cache
+from potodo.po_file import PoFileStats
+from potodo.arguments_handling import check_args
+from potodo.json import json_dateconv
+from potodo.logging import setup_logging
 
 
 def print_dir_stats(

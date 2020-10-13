@@ -10,9 +10,9 @@ with open("README.md") as readme:
 setuptools.setup(
     name="potodo",
     version=potodo.__version__,
-    description="Will list all .po files that are to be transated",
+    description="Will list all .po files that are to be translated",
     long_description=long_description,
-    long_description_content_type="text/markdown",  # This is important!
+    long_description_content_type="text/markdown",
     author="Jules Lasne",
     author_email="jules.lasne@gmail.com",
     url="https://github.com/seluj78/potodo",
@@ -32,6 +32,8 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     python_requires=">=3.6",
 )
