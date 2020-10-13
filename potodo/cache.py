@@ -5,10 +5,10 @@ from pathlib import Path
 from typing import cast
 from typing import Dict
 
-from potodo._po_file import PoFileStats
+from potodo.po_file import PoFileStats
 
 
-def _get_cache_file_content(
+def get_cache_file_content(
     path: str = ".potodo/cache.pickle",
 ) -> Dict[Path, PoFileStats]:
     logging.debug("Trying to load cache from %s", path)
@@ -23,7 +23,7 @@ def _get_cache_file_content(
         return cast(Dict[Path, PoFileStats], data)
 
 
-def _set_cache_content(
+def set_cache_content(
     obj: Dict[Path, PoFileStats], path: str = ".potodo/cache.pickle"
 ) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)

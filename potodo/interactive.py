@@ -5,7 +5,7 @@ from typing import List
 
 from simple_term_menu import TerminalMenu
 
-from potodo._po_file import is_within
+from potodo.po_file import is_within
 
 IS_CURSOR_CYCLING = True
 IS_SCREEN_CLEARED = True

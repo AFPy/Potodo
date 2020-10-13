@@ -64,8 +64,8 @@ def is_within(file: Path, excluded: Path) -> bool:
     return excluded in file.parents or file == excluded
 
 
-from potodo.utils.cache import _get_cache_file_content  # noqa
-from potodo.utils.cache import _set_cache_content  # noqa
+from potodo.cache import get_cache_file_content  # noqa
+from potodo.cache import set_cache_content  # noqa
 
 
 def get_po_stats_from_repo_or_cache(
@@ -106,7 +106,7 @@ def get_po_stats_from_repo_or_cache(
             for directory, po_files in po_files_per_directory.items()
         }
     else:
-        cached_files = _get_cache_file_content(
+        cached_files = get_cache_file_content(
             str(repo_path.resolve()) + "/.potodo/cache.pickle"
         )
         po_stats_per_directory = dict()
@@ -120,7 +120,7 @@ def get_po_stats_from_repo_or_cache(
                 ):
                     cached_files[po_file.resolve()] = cached_file = PoFileStats(po_file)
                 po_stats_per_directory[directory].append(cached_file)
-        _set_cache_content(
+        set_cache_content(
             cached_files, path=str(repo_path.resolve()) + "/.potodo/cache.pickle"
         )
 
