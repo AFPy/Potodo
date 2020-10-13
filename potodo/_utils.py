@@ -89,3 +89,26 @@ def get_po_files_per_directory_no_stats(
         directory: [po_file.name for po_file in po_files]
         for directory, po_files in files_per_dir.items()
     }
+
+
+def get_dir_list(repo_path: Path, exclude: Iterable[Path]) -> List[str]:
+    return list(
+        set(
+            [
+                file.parent.name
+                for file in repo_path.rglob("*.po")
+                if not any(is_within(file, excluded) for excluded in exclude)
+            ]
+        )
+    )
+
+
+def get_files_from_dir(
+    directory: str, repo_path: Path, exclude: Iterable[Path]
+) -> List[str]:
+    path = Path(str(repo_path) + "/" + directory)
+    return [
+        file.name
+        for file in path.rglob("*.po")
+        if not any(is_within(file, excluded) for excluded in exclude)
+    ]

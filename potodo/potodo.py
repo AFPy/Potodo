@@ -24,6 +24,8 @@ from potodo._interactive import (
     _file_list_menu,
 )
 from potodo._utils import get_po_files_per_directory_no_stats
+from potodo._utils import get_dir_list
+from potodo._utils import get_files_from_dir
 from potodo._utils import json_dateconv
 
 # TODO: Sort the functions (maybe in different files ?
@@ -108,23 +110,22 @@ def exec_potodo(
 
     dir_stats: List[Any] = []
     if is_interactive:
-        po_files_and_dirs_no_stats = get_po_files_per_directory_no_stats(
-            repo_path=path, exclude=exclude
-        )
-        directory_options = list(po_files_and_dirs_no_stats.keys())
+        directory_options = get_dir_list(repo_path=path, exclude=exclude)
         while True:
             selected_dir = _directory_list_menu(directory_options)
             if selected_dir == (len(directory_options) - 1):
                 exit(0)
             directory = directory_options[selected_dir]
-            file_options = po_files_and_dirs_no_stats[directory]
+            file_options = get_files_from_dir(
+                directory=directory, repo_path=path, exclude=exclude
+            )
             # TODO: Add stats on files and also add reservations
             selected_file = _file_list_menu(directory, file_options)
             if selected_file == (len(file_options) + 1):
                 exit(0)
             elif selected_file == len(file_options):
                 continue
-            file = po_files_and_dirs_no_stats[directory][selected_file]
+            file = file_options[selected_file]
             final_choice = _confirmation_menu(file, directory)
             if final_choice == 3:
                 exit(0)
