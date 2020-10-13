@@ -64,8 +64,8 @@ def is_within(file: Path, excluded: Path) -> bool:
     return excluded in file.parents or file == excluded
 
 
-from potodo.utils._cache import _get_cache_file_content  # noqa
-from potodo.utils._cache import _set_cache_content  # noqa
+from potodo.utils.cache import _get_cache_file_content  # noqa
+from potodo.utils.cache import _set_cache_content  # noqa
 
 
 def get_po_stats_from_repo_or_cache(
