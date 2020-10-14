@@ -450,28 +450,6 @@ def main() -> None:
     args = vars(parser.parse_args())
     args.update(check_args(**args))
 
-    if args.get("json_format") and args.get("is_interactive"):
-        print("Json format and interactive modes cannot be activated at the same time.")
-        exit(1)
-
-    if args.get("is_interactive"):
-        try:
-            import termios  # noqa
-        except ImportError:
-            import platform
-
-            raise NotImplementedError(
-                '"{}" is not supported for interactive mode'.format(platform.system())
-            )
-
-    if args.get("exclude_fuzzy") and args.get("only_fuzzy"):
-        print("Cannot pass --exclude-fuzzy and --only-fuzzy at the same time")
-        exit(1)
-
-    if args.get("exclude_reserved") and args.get("only_reserved"):
-        print("Cannot pass --exclude-reserved and --only-reserved at the same time")
-        exit(1)
-
     if args["logging_level"]:
         setup_logging(args["logging_level"])
 
