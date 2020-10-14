@@ -116,8 +116,6 @@ class TestPotodoCLI:
     def test_potodo_exclude_fuzzy(self):
         output = check_output(["potodo", "--exclude-fuzzy"]).decode("utf-8")
         assert "- excluded.po                      1 /   2 ( 50.0% translated)" in output
-        assert "- file4.po                         1 to do" in output
-        assert "# repository (16.50% done)" in output
         assert "- file1.po                         2 to do, including 1 fuzzies." not in output
 
     # TODO: Test hide_reserved, offline options, only_reserved, exclude_reserved, show_reservation_dates
