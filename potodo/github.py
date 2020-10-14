@@ -64,6 +64,9 @@ def _get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
     while next_url:
         logging.debug("Getting %s", next_url)
         resp = requests.get(next_url)
+        if resp.status_code == 403:
+            # Rate limit exceeded
+            return {}
         issues.extend(resp.json())
         next_url = resp.links.get("next", {}).get("url")
 
