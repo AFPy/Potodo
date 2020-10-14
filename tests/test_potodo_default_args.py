@@ -126,3 +126,5 @@ class TestPotodoCLI:
         )
 
     # TODO: Test hide_reserved, offline options, only_reserved, exclude_reserved, show_reservation_dates
+    # TODO: Test verbose output levels
+
