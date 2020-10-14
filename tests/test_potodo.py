@@ -21,6 +21,7 @@ config = {
     "exclude_reserved": False,
     "show_reservation_dates": False,
     "no_cache": True,
+    "matching_files": False,
 }
 
 

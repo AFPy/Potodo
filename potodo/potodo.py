@@ -78,6 +78,7 @@ def exec_potodo(
     show_reservation_dates: bool,
     no_cache: bool,
     is_interactive: bool,
+    matching_files: bool,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -97,6 +98,7 @@ def exec_potodo(
     :param show_reservation_dates: Will show the reservation dates
     :param no_cache: Disables cache (Cache is disabled when files are modified)
     :param is_interactive: Switches output to an interactive CLI menu
+    :param matching_files: Should the file paths be printed instead of normal output
     """
 
     cache_args = {
@@ -188,6 +190,7 @@ def exec_potodo(
                         exclude_reserved,
                         only_reserved,
                         show_reservation_dates,
+                        matching_files,
                     )
 
             # Once all files have been processed, print the dir and the files
@@ -225,6 +228,7 @@ def buffer_add(
     exclude_reserved: bool,
     only_reserved: bool,
     show_reservation_dates: bool,
+    matching_files: bool,
 ) -> None:
     """Will add to the buffer the information to print about the file is
     the file isn't translated entirely or above or below requested
@@ -274,7 +278,10 @@ def buffer_add(
     filename = po_file_stats.filename
     path = po_file_stats.path
 
-    if json_format:
+    if matching_files:
+        print(path)
+        return
+    elif json_format:
 
         # the order of the keys is the display order
         d = dict(
@@ -436,6 +443,15 @@ def main() -> None:
         action="store_true",
         dest="is_interactive",
         help="Activates the interactive menu",
+    )
+
+    parser.add_argument(
+        "-l",
+        "--matching-files",
+        action="store_true",
+        dest="matching_files",
+        help="Suppress normal output; instead print the name of each matching po file from which output would normally "
+        "have been printed.",
     )
 
     parser.add_argument(
