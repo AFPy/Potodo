@@ -5,6 +5,10 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 Potodo, a (almost) flawless TODO/progress listing CLI tool for po files.
 
+### Potodo is part of poutils !
+
+[Poutils](https://github.com/seluj78/poutils) is is a metapackage to easily install usefull Python tools to use with po files.
+
 ## Installation
 
 ```bash
