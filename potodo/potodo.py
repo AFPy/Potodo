@@ -117,7 +117,10 @@ def exec_potodo(
         "is_interactive": is_interactive,
     }
 
-    ignore_matches = parse_gitignore(path / ".potodoignore")
+    try:
+        ignore_matches = parse_gitignore(path / ".potodoignore")
+    except FileNotFoundError:
+        ignore_matches = parse_gitignore("/dev/null")
 
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
