@@ -19,7 +19,7 @@ pip install potodo
 ## Usage
 
 ```
-usage: potodo [-h] [-p path] [-e path [path ...]] [-a X] [-b X] [-f] [-o] [-n] [-c] [-j] [--exclude-fuzzy] [--exclude-reserved] [--only-reserved] [--show-reservation-dates] [--no-cache] [-i] [--version] [-v]
+usage: potodo [-h] [-p path] [-e path [path ...]] [-a X] [-b X] [-f] [-o] [-n] [-c] [-j] [--exclude-fuzzy] [--exclude-reserved] [--only-reserved] [--show-reservation-dates] [--no-cache] [-i] [-l] [--version] [-v]
 
 List and prettify the po files left to translate.
 
@@ -42,6 +42,7 @@ optional arguments:
                         show issue creation dates
   --no-cache            Disables cache (Cache is disabled when files are modified)
   -i, --interactive     Activates the interactive menu
+  -l, --matching-files  Suppress normal output; instead print the name of each matching po file from which output would normally have been printed.
   --version             show program's version number and exit
   -v, --verbose         Increases output verbosity
 ```
