@@ -125,7 +125,7 @@ def exec_potodo(
         ignore_matches = parse_gitignore("/dev/null")
 
     # Initialize the arguments
-    issue_reservations = get_issue_reservations(offline, hide_reserved, matching_files, path)
+    issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
     dir_stats: List[Any] = []
     if is_interactive:
