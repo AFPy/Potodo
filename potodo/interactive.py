@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import cast
 from typing import Iterable
 from typing import List
+from typing import Callable
 
 from simple_term_menu import TerminalMenu
 
@@ -61,13 +62,16 @@ def _confirmation_menu(choosen_file: str, directory: str) -> int:
     return cast(int, choice)
 
 
-def get_dir_list(repo_path: Path, exclude: Iterable[Path]) -> List[str]:
+def get_dir_list(
+    repo_path: Path, exclude: Iterable[Path], ignore_matches: Callable[[str], bool]
+) -> List[str]:
     return list(
         set(
             [
                 file.parent.name
                 for file in repo_path.rglob("*.po")
                 if not any(is_within(file, excluded) for excluded in exclude)
+                and not ignore_matches(str(file))
             ]
         )
     )

@@ -8,6 +8,8 @@ from typing import List
 from typing import Mapping
 from typing import Sequence
 from typing import Set
+from typing import Callable
+from typing import Any
 
 import polib
 
@@ -69,7 +71,11 @@ from potodo.cache import set_cache_content  # noqa
 
 
 def get_po_stats_from_repo_or_cache(
-    repo_path: Path, exclude: Iterable[Path], no_cache: bool = False
+    repo_path: Path,
+    exclude: Iterable[Path],
+    cache_args: Any,
+    ignore_matches: Callable[[str], bool],
+    no_cache: bool = False,
 ) -> Mapping[str, List[PoFileStats]]:
     """Gets all the po files recursively from 'repo_path'
     and cache if no_cache is set to False, excluding those in
@@ -85,6 +91,7 @@ def get_po_stats_from_repo_or_cache(
         file
         for file in repo_path.rglob("*.po")
         if not any(is_within(file, excluded) for excluded in exclude)
+        and not ignore_matches(str(file))
     ]
 
     # Group files by directory
@@ -107,7 +114,8 @@ def get_po_stats_from_repo_or_cache(
         }
     else:
         cached_files = get_cache_file_content(
-            str(repo_path.resolve()) + "/.potodo/cache.pickle"
+            cache_args=cache_args,
+            path=str(repo_path.resolve()) + "/.potodo/cache.pickle",
         )
         po_stats_per_directory = dict()
         for directory, po_files in po_files_per_directory.items():
@@ -121,7 +129,9 @@ def get_po_stats_from_repo_or_cache(
                     cached_files[po_file.resolve()] = cached_file = PoFileStats(po_file)
                 po_stats_per_directory[directory].append(cached_file)
         set_cache_content(
-            cached_files, path=str(repo_path.resolve()) + "/.potodo/cache.pickle"
+            cached_files,
+            cache_args,
+            path=str(repo_path.resolve()) + "/.potodo/cache.pickle",
         )
 
     return po_stats_per_directory

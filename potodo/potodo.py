@@ -9,11 +9,11 @@ from typing import Dict
 from typing import List
 from typing import Sequence
 from typing import Tuple
+from gitignore_parser import parse_gitignore
 
 from potodo import __version__
 from potodo.arguments_handling import check_args
 from potodo.github import get_issue_reservations
-from potodo.ignore import get_ignore_content
 from potodo.interactive import _confirmation_menu
 from potodo.interactive import _directory_list_menu
 from potodo.interactive import _file_list_menu
@@ -99,15 +99,37 @@ def exec_potodo(
     :param is_interactive: Switches output to an interactive CLI menu
     """
 
-    ignore_file_content = get_ignore_content(repo_path=path)
-    exclude.extend(ignore_file_content)
+    cache_args = {
+        "path": path,
+        "exclude": exclude,
+        "above": above,
+        "below": below,
+        "only_fuzzy": only_fuzzy,
+        "offline": offline,
+        "hide_reserved": hide_reserved,
+        "counts": counts,
+        "json_format": json_format,
+        "exclude_fuzzy": exclude_fuzzy,
+        "exclude_reserved": exclude_reserved,
+        "only_reserved": only_reserved,
+        "show_reservation_dates": show_reservation_dates,
+        "no_cache": no_cache,
+        "is_interactive": is_interactive,
+    }
+
+    try:
+        ignore_matches = parse_gitignore(path / ".potodoignore")
+    except FileNotFoundError:
+        ignore_matches = parse_gitignore("/dev/null")
 
     # Initialize the arguments
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
     dir_stats: List[Any] = []
     if is_interactive:
-        directory_options = get_dir_list(repo_path=path, exclude=exclude)
+        directory_options = get_dir_list(
+            repo_path=path, exclude=exclude, ignore_matches=ignore_matches
+        )
         while True:
             selected_dir = _directory_list_menu(directory_options)
             if selected_dir == (len(directory_options) - 1):
@@ -139,7 +161,9 @@ def exec_potodo(
         else:
             exit()
     else:
-        po_files_and_dirs = get_po_stats_from_repo_or_cache(path, exclude, no_cache)
+        po_files_and_dirs = get_po_stats_from_repo_or_cache(
+            path, exclude, cache_args, ignore_matches, no_cache
+        )
         for directory_name, po_files in sorted(po_files_and_dirs.items()):
             # For each directory and files in this directory
             buffer: List[Any] = []
