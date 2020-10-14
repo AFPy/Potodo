@@ -125,5 +125,21 @@ class TestPotodoCLI:
             not in output
         )
 
+    def test_potodo_matching_files_solo(self):
+        output = check_output(["potodo", "--matching-files"]).decode("utf-8")
+        output_short = check_output(["potodo", "-l"]).decode("utf-8")
+        assert output == output_short
+        assert "excluded/file4.po" in output
+        assert "folder/excluded.po" in output
+        assert "folder/file3.po" in output
+        assert "file1.po" in output
+        assert "file2.po" in output
+
+    def test_potodo_matching_files_fuzzy(self):
+        output = check_output(["potodo", "--matching-files", "--only-fuzzy"]).decode("utf-8")
+        output_short = check_output(["potodo", "-l", "-f"]).decode("utf-8")
+        assert output == output_short
+        assert "file1.po" in output
+
     # TODO: Test hide_reserved, offline options, only_reserved, exclude_reserved, show_reservation_dates
     # TODO: Test verbose output levels

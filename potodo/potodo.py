@@ -446,7 +446,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "-l"
+        "-l",
         "--matching-files",
         action="store_true",
         dest="matching_files",
