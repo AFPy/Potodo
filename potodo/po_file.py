@@ -43,6 +43,7 @@ class PoFileStats:
         ] = self.pofile.untranslated_entries()
         self.untranslated_nb: int = len(self.untranslated_entries)
 
+        self.entries_count: int = self.translated_nb + self.untranslated_nb
         self.percent_translated: int = self.pofile.percent_translated()
         self.po_file_size = len(self.pofile) - self.obsolete_nb
         self.filename_dir: str = self.directory + "/" + self.filename
