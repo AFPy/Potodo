@@ -31,7 +31,9 @@ def check_args(
         exit(1)
 
     if json_format and is_interactive:
-        print("Potodo: Json format and interactive modes cannot be activated at the same time.")
+        print(
+            "Potodo: Json format and interactive modes cannot be activated at the same time."
+        )
         exit(1)
 
     if is_interactive:
@@ -40,14 +42,20 @@ def check_args(
         except ImportError:
             import platform
 
-            print('Potodo: "{}" is not supported for interactive mode'.format(platform.system()))
+            print(
+                'Potodo: "{}" is not supported for interactive mode'.format(
+                    platform.system()
+                )
+            )
 
     if exclude_fuzzy and only_fuzzy:
         print("Potodo: Cannot pass --exclude-fuzzy and --only-fuzzy at the same time.")
         exit(1)
 
     if exclude_reserved and only_reserved:
-        print("Potodo: Cannot pass --exclude-reserved and --only-reserved at the same time.")
+        print(
+            "Potodo: Cannot pass --exclude-reserved and --only-reserved at the same time."
+        )
         exit(1)
 
     # If no path is specified, use current directory
