@@ -136,7 +136,9 @@ class TestPotodoCLI:
         assert "file2.po" in output
 
     def test_potodo_matching_files_fuzzy(self):
-        output = check_output(["potodo", "--matching-files", "--only-fuzzy"]).decode("utf-8")
+        output = check_output(["potodo", "--matching-files", "--only-fuzzy"]).decode(
+            "utf-8"
+        )
         output_short = check_output(["potodo", "-l", "-f"]).decode("utf-8")
         assert output == output_short
         assert "file1.po" in output
