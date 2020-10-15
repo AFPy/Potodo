@@ -122,7 +122,7 @@ def exec_potodo(
     }
 
     try:
-        ignore_matches = parse_gitignore(path / ".potodoignore")
+        ignore_matches = parse_gitignore(".potodoignore", base_dir=path)
     except FileNotFoundError:
         ignore_matches = parse_gitignore("/dev/null")
 
