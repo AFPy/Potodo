@@ -61,7 +61,7 @@ def test_output(capsys):
         },
         {
             "name": f"{REPO_DIR}/",
-            "percent_translated": 16.5,
+            "percent_translated": 25.0,
             "files": [
                 {
                     "name": f"{REPO_DIR}/file1",

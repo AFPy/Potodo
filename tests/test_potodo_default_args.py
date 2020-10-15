@@ -31,14 +31,14 @@ class TestPotodoCLI:
     def test_potodo_no_args(self):
         output = check_output("potodo").decode("utf-8")
         assert "# excluded (50.00% done)" in output
-        assert "# folder (25.00% done)" in output
+        assert "# folder (33.33% done)" in output
         assert (
             "- excluded.po                      1 /   2 ( 50.0% translated)" in output
         )
         assert (
             "- file3.po                         0 /   1 (  0.0% translated)" in output
         )
-        assert "# repository (16.50% done)" in output
+        assert "# repository (25.00% done)" in output
         assert (
             "- file1.po                         1 /   3 ( 33.0% translated), 1 fuzzy"
             in output
@@ -57,7 +57,7 @@ class TestPotodoCLI:
             "- excluded.po                      1 /   2 ( 50.0% translated)"
             not in output
         )
-        assert "# repository (16.50% done)" in output
+        assert "# repository (25.00% done)" in output
         assert (
             "- file1.po                         1 /   3 ( 33.0% translated), 1 fuzzy"
             in output
@@ -110,7 +110,7 @@ class TestPotodoCLI:
             not in output
         )
         assert "- file4.po                         1 to do" in output
-        assert "# repository (16.50% done)" in output
+        assert "# repository (25.00% done)" in output
         assert (
             "- file1.po                         2 to do, including 1 fuzzies." in output
         )
