@@ -1,7 +1,6 @@
 import argparse
 import json
 import logging
-import statistics
 import webbrowser
 from pathlib import Path
 from typing import Any
@@ -28,7 +27,7 @@ from potodo.po_file import PoFileStats
 def print_dir_stats(
     directory_name: str,
     buffer: Sequence[str],
-    folder_stats: Sequence[int],
+    folder_stats: Dict[str, int],
     printed_list: Sequence[bool],
 ) -> None:
     """This function prints the directory name, its stats and the buffer"""
@@ -38,7 +37,10 @@ def print_dir_stats(
         # folder stats and file(s) Each time a file is went over True
         # or False is placed in the printed_list list.  If False is
         # placed it means it doesnt need to be printed
-        print(f"\n\n# {directory_name} ({statistics.mean(folder_stats):.2f}% done)\n")
+
+        folder_completion = 100 * folder_stats["translated"] / folder_stats["total"]
+
+        print(f"\n\n# {directory_name} ({folder_completion:.2f}% done)\n")
         print("\n".join(buffer))
     logging.debug("Not printing directory %s", directory_name)
 
@@ -46,17 +48,17 @@ def print_dir_stats(
 def add_dir_stats(
     directory_name: str,
     buffer: List[Dict[str, str]],
-    folder_stats: Sequence[int],
+    folder_stats: Dict[str, int],
     printed_list: Sequence[bool],
     all_stats: List[Dict[str, Any]],
 ) -> None:
     """Appends directory name, its stats and the buffer to stats"""
     if any(printed_list):
-        pc_translated = statistics.mean(folder_stats)
+        folder_completion = 100 * folder_stats["translated"] / folder_stats["total"]
         all_stats.append(
             dict(
                 name=f"{directory_name}/",
-                percent_translated=float(f"{pc_translated:.2f}"),
+                percent_translated=float(f"{folder_completion:.2f}"),
                 files=buffer,
             )
         )
@@ -120,7 +122,7 @@ def exec_potodo(
     }
 
     try:
-        ignore_matches = parse_gitignore(path / ".potodoignore")
+        ignore_matches = parse_gitignore(".potodoignore", base_dir=path)
     except FileNotFoundError:
         ignore_matches = parse_gitignore("/dev/null")
 
@@ -169,7 +171,7 @@ def exec_potodo(
         for directory_name, po_files in sorted(po_files_and_dirs.items()):
             # For each directory and files in this directory
             buffer: List[Any] = []
-            folder_stats: List[int] = []
+            folder_stats: Dict[str, int] = {"translated": 0, "total": 0}
             printed_list: List[bool] = []
 
             for po_file in sorted(po_files):
@@ -217,7 +219,7 @@ def exec_potodo(
 
 def buffer_add(
     buffer: List[Any],
-    folder_stats: List[int],
+    folder_stats: Dict[str, int],
     printed_list: List[bool],
     po_file_stats: PoFileStats,
     issue_reservations: Dict[str, Tuple[Any, Any]],
@@ -244,7 +246,8 @@ def buffer_add(
     ):
 
         # add the percentage of the file to the stats of the folder
-        folder_stats.append(po_file_stats.percent_translated)
+        folder_stats["translated"] += po_file_stats.translated_nb
+        folder_stats["total"] += po_file_stats.entries_count
 
         if not json_format:
             # don't print that file
@@ -318,7 +321,8 @@ def buffer_add(
         buffer.append(s)
 
     # Add the percent translated to the folder statistics
-    folder_stats.append(po_file_stats.percent_translated)
+    folder_stats["translated"] += po_file_stats.translated_nb
+    folder_stats["total"] += po_file_stats.entries_count
     # Indicate to print the file
     printed_list.append(True)
 
