@@ -1,9 +1,9 @@
 import argparse
 import json
 import logging
-import webbrowser
 from pathlib import Path
 from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Sequence
@@ -13,11 +13,7 @@ from gitignore_parser import parse_gitignore
 from potodo import __version__
 from potodo.arguments_handling import check_args
 from potodo.github import get_issue_reservations
-from potodo.interactive import _confirmation_menu
-from potodo.interactive import _directory_list_menu
-from potodo.interactive import _file_list_menu
-from potodo.interactive import get_dir_list
-from potodo.interactive import get_files_from_dir
+
 from potodo.json import json_dateconv
 from potodo.logging import setup_logging
 from potodo.po_file import get_po_stats_from_repo_or_cache
@@ -64,6 +60,106 @@ def add_dir_stats(
         )
 
 
+def non_interactive_output(
+    path: Path,
+    exclude: List[Path],
+    above: int,
+    below: int,
+    only_fuzzy: bool,
+    offline: bool,
+    hide_reserved: bool,
+    counts: bool,
+    json_format: bool,
+    exclude_fuzzy: bool,
+    exclude_reserved: bool,
+    only_reserved: bool,
+    show_reservation_dates: bool,
+    no_cache: bool,
+    is_interactive: bool,
+    matching_files: bool,
+    ignore_matches: Callable[[str], bool],
+) -> None:
+    dir_stats: List[Any] = []
+    # Initialize the arguments
+    cache_args = {
+        "path": path,
+        "exclude": exclude,
+        "above": above,
+        "below": below,
+        "only_fuzzy": only_fuzzy,
+        "offline": offline,
+        "hide_reserved": hide_reserved,
+        "counts": counts,
+        "json_format": json_format,
+        "exclude_fuzzy": exclude_fuzzy,
+        "exclude_reserved": exclude_reserved,
+        "only_reserved": only_reserved,
+        "show_reservation_dates": show_reservation_dates,
+        "no_cache": no_cache,
+        "is_interactive": is_interactive,
+    }
+    issue_reservations = get_issue_reservations(offline, hide_reserved, path)
+
+    total_translated: int = 0
+    total_entries: int = 0
+    po_files_and_dirs = get_po_stats_from_repo_or_cache(
+        path, exclude, cache_args, ignore_matches, no_cache
+    )
+    for directory_name, po_files in sorted(po_files_and_dirs.items()):
+        # For each directory and files in this directory
+        buffer: List[Any] = []
+        folder_stats: Dict[str, int] = {"translated": 0, "total": 0}
+        printed_list: List[bool] = []
+    
+        for po_file in sorted(po_files):
+            # For each file in those files from that directory
+            if not only_fuzzy or po_file.fuzzy_entries:
+                if exclude_fuzzy and po_file.fuzzy_entries:
+                    continue
+                buffer_add(
+                    buffer,
+                    folder_stats,
+                    printed_list,
+                    po_file,
+                    issue_reservations,
+                    above,
+                    below,
+                    counts,
+                    json_format,
+                    exclude_reserved,
+                    only_reserved,
+                    show_reservation_dates,
+                    matching_files,
+                )
+    
+        # Once all files have been processed, print the dir and the files
+        # or store them into a dict to print them once all directories have
+        # been processed.
+        if json_format:
+            add_dir_stats(
+                directory_name, buffer, folder_stats, printed_list, dir_stats
+            )
+        else:
+            print_dir_stats(directory_name, buffer, folder_stats, printed_list)
+    
+        total_translated += folder_stats["translated"]
+        total_entries += folder_stats["total"]
+
+    if json_format:
+        print(
+            json.dumps(
+                dir_stats,
+                indent=4,
+                separators=(",", ": "),
+                sort_keys=False,
+                default=json_dateconv,
+            )
+        )
+    else:
+        total_completion = 100 * total_translated / total_entries
+        print(f"\n\n# TOTAL ({total_completion:.2f}% done)\n")
+
+
 def exec_potodo(
     path: Path,
     exclude: List[Path],
@@ -103,126 +199,34 @@ def exec_potodo(
     :param matching_files: Should the file paths be printed instead of normal output
     """
 
-    cache_args = {
-        "path": path,
-        "exclude": exclude,
-        "above": above,
-        "below": below,
-        "only_fuzzy": only_fuzzy,
-        "offline": offline,
-        "hide_reserved": hide_reserved,
-        "counts": counts,
-        "json_format": json_format,
-        "exclude_fuzzy": exclude_fuzzy,
-        "exclude_reserved": exclude_reserved,
-        "only_reserved": only_reserved,
-        "show_reservation_dates": show_reservation_dates,
-        "no_cache": no_cache,
-        "is_interactive": is_interactive,
-    }
-
     try:
         ignore_matches = parse_gitignore(".potodoignore", base_dir=path)
     except FileNotFoundError:
         ignore_matches = parse_gitignore("/dev/null")
 
-    # Initialize the arguments
-    issue_reservations = get_issue_reservations(offline, hide_reserved, path)
-
-    dir_stats: List[Any] = []
     if is_interactive:
-        directory_options = get_dir_list(
-            repo_path=path, exclude=exclude, ignore_matches=ignore_matches
-        )
-        while True:
-            selected_dir = _directory_list_menu(directory_options)
-            if selected_dir == (len(directory_options) - 1):
-                exit(0)
-            directory = directory_options[selected_dir]
-            file_options = get_files_from_dir(
-                directory=directory, repo_path=path, exclude=exclude
-            )
-            # TODO: Add stats on files and also add reservations
-            selected_file = _file_list_menu(directory, file_options)
-            if selected_file == (len(file_options) + 1):
-                exit(0)
-            elif selected_file == len(file_options):
-                continue
-            file = file_options[selected_file]
-            final_choice = _confirmation_menu(file, directory)
-            if final_choice == 3:
-                exit(0)
-            elif final_choice == 2:
-                continue
-            else:
-                break
-        if final_choice == 0:
-            webbrowser.open(
-                f"https://github.com/python/python-docs-fr/issues/new?title=Je%20travaille%20sur%20"
-                f"{directory}/{file}"
-                f"&body=%0A%0A%0A---%0AThis+issue+was+created+using+potodo+interactive+mode."
-            )
-        else:
-            exit()
+        from potodo.interactive import interactive_output
+        interactive_output(path, exclude, ignore_matches)
     else:
-        total_translated: int = 0
-        total_entries: int = 0
-        po_files_and_dirs = get_po_stats_from_repo_or_cache(
-            path, exclude, cache_args, ignore_matches, no_cache
+        non_interactive_output(
+            path,
+            exclude,
+            above,
+            below,
+            only_fuzzy,
+            offline,
+            hide_reserved,
+            counts,
+            json_format,
+            exclude_fuzzy,
+            exclude_reserved,
+            only_reserved,
+            show_reservation_dates,
+            no_cache,
+            is_interactive,
+            matching_files,
+            ignore_matches,
         )
-        for directory_name, po_files in sorted(po_files_and_dirs.items()):
-            # For each directory and files in this directory
-            buffer: List[Any] = []
-            folder_stats: Dict[str, int] = {"translated": 0, "total": 0}
-            printed_list: List[bool] = []
-
-            for po_file in sorted(po_files):
-                # For each file in those files from that directory
-                if not only_fuzzy or po_file.fuzzy_entries:
-                    if exclude_fuzzy and po_file.fuzzy_entries:
-                        continue
-                    buffer_add(
-                        buffer,
-                        folder_stats,
-                        printed_list,
-                        po_file,
-                        issue_reservations,
-                        above,
-                        below,
-                        counts,
-                        json_format,
-                        exclude_reserved,
-                        only_reserved,
-                        show_reservation_dates,
-                        matching_files,
-                    )
-
-            # Once all files have been processed, print the dir and the files
-            # or store them into a dict to print them once all directories have
-            # been processed.
-            if json_format:
-                add_dir_stats(
-                    directory_name, buffer, folder_stats, printed_list, dir_stats
-                )
-            else:
-                print_dir_stats(directory_name, buffer, folder_stats, printed_list)
-
-            total_translated += folder_stats["translated"]
-            total_entries += folder_stats["total"]
-
-        if json_format:
-            print(
-                json.dumps(
-                    dir_stats,
-                    indent=4,
-                    separators=(",", ": "),
-                    sort_keys=False,
-                    default=json_dateconv,
-                )
-            )
-        else:
-            total_completion = 100 * total_translated / total_entries
-            print(f"\n\n# TOTAL ({total_completion:.2f}% done)\n")
 
 
 def buffer_add(
