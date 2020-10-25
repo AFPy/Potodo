@@ -1,4 +1,5 @@
 import logging
+from tempfile import NamedTemporaryFile
 import os
 import pickle
 from pathlib import Path
@@ -35,6 +36,9 @@ def set_cache_content(
 ) -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     data = {"version": VERSION, "args": cache_args, "data": obj}
-    with open(path, "wb") as handle:
-        pickle.dump(data, handle)
+    with NamedTemporaryFile(
+        mode="wb", delete=False, dir=str(Path(path).parent), prefix=Path(path).name
+    ) as tmp:
+        pickle.dump(data, tmp)
+    os.rename(tmp.name, path)
     logging.debug("Set cache to %s", path)
