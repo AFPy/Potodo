@@ -29,6 +29,12 @@ class TestPotodoArgsErrors:
     excluded_2 = str(config["exclude"][1])
 
     def test_potodo_help(self):
+        """
+        Help for help.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output(["potodo", "--help"]).decode("utf-8")
         output_short = check_output(["potodo", "-h"]).decode("utf-8")
         assert output == output_short
@@ -36,6 +42,12 @@ class TestPotodoArgsErrors:
         # TODO: Find a better way of testing help output
 
     def test_potodo_above_below_conflict(self):
+        """
+        Test that we have_potlict_below_below.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             check_output(["potodo", "--above", "50", "--below", "40"]).decode("utf-8")
         except CalledProcessError as e:
@@ -48,6 +60,12 @@ class TestPotodoArgsErrors:
         assert output == b"Potodo: 'below' value must be greater than 'above' value.\n"
 
     def test_potodo_json_interactive_conflict(self):
+        """
+        Test if we need to make sure that we reactive.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             check_output(["potodo", "--json", "--interactive"]).decode("utf-8")
         except CalledProcessError as e:
@@ -63,6 +81,12 @@ class TestPotodoArgsErrors:
         )
 
     def test_potodo_exclude_and_only_fuzzy_conflict(self):
+        """
+        Exclude all the test was run by - place.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             check_output(["potodo", "--exclude-fuzzy", "--only-fuzzy"]).decode("utf-8")
         except CalledProcessError as e:
@@ -73,6 +97,12 @@ class TestPotodoArgsErrors:
         )
 
     def test_potodo_exclude_and_only_reserved_conflict(self):
+        """
+        Exclude the test config files.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             check_output(["potodo", "--exclude-reserved", "--only-reserved"]).decode(
                 "utf-8"

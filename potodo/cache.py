@@ -14,6 +14,13 @@ def get_cache_file_content(
     cache_args: Any,
     path: str = ".potodo/cache.pickle",
 ) -> Dict[Path, PoFileStats]:
+    """
+    Get cache file content
+
+    Args:
+        cache_args: (str): write your description
+        path: (str): write your description
+    """
     logging.debug("Trying to load cache from %s", path)
     try:
         with open(path, "rb") as handle:
@@ -33,6 +40,14 @@ def get_cache_file_content(
 def set_cache_content(
     obj: Dict[Path, PoFileStats], cache_args: Any, path: str = ".potodo/cache.pickle"
 ) -> None:
+    """
+    Set the cache.
+
+    Args:
+        obj: (todo): write your description
+        cache_args: (dict): write your description
+        path: (str): write your description
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     data = {"version": VERSION, "args": cache_args, "data": obj}
     with open(path, "wb") as handle:

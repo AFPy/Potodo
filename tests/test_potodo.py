@@ -26,6 +26,12 @@ config = {
 
 
 def test_txt_output(capsys):
+    """
+    Convert the output of a. txtodo.
+
+    Args:
+        capsys: (todo): write your description
+    """
     exec_potodo(json_format=False, **config)
     captured = capsys.readouterr()
 
@@ -39,6 +45,12 @@ def test_txt_output(capsys):
 
 
 def test_output(capsys):
+    """
+    Outputs the jup output of the potential.
+
+    Args:
+        capsys: (todo): write your description
+    """
     exec_potodo(json_format=True, **config)
     output = json.loads(capsys.readouterr().out)
 

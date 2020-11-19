@@ -25,6 +25,27 @@ def check_args(
     is_interactive: bool,
     **kwargs: Any,
 ) -> Mapping[str, Any]:
+    """
+    Check if the arguments. txt.
+
+    Args:
+        path: (str): write your description
+        exclude: (list): write your description
+        below: (bool): write your description
+        above: (todo): write your description
+        verbose: (bool): write your description
+        only_fuzzy: (todo): write your description
+        offline: (bool): write your description
+        hide_reserved: (bool): write your description
+        counts: (array): write your description
+        json_format: (str): write your description
+        exclude_fuzzy: (bool): write your description
+        exclude_reserved: (bool): write your description
+        only_reserved: (todo): write your description
+        show_reservation_dates: (bool): write your description
+        no_cache: (todo): write your description
+        is_interactive: (bool): write your description
+    """
     # If below is lower than above, raise an error
     if below < above:
         print("Potodo: 'below' value must be greater than 'above' value.")

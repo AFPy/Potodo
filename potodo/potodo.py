@@ -328,6 +328,11 @@ def buffer_add(
 
 
 def main() -> None:
+    """
+    Main function.
+
+    Args:
+    """
     parser = argparse.ArgumentParser(
         prog="potodo",
         description="List and prettify the po files left to translate.",

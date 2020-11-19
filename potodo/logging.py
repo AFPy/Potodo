@@ -2,6 +2,12 @@ import logging
 
 
 def setup_logging(logging_level: int) -> None:
+    """
+    Setup logging.
+
+    Args:
+        logging_level: (str): write your description
+    """
     logging.basicConfig(
         level=logging_level,
         format="%(asctime)s %(levelname)-8s [%(filename)s:"

@@ -49,6 +49,12 @@ class PoFileStats:
         self.filename_dir: str = self.directory + "/" + self.filename
 
     def __str__(self) -> str:
+        """
+        Str : str
+
+        Args:
+            self: (todo): write your description
+        """
         return (
             f"Filename: {self.filename}\n"
             f"Fuzzy Entries: {self.fuzzy_entries}\n"

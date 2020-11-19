@@ -29,6 +29,12 @@ class TestPotodoCLI:
     excluded_2 = str(config["exclude"][1])
 
     def test_potodo_no_args(self):
+        """
+        Run test arguments.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output("potodo").decode("utf-8")
         assert "# excluded (50.00% done)" in output
         assert "# folder (33.33% done)" in output
@@ -45,6 +51,12 @@ class TestPotodoCLI:
         )
 
     def test_potodo_exclude(self):
+        """
+        Exclude an exclude to test.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output(
             ["potodo", "--exclude", self.excluded_1, self.excluded_2]
         ).decode("utf-8")
@@ -64,6 +76,12 @@ class TestPotodoCLI:
         )
 
     def test_potodo_above(self):
+        """
+        Test that the test is called.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output(["potodo", "--above", "40"]).decode("utf-8")
         output_short = check_output(["potodo", "-a", "40"]).decode("utf-8")
         assert output == output_short
@@ -76,6 +94,12 @@ class TestPotodoCLI:
         )
 
     def test_potodo_below(self):
+        """
+        Test if the test was run.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output(["potodo", "--below", "40"]).decode("utf-8")
         output_short = check_output(["potodo", "-b", "40"]).decode("utf-8")
         assert output == output_short
@@ -89,6 +113,12 @@ class TestPotodoCLI:
         )
 
     def test_potodo_onlyfuzzy(self):
+        """
+        Test if the test is enabled.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output(["potodo", "--only-fuzzy"]).decode("utf-8")
         output_short = check_output(["potodo", "-f"]).decode("utf-8")
         assert output == output_short
@@ -102,6 +132,12 @@ class TestPotodoCLI:
         )
 
     def test_potodo_counts(self):
+        """
+        Determine whether the number of tests.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output(["potodo", "--counts"]).decode("utf-8")
         output_short = check_output(["potodo", "-c"]).decode("utf-8")
         assert output == output_short
@@ -116,6 +152,12 @@ class TestPotodoCLI:
         )
 
     def test_potodo_exclude_fuzzy(self):
+        """
+        Exclude test test test test.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output(["potodo", "--exclude-fuzzy"]).decode("utf-8")
         assert (
             "- excluded.po                      1 /   2 ( 50.0% translated)" in output
@@ -126,6 +168,12 @@ class TestPotodoCLI:
         )
 
     def test_potodo_matching_files_solo(self):
+        """
+        Check for potential files that match files.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output(["potodo", "--matching-files"]).decode("utf-8")
         output_short = check_output(["potodo", "-l"]).decode("utf-8")
         assert output == output_short
@@ -136,6 +184,12 @@ class TestPotodoCLI:
         assert "file2.po" in output
 
     def test_potodo_matching_files_fuzzy(self):
+        """
+        Test whether the potential files that have the correct.
+
+        Args:
+            self: (todo): write your description
+        """
         output = check_output(["potodo", "--matching-files", "--only-fuzzy"]).decode(
             "utf-8"
         )

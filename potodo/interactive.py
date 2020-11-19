@@ -13,6 +13,12 @@ IS_SCREEN_CLEARED = True
 
 
 def _directory_list_menu(directory_list: List[str]) -> int:
+    """
+    Return a list of directories.
+
+    Args:
+        directory_list: (str): write your description
+    """
     final_dir_list = directory_list
     if "[q] Quit" not in final_dir_list:
         final_dir_list.append("[q] Quit")
@@ -31,6 +37,13 @@ def _directory_list_menu(directory_list: List[str]) -> int:
 
 
 def _file_list_menu(directory: str, file_list: List[str]) -> int:
+    """
+    Function that returns a list of a file.
+
+    Args:
+        directory: (str): write your description
+        file_list: (str): write your description
+    """
     if "[;] Back" not in file_list:
         file_list.append("[;] Back")
         file_list.append("[q] Quit")
@@ -49,6 +62,13 @@ def _file_list_menu(directory: str, file_list: List[str]) -> int:
 
 
 def _confirmation_menu(choosen_file: str, directory: str) -> int:
+    """
+    Display a menu menu.
+
+    Args:
+        choosen_file: (str): write your description
+        directory: (str): write your description
+    """
     confimation_menu = TerminalMenu(
         title=f"Are you sure you want to choose {directory}/{choosen_file}?"
         f" (This will open a web browser tab to open a new issue)",
@@ -65,6 +85,17 @@ def _confirmation_menu(choosen_file: str, directory: str) -> int:
 def get_dir_list(
     repo_path: Path, exclude: Iterable[Path], ignore_matches: Callable[[str], bool]
 ) -> List[str]:
+    """
+    Return a list of directories in a directory.
+
+    Args:
+        repo_path: (str): write your description
+        exclude: (list): write your description
+        ignore_matches: (bool): write your description
+        Callable: (str): write your description
+        str: (str): write your description
+        bool: (str): write your description
+    """
     return list(
         set(
             [
@@ -80,6 +111,14 @@ def get_dir_list(
 def get_files_from_dir(
     directory: str, repo_path: Path, exclude: Iterable[Path]
 ) -> List[str]:
+    """
+    Return a list of directory.
+
+    Args:
+        directory: (str): write your description
+        repo_path: (str): write your description
+        exclude: (str): write your description
+    """
     path = Path(str(repo_path) + "/" + directory)
     return [
         file.name
