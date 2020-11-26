@@ -8,12 +8,12 @@ from typing import Dict
 from typing import List
 from typing import Sequence
 from typing import Tuple
+
 from gitignore_parser import parse_gitignore
 
 from potodo import __version__
 from potodo.arguments_handling import check_args
 from potodo.github import get_issue_reservations
-
 from potodo.json import json_dateconv
 from potodo.logging import setup_logging
 from potodo.po_file import get_po_stats_from_repo_or_cache
@@ -110,7 +110,7 @@ def non_interactive_output(
         buffer: List[Any] = []
         folder_stats: Dict[str, int] = {"translated": 0, "total": 0}
         printed_list: List[bool] = []
-    
+
         for po_file in sorted(po_files):
             # For each file in those files from that directory
             if not only_fuzzy or po_file.fuzzy_entries:
@@ -131,17 +131,15 @@ def non_interactive_output(
                     show_reservation_dates,
                     matching_files,
                 )
-    
+
         # Once all files have been processed, print the dir and the files
         # or store them into a dict to print them once all directories have
         # been processed.
         if json_format:
-            add_dir_stats(
-                directory_name, buffer, folder_stats, printed_list, dir_stats
-            )
+            add_dir_stats(directory_name, buffer, folder_stats, printed_list, dir_stats)
         else:
             print_dir_stats(directory_name, buffer, folder_stats, printed_list)
-    
+
         total_translated += folder_stats["translated"]
         total_entries += folder_stats["total"]
 
@@ -206,6 +204,7 @@ def exec_potodo(
 
     if is_interactive:
         from potodo.interactive import interactive_output
+
         interactive_output(path, exclude, ignore_matches)
     else:
         non_interactive_output(
@@ -341,15 +340,11 @@ def buffer_add(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="potodo",
-        description="List and prettify the po files left to translate.",
+        prog="potodo", description="List and prettify the po files left to translate.",
     )
 
     parser.add_argument(
-        "-p",
-        "--path",
-        help="execute Potodo in path",
-        metavar="path",
+        "-p", "--path", help="execute Potodo in path", metavar="path",
     )
 
     parser.add_argument(

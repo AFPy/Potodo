@@ -1,19 +1,18 @@
 import logging
-from tempfile import NamedTemporaryFile
 import os
 import pickle
 from pathlib import Path
+from tempfile import NamedTemporaryFile
+from typing import Any
 from typing import cast
 from typing import Dict
-from typing import Any
 
 from potodo import __version__ as VERSION
 from potodo.po_file import PoFileStats
 
 
 def get_cache_file_content(
-    cache_args: Any,
-    path: str = ".potodo/cache.pickle",
+    cache_args: Any, path: str = ".potodo/cache.pickle",
 ) -> Dict[Path, PoFileStats]:
     logging.debug("Trying to load cache from %s", path)
     try:

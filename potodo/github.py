@@ -29,7 +29,9 @@ def get_repo_url(repo_path: Path) -> str:
                 stderr=subprocess.STDOUT,
             )
         except subprocess.CalledProcessError:
-            print("potodo needs to be ran in a git repository, or use the `-p` `--path` argument.")
+            print(
+                "potodo needs to be ran in a git repository, or use the `-p` `--path` argument."
+            )
             exit(1)
     logging.debug("Found repo url %s from %s", url, repo_path)
     return url

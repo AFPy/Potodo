@@ -2,14 +2,14 @@ import itertools
 import logging
 import os
 from pathlib import Path
+from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import Iterable
 from typing import List
 from typing import Mapping
 from typing import Sequence
 from typing import Set
-from typing import Callable
-from typing import Any
 
 import polib
 
