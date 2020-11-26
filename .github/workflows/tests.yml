@@ -36,5 +36,5 @@ jobs:
           key: ${{ matrix.tox.python-version }}-${{ hashFiles('tox.ini') }}-${{ hashFiles('requirements-dev.txt') }}
       - name: Install tox
         run: python3 -m pip install tox
-      - name: Run tox
+      - name: Run tox on ${{ matrix.os }} for Python ${{ matrix.tox.py_version }}
         run: tox -q -p all -e ${{ matrix.tox.env }}
