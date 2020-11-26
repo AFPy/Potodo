@@ -1,0 +1,9 @@
+polib==1.1.0
+requests==2.25.0
+simple-term-menu==0.10.4
+gitignore_parser==0.0.8
+tox
+virtualenv
+flake8
+mypy
+black
