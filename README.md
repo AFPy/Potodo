@@ -1,5 +1,5 @@
 # Potodo
-[![Build Status](https://travis-ci.com/Seluj78/Potodo.svg?branch=master)](https://travis-ci.com/Seluj78/Potodo)
+![Build status](https://github.com/AFPy/Potodo/workflows/Tox%20tests/badge.svg)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
