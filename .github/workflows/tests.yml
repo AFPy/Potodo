@@ -11,7 +11,7 @@ on:
 jobs:
   test:
     name: Run tox
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     # TODO: Add macos-latest
     strategy:
       matrix:
