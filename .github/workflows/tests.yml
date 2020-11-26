@@ -11,9 +11,9 @@ on:
 jobs:
   test:
     name: Run tox
-    runs-on: [ubuntu-latest, macos-latest]
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest]
         tox:
           - py_version: '3.6'
             env: py36
