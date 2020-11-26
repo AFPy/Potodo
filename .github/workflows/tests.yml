@@ -9,35 +9,30 @@ on:
       - master
 
 jobs:
-  build_ubuntu:
+  test:
+    name: Run tox
+    runs-on: [ubuntu-latest, macos-latest]
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    name: ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+        tox:
+          - py_version: '3.6'
+            env: py36
+          - py_version: '3.7'
+            env: py37
+          - py_version: '3.8'
+            env: py38,flake8,mypy,black
+          - py_version: '3.9'
+            env: py39
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.6'
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.7'
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
+          python-version: ${{ matrix.tox.py_version }}
       - uses: actions/cache@v2
         with:
-          path: |
-            .venv
-            .tox
-          key: ${{ matrix.os }}-${{ hashFiles('tox.ini') }}-${{ hashFiles('requirements-dev.txt') }}
-      - name: tox
-        run: |
-          python3.8 -m venv .venv
-          .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/python -m pip install tox
-          .venv/bin/tox -q -p all
+          path: .tox
+          key: ${{ matrix.tox.python-version }}-${{ hashFiles('tox.ini') }}-${{ hashFiles('requirements-dev.txt') }}
+      - name: Install tox
+        run: python3 -m pip install tox
+      - name: Run tox
+        run: tox -q -p all -e ${{ matrix.tox.env }}
