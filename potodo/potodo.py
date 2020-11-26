@@ -165,6 +165,8 @@ def exec_potodo(
         else:
             exit()
     else:
+        total_translated: int = 0
+        total_entries: int = 0
         po_files_and_dirs = get_po_stats_from_repo_or_cache(
             path, exclude, cache_args, ignore_matches, no_cache
         )
@@ -205,6 +207,9 @@ def exec_potodo(
             else:
                 print_dir_stats(directory_name, buffer, folder_stats, printed_list)
 
+            total_translated += folder_stats["translated"]
+            total_entries += folder_stats["total"]
+
         if json_format:
             print(
                 json.dumps(
@@ -215,6 +220,9 @@ def exec_potodo(
                     default=json_dateconv,
                 )
             )
+        else:
+            total_completion = 100 * total_translated / total_entries
+            print(f"\n\n# TOTAL ({total_completion:.2f}% done)\n")
 
 
 def buffer_add(
