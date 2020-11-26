@@ -28,10 +28,9 @@ def get_repo_url(repo_path: Path) -> str:
                 cwd=str(repo_path),
                 stderr=subprocess.STDOUT,
             )
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(
-                f'Unknown error. `{" ".join(e.cmd)}` returned "{e.output.rstrip()}".'
-            )
+        except subprocess.CalledProcessError:
+            print("potodo needs to be ran in a git repository, or use the `-p` `--path` argument.")
+            exit(1)
     logging.debug("Found repo url %s from %s", url, repo_path)
     return url
 
