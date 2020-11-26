@@ -15,7 +15,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     author="Jules Lasne",
     author_email="jules.lasne@gmail.com",
-    url="https://github.com/seluj78/potodo",
+    url="https://github.com/afpy/potodo",
     packages=["potodo"],
     package_dir={"potodo": "potodo"},
     entry_points={"console_scripts": ["potodo=potodo.potodo:main"]},
