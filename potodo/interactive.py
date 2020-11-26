@@ -3,6 +3,7 @@ from typing import cast
 from typing import Iterable
 from typing import List
 from typing import Callable
+import webbrowser
 
 from simple_term_menu import TerminalMenu
 
@@ -86,3 +87,41 @@ def get_files_from_dir(
         for file in path.rglob("*.po")
         if not any(is_within(file, excluded) for excluded in exclude)
     ]
+
+
+def interactive_output(
+    path: Path, exclude: List[Path], ignore_matches: Callable[[str], bool]
+) -> None:
+    directory_options = get_dir_list(
+        repo_path=path, exclude=exclude, ignore_matches=ignore_matches
+    )
+    while True:
+        selected_dir = _directory_list_menu(directory_options)
+        if selected_dir == (len(directory_options) - 1):
+            exit(0)
+        directory = directory_options[selected_dir]
+        file_options = get_files_from_dir(
+            directory=directory, repo_path=path, exclude=exclude
+        )
+        # TODO: Add stats on files and also add reservations
+        selected_file = _file_list_menu(directory, file_options)
+        if selected_file == (len(file_options) + 1):
+            exit(0)
+        elif selected_file == len(file_options):
+            continue
+        file = file_options[selected_file]
+        final_choice = _confirmation_menu(file, directory)
+        if final_choice == 3:
+            exit(0)
+        elif final_choice == 2:
+            continue
+        else:
+            break
+    if final_choice == 0:
+        webbrowser.open(
+            f"https://github.com/python/python-docs-fr/issues/new?title=Je%20travaille%20sur%20"
+            f"{directory}/{file}"
+            f"&body=%0A%0A%0A---%0AThis+issue+was+created+using+potodo+interactive+mode."
+        )
+    else:
+        exit()
