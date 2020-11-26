@@ -154,8 +154,9 @@ def non_interactive_output(
             )
         )
     else:
-        total_completion = 100 * total_translated / total_entries
-        print(f"\n\n# TOTAL ({total_completion:.2f}% done)\n")
+        if total_entries != 0:
+            total_completion = 100 * total_translated / total_entries
+            print(f"\n\n# TOTAL ({total_completion:.2f}% done)\n")
 
 
 def exec_potodo(
@@ -340,11 +341,15 @@ def buffer_add(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="potodo", description="List and prettify the po files left to translate.",
+        prog="potodo",
+        description="List and prettify the po files left to translate.",
     )
 
     parser.add_argument(
-        "-p", "--path", help="execute Potodo in path", metavar="path",
+        "-p",
+        "--path",
+        help="execute Potodo in path",
+        metavar="path",
     )
 
     parser.add_argument(

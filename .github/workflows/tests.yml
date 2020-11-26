@@ -12,6 +12,7 @@ jobs:
   test:
     name: Run tox
     runs-on: ubuntu-latest
+    # TODO: Add macos-latest
     strategy:
       matrix:
         tox:

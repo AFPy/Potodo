@@ -12,7 +12,8 @@ from potodo.po_file import PoFileStats
 
 
 def get_cache_file_content(
-    cache_args: Any, path: str = ".potodo/cache.pickle",
+    cache_args: Any,
+    path: str = ".potodo/cache.pickle",
 ) -> Dict[Path, PoFileStats]:
     logging.debug("Trying to load cache from %s", path)
     try:
