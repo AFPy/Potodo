@@ -1,11 +1,11 @@
 import logging
-from tempfile import NamedTemporaryFile
 import os
 import pickle
 from pathlib import Path
+from tempfile import NamedTemporaryFile
+from typing import Any
 from typing import cast
 from typing import Dict
-from typing import Any
 
 from potodo import __version__ as VERSION
 from potodo.po_file import PoFileStats
