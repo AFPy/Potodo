@@ -81,29 +81,12 @@ def non_interactive_output(
 ) -> None:
     dir_stats: List[Any] = []
     # Initialize the arguments
-    cache_args = {
-        "path": path,
-        "exclude": exclude,
-        "above": above,
-        "below": below,
-        "only_fuzzy": only_fuzzy,
-        "offline": offline,
-        "hide_reserved": hide_reserved,
-        "counts": counts,
-        "json_format": json_format,
-        "exclude_fuzzy": exclude_fuzzy,
-        "exclude_reserved": exclude_reserved,
-        "only_reserved": only_reserved,
-        "show_reservation_dates": show_reservation_dates,
-        "no_cache": no_cache,
-        "is_interactive": is_interactive,
-    }
     issue_reservations = get_issue_reservations(offline, hide_reserved, path)
 
     total_translated: int = 0
     total_entries: int = 0
     po_files_and_dirs = get_po_stats_from_repo_or_cache(
-        path, exclude, cache_args, ignore_matches, no_cache
+        path, exclude, ignore_matches, no_cache
     )
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
         # For each directory and files in this directory

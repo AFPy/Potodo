@@ -2,7 +2,6 @@ import itertools
 import logging
 import os
 from pathlib import Path
-from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import Iterable
@@ -74,7 +73,6 @@ from potodo.cache import set_cache_content  # noqa
 def get_po_stats_from_repo_or_cache(
     repo_path: Path,
     exclude: Iterable[Path],
-    cache_args: Any,
     ignore_matches: Callable[[str], bool],
     no_cache: bool = False,
 ) -> Mapping[str, List[PoFileStats]]:
@@ -115,7 +113,6 @@ def get_po_stats_from_repo_or_cache(
         }
     else:
         cached_files = get_cache_file_content(
-            cache_args=cache_args,
             path=str(repo_path.resolve()) + "/.potodo/cache.pickle",
         )
         po_stats_per_directory = dict()
@@ -131,7 +128,6 @@ def get_po_stats_from_repo_or_cache(
                 po_stats_per_directory[directory].append(cached_file)
         set_cache_content(
             cached_files,
-            cache_args,
             path=str(repo_path.resolve()) + "/.potodo/cache.pickle",
         )
 
