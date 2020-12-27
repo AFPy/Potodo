@@ -1,9 +1,18 @@
-# Potodo
-![Build status](https://github.com/AFPy/Potodo/workflows/Tests/badge.svg)
+[comment]: <> (<p align="center"><img width=12.5% src="https://github.com/afpy/potodo/blob/master/media/Logo.png"></p>)
+<p align="center"><img width=60% src="https://github.com/afpy/potodo/blob/master/media/Potodo.png"></p>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+![Python](https://img.shields.io/badge/python-v3.6+-blue.svg)
+![Build status](https://img.shields.io/github/workflow/status/afpy/potodo/Tests)
+[![GitHub Issues](https://img.shields.io/github/issues/afpy/potodo.svg)](https://github.com/afpy/potodo/issues)
+![Contributions welcome](https://img.shields.io/badge/contributions-welcome-orange.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+![PyPI](https://img.shields.io/pypi/v/potodo)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-![PyPI](https://img.shields.io/pypi/v/potodo)
+
+## What is it ?
 
 Potodo, a (almost) flawless TODO/progress listing CLI tool for po files.
 
@@ -12,13 +21,14 @@ Potodo, a (almost) flawless TODO/progress listing CLI tool for po files.
 [Poutils](https://pypi.org/project/poutils) (`.po` utils) is is a metapackage to easily install usefull Python tools to use with po files
 and `potodo` is a part of it! Go check out [Poutils](https://pypi.org/project/poutils) to discover the other useful tools for `po` file related translation!
 
+
 ## Installation
 
-```bash
+```sh
 pip install potodo
 ```
 
-## Usage
+## Usage example
 
 ```
 usage: potodo [-h] [-p path] [-e path [path ...]] [-a X] [-b X] [-f] [-o] [-n] [-c] [-j] [--exclude-fuzzy] [--exclude-reserved] [--only-reserved] [--show-reservation-dates] [--no-cache] [-i] [-l] [--version] [-v]
@@ -49,22 +59,80 @@ optional arguments:
   -v, --verbose         Increases output verbosity
 ```
 
+## Development setup
+
+Create a virtual environment
+```sh
+python3 -m venv venv
+```
+
+Activate it
+```sh
+source venv/bin/activate
+```
+
+Install the dev requirements
+```sh
+pip install -r requirements-dev.txt
+```
+
+Install the pre-commit hook
+```sh
+pre-commit install
+```
+
+Install `potodo` in a development version
+```
+pip install -e .
+```
+
+## Release History
+
+* v0.19.2
+    * Dropped `cache_args` to simplify cache functionality
+* v0.19.1
+    * Fixed a bug of division by 0
+    * Replaced Travis-ci tests with github actions
+* v0.19.0
+    * Fixed windows support
+* v0.17.3
+    * Fixed a math error where the completion %age of a folder was wrong
+    * Fixes on the `.potodoignore` file
+* v0.17.0
+    * Added tests
+    * Fixed bug where github would rate limit your IP address
+    * Fixed argument errors
+    * Added `-l` `--matching-files` Which will print the path of files matching your arguments
+* v0.16.0
+    * Args passed to potodo are now cached as well ! This allows for a better control of what is cached !
+    * The ignore file now works as the .gitignore does. Add a venv/ in your .potodoignore for example :)
+* v0.15.0
+    * Potodo now supports .potodoignore files ! You can finally ignore the venv you made 🎉
+* v0.14.3
+    * Added cache versioning to avoid errors when cache changes, for example if files are moved between `potodo` versions.
+* v0.14.2
+    * Nothing new, just code moved around ! Thanks for sticking around 🎉
+* v0.14.1
+    * Added `--only-reserved` option to display only reserved filed
+    * Added `--reserved-dates` to display when a file was reserved
+    * Added cache to cache `pofiles` to speedup the reading process
+    * Added logging for verbosity
+    * Added interactive option with `--interactive`
+    * Added contributors in the readme
+* < v0.14.1
+    * Base version
+ 
 ## Contributing
 
-You can run the tests using `tox` locally like:
+1. Fork it (<https://github.com/afpy/potdo/fork>)
+2. Create your feature branch (`git checkout -b feature/fooBar`
 
-    tox -p auto
+`/!\` Don't forget to bump the version in `potodo/__init__.py` when you're pushing your changes to your branch
 
-before commiting.
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature/fooBar`)
+5. Create a new Pull Request
 
-A pre-commit hook like:
-```sh
-cat <<EOF > .git/hooks/pre-commit
-#!/bin/sh
-exec tox -s -p all
-EOF
-```
-may help.
 
 ## Contributors ✨
 
