@@ -88,6 +88,8 @@ pip install -e .
 
 ## Release History
 
+* v0.20.0
+    * Beautiful README !
 * v0.19.2
     * Dropped `cache_args` to simplify cache functionality
 * v0.19.1
