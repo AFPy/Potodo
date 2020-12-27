@@ -77,9 +77,23 @@ def check_args(
         # Disable all logging
         logging.disable(logging.CRITICAL)
 
+    excluded_paths = []
+    for p in [Path(path).resolve() for path in exclude]:
+        if p.exists():
+            excluded_paths.append(p)
+        else:
+            print("Potodo: Path `{}` doesn't exist.".format(str(p)))
+            exit(1)
+
+    if path:
+        for p in excluded_paths:
+            if not str(p).startswith(str(path)):
+                print("Potodo: Path `{}` isn't in {}.".format(str(p), str(path)))
+                exit(1)
+
     # Convert strings to `Path` objects and make them absolute
     return {
         "path": Path(path).resolve(),
-        "exclude": [Path(path).resolve() for path in exclude],
+        "exclude": excluded_paths,
         "logging_level": logging_level,
     }

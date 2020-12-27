@@ -83,3 +83,10 @@ class TestPotodoArgsErrors:
             output
             == b"Potodo: Cannot pass --exclude-reserved and --only-reserved at the same time.\n"
         )
+
+    def test_potodo_exclude_uknown_path(self):
+        try:
+            check_output(["potodo", "--exclude", "c-api"]).decode("utf-8")
+        except CalledProcessError as e:
+            output = e.output
+        assert b"c-api` doesn't exist.\n" in output
