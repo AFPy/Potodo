@@ -1,5 +1,5 @@
 pytest
-pytest-cov
+coverage
 polib
 tox
 flake8
