@@ -1,0 +1,7 @@
+pytest
+pytest-cov
+polib
+tox
+flake8
+mypy
+black
