@@ -127,7 +127,8 @@ def get_po_stats_from_repo_or_cache(
                     cached_files[po_file.resolve()] = cached_file = PoFileStats(po_file)
                 po_stats_per_directory[directory].append(cached_file)
         set_cache_content(
-            cached_files, path=str(repo_path.resolve()) + "/.potodo/cache.pickle",
+            cached_files,
+            path=str(repo_path.resolve()) + "/.potodo/cache.pickle",
         )
 
     return po_stats_per_directory
