@@ -29,6 +29,7 @@ def test_txt_output(capsys):
     exec_potodo(json_format=False, **config)
     captured = capsys.readouterr()
 
+    assert "# repository" in captured.out
     assert "file1.po" in captured.out
     assert "file2.po" in captured.out
     assert "# folder" in captured.out
@@ -36,6 +37,7 @@ def test_txt_output(capsys):
     assert "1 fuzzy" in captured.out
     assert "2 fuzzy" not in captured.out
     assert "excluded" not in captured.out
+    assert "# TOTAL" in captured.out
 
 
 def test_output(capsys):
@@ -46,6 +48,9 @@ def test_output(capsys):
         {
             "name": "folder/",
             "percent_translated": 0.0,
+            "entries": 1,
+            "fuzzies": 0,
+            "translated": 0,
             "files": [
                 {
                     "name": "folder/file3",
@@ -62,6 +67,9 @@ def test_output(capsys):
         {
             "name": f"{REPO_DIR}/",
             "percent_translated": 25.0,
+            "entries": 4,
+            "fuzzies": 1,
+            "translated": 1,
             "files": [
                 {
                     "name": f"{REPO_DIR}/file1",

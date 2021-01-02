@@ -55,6 +55,9 @@ def add_dir_stats(
             dict(
                 name=f"{directory_name}/",
                 percent_translated=float(f"{folder_completion:.2f}"),
+                entries=sum(file["entries"] for file in buffer),
+                fuzzies=sum(file["fuzzies"] for file in buffer),
+                translated=sum(file["translated"] for file in buffer),
                 files=buffer,
             )
         )
