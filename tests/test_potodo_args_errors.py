@@ -1,5 +1,5 @@
+import sys
 from pathlib import Path
-
 from subprocess import check_output, CalledProcessError
 
 REPO_DIR = "repository"
@@ -29,19 +29,27 @@ class TestPotodoArgsErrors:
     excluded_2 = str(config["exclude"][1])
 
     def test_potodo_help(self):
-        output = check_output(["potodo", "--help"]).decode("utf-8")
-        output_short = check_output(["potodo", "-h"]).decode("utf-8")
+        output = check_output([sys.executable, "-m", "potodo", "--help"]).decode(
+            "utf-8"
+        )
+        output_short = check_output([sys.executable, "-m", "potodo", "-h"]).decode(
+            "utf-8"
+        )
         assert output == output_short
         assert "-h, --help            show this help message and exit" in output
         # TODO: Find a better way of testing help output
 
     def test_potodo_above_below_conflict(self):
         try:
-            check_output(["potodo", "--above", "50", "--below", "40"]).decode("utf-8")
+            check_output(
+                [sys.executable, "-m", "potodo", "--above", "50", "--below", "40"]
+            ).decode("utf-8")
         except CalledProcessError as e:
             output = e.output
         try:
-            check_output(["potodo", "-a", "50", "-b", "40"]).decode("utf-8")
+            check_output(
+                [sys.executable, "-m", "potodo", "-a", "50", "-b", "40"]
+            ).decode("utf-8")
         except CalledProcessError as e:
             output_short = e.output
         assert output == output_short
@@ -49,11 +57,13 @@ class TestPotodoArgsErrors:
 
     def test_potodo_json_interactive_conflict(self):
         try:
-            check_output(["potodo", "--json", "--interactive"]).decode("utf-8")
+            check_output(
+                [sys.executable, "-m", "potodo", "--json", "--interactive"]
+            ).decode("utf-8")
         except CalledProcessError as e:
             output = e.output
         try:
-            check_output(["potodo", "-j", "-i"]).decode("utf-8")
+            check_output([sys.executable, "-m", "potodo", "-j", "-i"]).decode("utf-8")
         except CalledProcessError as e:
             output_short = e.output
         assert output == output_short
@@ -64,7 +74,9 @@ class TestPotodoArgsErrors:
 
     def test_potodo_exclude_and_only_fuzzy_conflict(self):
         try:
-            check_output(["potodo", "--exclude-fuzzy", "--only-fuzzy"]).decode("utf-8")
+            check_output(
+                [sys.executable, "-m", "potodo", "--exclude-fuzzy", "--only-fuzzy"]
+            ).decode("utf-8")
         except CalledProcessError as e:
             output = e.output
         assert (
@@ -74,9 +86,15 @@ class TestPotodoArgsErrors:
 
     def test_potodo_exclude_and_only_reserved_conflict(self):
         try:
-            check_output(["potodo", "--exclude-reserved", "--only-reserved"]).decode(
-                "utf-8"
-            )
+            check_output(
+                [
+                    sys.executable,
+                    "-m",
+                    "potodo",
+                    "--exclude-reserved",
+                    "--only-reserved",
+                ]
+            ).decode("utf-8")
         except CalledProcessError as e:
             output = e.output
         assert (
