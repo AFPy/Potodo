@@ -1,5 +1,6 @@
 import itertools
 import logging
+import fnmatch
 import os
 from pathlib import Path
 from typing import Callable
@@ -61,18 +62,13 @@ class PoFileStats:
         return self.filename < other.filename
 
 
-def is_within(file: Path, excluded: Path) -> bool:
-    """Check if `file` is `excluded` or within `excluded`'s tree."""
-    return excluded in file.parents or file == excluded
-
-
 from potodo.cache import get_cache_file_content  # noqa
 from potodo.cache import set_cache_content  # noqa
 
 
 def get_po_stats_from_repo_or_cache(
     repo_path: Path,
-    exclude: Iterable[Path],
+    exclude: Iterable[str],
     ignore_matches: Callable[[str], bool],
     no_cache: bool = False,
 ) -> Mapping[str, List[PoFileStats]]:
@@ -89,7 +85,7 @@ def get_po_stats_from_repo_or_cache(
     all_po_files: List[Path] = [
         file
         for file in repo_path.rglob("*.po")
-        if not any(is_within(file, excluded) for excluded in exclude)
+        if not any(fnmatch.fnmatch(str(file), f"*{pattern}*") for pattern in exclude)
         and not ignore_matches(str(file))
     ]
 

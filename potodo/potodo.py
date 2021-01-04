@@ -62,7 +62,7 @@ def add_dir_stats(
 
 def non_interactive_output(
     path: Path,
-    exclude: List[Path],
+    exclude: List[str],
     above: int,
     below: int,
     only_fuzzy: bool,
@@ -144,7 +144,7 @@ def non_interactive_output(
 
 def exec_potodo(
     path: Path,
-    exclude: List[Path],
+    exclude: List[str],
     above: int,
     below: int,
     only_fuzzy: bool,
@@ -340,7 +340,7 @@ def main() -> None:
         "--exclude",
         nargs="+",
         default=[],
-        help="exclude from search",
+        help="Patterns to exclude from search",
         metavar="path",
     )
 

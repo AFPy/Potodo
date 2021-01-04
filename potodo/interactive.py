@@ -1,3 +1,4 @@
+import fnmatch
 import webbrowser
 from pathlib import Path
 from typing import Callable
@@ -6,8 +7,6 @@ from typing import Iterable
 from typing import List
 
 from simple_term_menu import TerminalMenu
-
-from potodo.po_file import is_within
 
 IS_CURSOR_CYCLING = True
 IS_SCREEN_CLEARED = True
@@ -64,14 +63,16 @@ def _confirmation_menu(choosen_file: str, directory: str) -> int:
 
 
 def get_dir_list(
-    repo_path: Path, exclude: Iterable[Path], ignore_matches: Callable[[str], bool]
+    repo_path: Path, exclude: Iterable[str], ignore_matches: Callable[[str], bool]
 ) -> List[str]:
     return list(
         set(
             [
                 file.parent.name
                 for file in repo_path.rglob("*.po")
-                if not any(is_within(file, excluded) for excluded in exclude)
+                if not any(
+                    fnmatch.fnmatch(str(file), f"*{pattern}*") for pattern in exclude
+                )
                 and not ignore_matches(str(file))
             ]
         )
@@ -79,18 +80,18 @@ def get_dir_list(
 
 
 def get_files_from_dir(
-    directory: str, repo_path: Path, exclude: Iterable[Path]
+    directory: str, repo_path: Path, exclude: Iterable[str]
 ) -> List[str]:
     path = Path(str(repo_path) + "/" + directory)
     return [
         file.name
         for file in path.rglob("*.po")
-        if not any(is_within(file, excluded) for excluded in exclude)
+        if not any(fnmatch.fnmatch(str(file), f"*{pattern}*") for pattern in exclude)
     ]
 
 
 def interactive_output(
-    path: Path, exclude: List[Path], ignore_matches: Callable[[str], bool]
+    path: Path, exclude: List[str], ignore_matches: Callable[[str], bool]
 ) -> None:
     directory_options = get_dir_list(
         repo_path=path, exclude=exclude, ignore_matches=ignore_matches

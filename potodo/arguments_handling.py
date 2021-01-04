@@ -80,6 +80,6 @@ def check_args(
     # Convert strings to `Path` objects and make them absolute
     return {
         "path": Path(path).resolve(),
-        "exclude": [Path(path).resolve() for path in exclude],
+        "exclude": exclude,
         "logging_level": logging_level,
     }
