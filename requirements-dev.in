@@ -1,7 +1,7 @@
-pytest
+-r requirements.txt
+black
 coverage
-polib
-tox
 flake8
 mypy
-black
+pytest
+tox
