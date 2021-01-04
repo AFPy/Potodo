@@ -1,4 +1,3 @@
-import fnmatch
 import webbrowser
 from pathlib import Path
 from typing import Callable
@@ -70,9 +69,7 @@ def get_dir_list(
             [
                 file.parent.name
                 for file in repo_path.rglob("*.po")
-                if not any(
-                    fnmatch.fnmatch(str(file), f"*{pattern}*") for pattern in exclude
-                )
+                if not any(file.match(pattern) for pattern in exclude)
                 and not ignore_matches(str(file))
             ]
         )
@@ -86,7 +83,7 @@ def get_files_from_dir(
     return [
         file.name
         for file in path.rglob("*.po")
-        if not any(fnmatch.fnmatch(str(file), f"*{pattern}*") for pattern in exclude)
+        if not any(file.match(pattern) for pattern in exclude)
     ]
 
 

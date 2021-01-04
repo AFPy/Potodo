@@ -1,32 +1,10 @@
 import json
-from pathlib import Path
 
 from potodo.potodo import exec_potodo
 
-REPO_DIR = "repository"
-ABS_REPO_DIR = Path(__file__).resolve().parent / "fixtures" / REPO_DIR
 
-config = {
-    "path": ABS_REPO_DIR,
-    "exclude": [ABS_REPO_DIR / "excluded", ABS_REPO_DIR / "folder" / "excluded.po"],
-    "above": 0,
-    "below": 100,
-    "only_fuzzy": False,
-    "hide_reserved": False,
-    "counts": False,
-    "offline": True,
-    "is_interactive": False,
-    "exclude_fuzzy": False,
-    "only_reserved": False,
-    "exclude_reserved": False,
-    "show_reservation_dates": False,
-    "no_cache": True,
-    "matching_files": False,
-}
-
-
-def test_txt_output(capsys):
-    exec_potodo(json_format=False, **config)
+def test_txt_output(capsys, base_config):
+    exec_potodo(json_format=False, **base_config)
     captured = capsys.readouterr()
 
     assert "file1.po" in captured.out
@@ -38,8 +16,8 @@ def test_txt_output(capsys):
     assert "excluded" not in captured.out
 
 
-def test_output(capsys):
-    exec_potodo(json_format=True, **config)
+def test_output(capsys, base_config, repo_dir):
+    exec_potodo(json_format=True, **base_config)
     output = json.loads(capsys.readouterr().out)
 
     expected = [
@@ -49,7 +27,7 @@ def test_output(capsys):
             "files": [
                 {
                     "name": "folder/file3",
-                    "path": f"{ABS_REPO_DIR}/folder/file3.po",
+                    "path": f"{repo_dir}/folder/file3.po",
                     "entries": 1,
                     "fuzzies": 0,
                     "translated": 0,
@@ -60,12 +38,12 @@ def test_output(capsys):
             ],
         },
         {
-            "name": f"{REPO_DIR}/",
+            "name": "repository/",
             "percent_translated": 25.0,
             "files": [
                 {
-                    "name": f"{REPO_DIR}/file1",
-                    "path": f"{ABS_REPO_DIR}/file1.po",
+                    "name": "repository/file1",
+                    "path": f"{repo_dir}/file1.po",
                     "entries": 3,
                     "fuzzies": 1,
                     "translated": 1,
@@ -74,8 +52,8 @@ def test_output(capsys):
                     "reservation_date": None,
                 },
                 {
-                    "name": f"{REPO_DIR}/file2",
-                    "path": f"{ABS_REPO_DIR}/file2.po",
+                    "name": "repository/file2",
+                    "path": f"{repo_dir}/file2.po",
                     "entries": 1,
                     "fuzzies": 0,
                     "translated": 0,

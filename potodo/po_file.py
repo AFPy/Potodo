@@ -1,6 +1,5 @@
 import itertools
 import logging
-import fnmatch
 import os
 from pathlib import Path
 from typing import Callable
@@ -85,7 +84,7 @@ def get_po_stats_from_repo_or_cache(
     all_po_files: List[Path] = [
         file
         for file in repo_path.rglob("*.po")
-        if not any(fnmatch.fnmatch(str(file), f"*{pattern}*") for pattern in exclude)
+        if not any(file.match(pattern) for pattern in exclude)
         and not ignore_matches(str(file))
     ]
 
