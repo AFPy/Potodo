@@ -26,4 +26,5 @@ def base_config(repo_dir):
         "show_reservation_dates": False,
         "no_cache": True,
         "matching_files": False,
+        "json_format": False,
     }

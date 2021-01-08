@@ -4,7 +4,7 @@ from potodo.potodo import exec_potodo
 
 
 def test_txt_output(capsys, base_config):
-    exec_potodo(json_format=False, **base_config)
+    exec_potodo(**base_config)
     captured = capsys.readouterr()
 
     assert "file1.po" in captured.out
@@ -17,7 +17,8 @@ def test_txt_output(capsys, base_config):
 
 
 def test_output(capsys, base_config, repo_dir):
-    exec_potodo(json_format=True, **base_config)
+    base_config["json_format"] = True
+    exec_potodo(**base_config)
     output = json.loads(capsys.readouterr().out)
 
     expected = [
