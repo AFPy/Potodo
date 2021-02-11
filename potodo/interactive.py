@@ -2,7 +2,6 @@ import webbrowser
 from pathlib import Path
 from typing import Callable
 from typing import cast
-from typing import Iterable
 from typing import List
 
 from simple_term_menu import TerminalMenu
@@ -61,45 +60,34 @@ def _confirmation_menu(choosen_file: str, directory: str) -> int:
     return cast(int, choice)
 
 
-def get_dir_list(
-    repo_path: Path, exclude: Iterable[str], ignore_matches: Callable[[str], bool]
-) -> List[str]:
+def get_dir_list(repo_path: Path, ignore_matches: Callable[[str], bool]) -> List[str]:
     return list(
         set(
             [
                 file.parent.name
                 for file in repo_path.rglob("*.po")
-                if not any(file.match(pattern) for pattern in exclude)
-                and not ignore_matches(str(file))
+                if not ignore_matches(str(file))
             ]
         )
     )
 
 
 def get_files_from_dir(
-    directory: str, repo_path: Path, exclude: Iterable[str]
+    directory: str, repo_path: Path, ignore_matches: Callable[[str], bool]
 ) -> List[str]:
     path = Path(str(repo_path) + "/" + directory)
-    return [
-        file.name
-        for file in path.rglob("*.po")
-        if not any(file.match(pattern) for pattern in exclude)
-    ]
+    return [file.name for file in path.rglob("*.po") if not ignore_matches(str(file))]
 
 
-def interactive_output(
-    path: Path, exclude: List[str], ignore_matches: Callable[[str], bool]
-) -> None:
-    directory_options = get_dir_list(
-        repo_path=path, exclude=exclude, ignore_matches=ignore_matches
-    )
+def interactive_output(path: Path, ignore_matches: Callable[[str], bool]) -> None:
+    directory_options = get_dir_list(repo_path=path, ignore_matches=ignore_matches)
     while True:
         selected_dir = _directory_list_menu(directory_options)
         if selected_dir == (len(directory_options) - 1):
             exit(0)
         directory = directory_options[selected_dir]
         file_options = get_files_from_dir(
-            directory=directory, repo_path=path, exclude=exclude
+            directory=directory, repo_path=path, ignore_matches=ignore_matches
         )
         # TODO: Add stats on files and also add reservations
         selected_file = _file_list_menu(directory, file_options)

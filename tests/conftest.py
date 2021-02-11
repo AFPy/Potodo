@@ -12,7 +12,7 @@ def repo_dir():
 def base_config(repo_dir):
     return {
         "path": repo_dir,
-        "exclude": ["excluded/*", "excluded.po"],
+        "exclude": ["excluded/", "excluded.po"],
         "above": 0,
         "below": 100,
         "only_fuzzy": False,
