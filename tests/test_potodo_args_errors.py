@@ -1,33 +1,8 @@
 import sys
-from pathlib import Path
 from subprocess import check_output, CalledProcessError
-
-REPO_DIR = "repository"
-ABS_REPO_DIR = Path(__file__).resolve().parent / "fixtures" / REPO_DIR
-
-BASE_CONFIG = {
-    "path": ABS_REPO_DIR,
-    "exclude": [ABS_REPO_DIR / "excluded", ABS_REPO_DIR / "folder" / "excluded.po"],
-    "above": 0,
-    "below": 100,
-    "only_fuzzy": False,
-    "hide_reserved": False,
-    "counts": False,
-    "offline": True,
-    "is_interactive": False,
-    "exclude_fuzzy": False,
-    "only_reserved": False,
-    "exclude_reserved": False,
-    "show_reservation_dates": False,
-    "no_cache": True,
-}
 
 
 class TestPotodoArgsErrors:
-    config = BASE_CONFIG
-    excluded_1 = str(config["exclude"][0])
-    excluded_2 = str(config["exclude"][1])
-
     def test_potodo_help(self):
         output = check_output([sys.executable, "-m", "potodo", "--help"]).decode(
             "utf-8"

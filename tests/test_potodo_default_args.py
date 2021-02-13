@@ -1,33 +1,8 @@
 import sys
-from pathlib import Path
 from subprocess import check_output
-
-REPO_DIR = "repository"
-ABS_REPO_DIR = Path(__file__).resolve().parent / "fixtures" / REPO_DIR
-
-BASE_CONFIG = {
-    "path": ABS_REPO_DIR,
-    "exclude": [ABS_REPO_DIR / "excluded", ABS_REPO_DIR / "folder" / "excluded.po"],
-    "above": 0,
-    "below": 100,
-    "only_fuzzy": False,
-    "hide_reserved": False,
-    "counts": False,
-    "offline": True,
-    "is_interactive": False,
-    "exclude_fuzzy": False,
-    "only_reserved": False,
-    "exclude_reserved": False,
-    "show_reservation_dates": False,
-    "no_cache": True,
-}
 
 
 class TestPotodoCLI:
-    config = BASE_CONFIG
-    excluded_1 = str(config["exclude"][0])
-    excluded_2 = str(config["exclude"][1])
-
     def test_potodo_no_args(self):
         output = check_output([sys.executable, "-m", "potodo"]).decode("utf-8")
         assert "# excluded (50.00% done)" in output
@@ -44,19 +19,26 @@ class TestPotodoCLI:
             in output
         )
 
-    def test_potodo_exclude(self):
+    def test_potodo_exclude(self, base_config):
         output = check_output(
             [
                 sys.executable,
                 "-m",
                 "potodo",
                 "--exclude",
-                self.excluded_1,
-                self.excluded_2,
+                base_config["exclude"][0],
+                base_config["exclude"][1],
             ]
         ).decode("utf-8")
         output_short = check_output(
-            [sys.executable, "-m", "potodo", "-e", self.excluded_1, self.excluded_2]
+            [
+                sys.executable,
+                "-m",
+                "potodo",
+                "-e",
+                base_config["exclude"][0],
+                base_config["exclude"][1],
+            ]
         ).decode("utf-8")
         assert output == output_short
         assert "# excluded (50.00% done)" not in output

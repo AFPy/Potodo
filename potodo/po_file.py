@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 from typing import Callable
 from typing import Dict
-from typing import Iterable
 from typing import List
 from typing import Mapping
 from typing import Sequence
@@ -61,24 +60,18 @@ class PoFileStats:
         return self.filename < other.filename
 
 
-def is_within(file: Path, excluded: Path) -> bool:
-    """Check if `file` is `excluded` or within `excluded`'s tree."""
-    return excluded in file.parents or file == excluded
-
-
 from potodo.cache import get_cache_file_content  # noqa
 from potodo.cache import set_cache_content  # noqa
 
 
 def get_po_stats_from_repo_or_cache(
     repo_path: Path,
-    exclude: Iterable[Path],
     ignore_matches: Callable[[str], bool],
     no_cache: bool = False,
 ) -> Mapping[str, List[PoFileStats]]:
     """Gets all the po files recursively from 'repo_path'
-    and cache if no_cache is set to False, excluding those in
-    'exclude'. Return a dict with all directories and PoFile instances of
+    and cache if no_cache is set to False, excluding those if ignore_matches match them.
+    Return a dict with all directories and PoFile instances of
     `.po` files in those directories.
     """
 
@@ -87,10 +80,7 @@ def get_po_stats_from_repo_or_cache(
     # any (sub)folder from the exclusion list
     logging.debug("Finding all files matching **/*.po in %s", repo_path)
     all_po_files: List[Path] = [
-        file
-        for file in repo_path.rglob("*.po")
-        if not any(is_within(file, excluded) for excluded in exclude)
-        and not ignore_matches(str(file))
+        file for file in repo_path.rglob("*.po") if not ignore_matches(str(file))
     ]
 
     # Group files by directory

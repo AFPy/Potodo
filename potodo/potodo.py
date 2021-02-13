@@ -9,7 +9,7 @@ from typing import List
 from typing import Sequence
 from typing import Tuple
 
-from gitignore_parser import parse_gitignore
+from gitignore_parser import rule_from_pattern
 
 from potodo import __version__
 from potodo.arguments_handling import check_args
@@ -62,7 +62,7 @@ def add_dir_stats(
 
 def non_interactive_output(
     path: Path,
-    exclude: List[Path],
+    exclude: List[str],
     above: int,
     below: int,
     only_fuzzy: bool,
@@ -85,9 +85,7 @@ def non_interactive_output(
 
     total_translated: int = 0
     total_entries: int = 0
-    po_files_and_dirs = get_po_stats_from_repo_or_cache(
-        path, exclude, ignore_matches, no_cache
-    )
+    po_files_and_dirs = get_po_stats_from_repo_or_cache(path, ignore_matches, no_cache)
     for directory_name, po_files in sorted(po_files_and_dirs.items()):
         # For each directory and files in this directory
         buffer: List[Any] = []
@@ -142,9 +140,24 @@ def non_interactive_output(
             print(f"\n\n# TOTAL ({total_completion:.2f}% done)\n")
 
 
+def build_ignore_matcher(path: Path, exclude: List[str]) -> Callable[[str], bool]:
+    path = path.resolve()
+    potodo_ignore = path / ".potodoignore"
+    rules = []
+    if potodo_ignore.exists():
+        for line in potodo_ignore.read_text().splitlines():
+            rule = rule_from_pattern(line, path)
+            if rule:
+                rules.append(rule)
+    rules.append(rule_from_pattern(".git/", path))
+    for rule in exclude:
+        rules.append(rule_from_pattern(rule, path))
+    return lambda file_path: any(r.match(file_path) for r in rules)
+
+
 def exec_potodo(
     path: Path,
-    exclude: List[Path],
+    exclude: List[str],
     above: int,
     below: int,
     only_fuzzy: bool,
@@ -181,15 +194,11 @@ def exec_potodo(
     :param matching_files: Should the file paths be printed instead of normal output
     """
 
-    try:
-        ignore_matches = parse_gitignore(".potodoignore", base_dir=path)
-    except FileNotFoundError:
-        ignore_matches = parse_gitignore("/dev/null")
-
+    ignore_matches = build_ignore_matcher(path, exclude)
     if is_interactive:
         from potodo.interactive import interactive_output
 
-        interactive_output(path, exclude, ignore_matches)
+        interactive_output(path, ignore_matches)
     else:
         non_interactive_output(
             path,
@@ -340,7 +349,7 @@ def main() -> None:
         "--exclude",
         nargs="+",
         default=[],
-        help="exclude from search",
+        help="gitignore-style patterns to exclude from search.",
         metavar="path",
     )
 
