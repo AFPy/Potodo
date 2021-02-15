@@ -88,8 +88,10 @@ pip install -e .
 
 ## Release History
 
+* v0.21.0
+    * A nice new README
 * v0.20.0
-    * Beautiful README !
+    * New exclude behavior with gitignore style matching !
 * v0.19.2
     * Dropped `cache_args` to simplify cache functionality
 * v0.19.1
