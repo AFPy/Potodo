@@ -20,7 +20,7 @@ class PoFileStats:
         self.path: Path = path
         self.filename: str = path.name
         self.mtime = os.path.getmtime(path)
-        self.pofile: polib.POFile = polib.pofile(self.path)
+        self.pofile: polib.POFile = polib.pofile(str(self.path))
         self.directory: str = self.path.parent.name
 
         self.obsolete_entries: Sequence[polib.POEntry] = self.pofile.obsolete_entries()
