@@ -1,9 +1,0 @@
--r requirements.txt
-black
-coverage
-flake8
-mypy
-pytest
-tox
-types-requests
-types-polib
