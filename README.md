@@ -88,6 +88,8 @@ pip install -e .
 
 ## Release History
 
+* v0.21.2
+    * FIX: Don't miss issues (reservations) to files containing multiple dots. Contributed by @eviau.
 * v0.21.0
     * A nice new README
 * v0.20.0
@@ -125,7 +127,7 @@ pip install -e .
     * Added contributors in the readme
 * < v0.14.1
     * Base version
- 
+
 ## Contributing
 
 1. Fork it (<https://github.com/afpy/potdo/fork>)
