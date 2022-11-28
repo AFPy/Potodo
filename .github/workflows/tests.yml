@@ -14,6 +14,7 @@ jobs:
     name: Run tox on ${{ matrix.os }} for Python ${{ matrix.tox.py_version }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
         tox:
