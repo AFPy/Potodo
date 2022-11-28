@@ -11,7 +11,7 @@ on:
 
 jobs:
   test:
-    name: Run tox on ${{ matrix.os }} for Python ${{ matrix.tox.py_version }}
+    name: Run tox on ${{ matrix.os }} for Python ${{ matrix.py_version }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.tox.py_version }}
+          python-version: ${{ matrix.py_version }}
           cache: 'pip'
           cache-dependency-path: |
             **/setup.cfg
@@ -45,4 +45,4 @@ jobs:
       - name: Install tox
         run: python3 -m pip install tox
       - name: Run tox
-        run: tox -q -p all -e ${{ matrix.tox.env }},flake8,mypy,black
+        run: tox -q -p all -e ${{ matrix.env }},flake8,mypy,black
