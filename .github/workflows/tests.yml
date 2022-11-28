@@ -43,4 +43,4 @@ jobs:
       - name: Install tox
         run: python3 -m pip install tox
       - name: Run tox
-        run: tox -q -p all -e ${{ matrix.tox.env }}
+        run: tox -q -p all
