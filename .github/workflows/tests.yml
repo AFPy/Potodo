@@ -40,7 +40,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: .tox
-          key: ${{ matrix.os }}-${{ matrix.tox.python-version }}-${{ hashFiles('tox.ini') }}-${{ hashFiles('requirements-dev.txt') }}
+          key: ${{ matrix.os }}-${{ matrix.py_version }}-${{ hashFiles('tox.ini') }}-${{ hashFiles('requirements-dev.txt') }}
       - name: Install tox
         run: python3 -m pip install tox
       - name: Run tox
