@@ -10,6 +10,9 @@ from typing import Tuple
 
 import requests
 
+class NoRemoteError(Exception):
+    """Raise when no remote can be found, or when the remote is not github."""
+
 
 def get_repo_url(repo_path: Path) -> str:
     """Tries to get the repository url from git commands"""
@@ -29,10 +32,8 @@ def get_repo_url(repo_path: Path) -> str:
                 stderr=subprocess.STDOUT,
             )
         except subprocess.CalledProcessError:
-            print(
-                "potodo needs to be ran in a git repository, or use the `-p` `--path` argument."
-            )
-            exit(1)
+            logging.debug("Cannot find remote 'origin': won't fetch github issues.")
+            raise NoRemoteError
     logging.debug("Found repo url %s from %s", url, repo_path)
     return url
 
@@ -57,11 +58,14 @@ def _get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
     """Will get the repository name then request all the issues and put them in a dict"""  # noqa
 
     issues: List[Dict[Any, Any]] = []
-    next_url = (
-        "https://api.github.com/repos/"
-        + get_repo_name(repo_path)
-        + "/issues?state=open"
-    )
+    repo_name = get_repo_name(repo_path)
+    if 'github.com' not in repo_name:
+        logging.debug("Remote 'origin' does not points to a Github instance: "
+                      "not fetching issues.")
+        raise NoRemoteError
+    if repo_name is None:
+        return None
+    next_url = f"https://api.github.com/repos/{repo_name}/issues?state=open"
     while next_url:
         logging.debug("Getting %s", next_url)
         resp = requests.get(next_url)
@@ -96,12 +100,15 @@ def get_issue_reservations(
     if not offline and not hide_reserved:
         logging.info("Getting issue reservations from github.com")
         # If the reservations are to be displayed, then get them
-        issue_reservations = _get_reservation_list(repo_path)
+        try:
+            issue_reservations = _get_reservation_list(repo_path)
+        except NoRemoteError:
+            return {}
     else:
         logging.debug(
             "Reservation list set to be empty because Potodo was started offline"
             " or hiding the reservations."
         )
-        # Otherwise, an empty list will do the trick
+        # Otherwise, an empty dict will do the trick
         issue_reservations = {}
     return issue_reservations
