@@ -46,7 +46,9 @@ def _get_reservation_list(api_url: str) -> Dict[str, Tuple[Any, Any]]:
 
 
 def get_issue_reservations(
-    offline: bool, hide_reserved: bool, api_url: str,
+    offline: bool,
+    hide_reserved: bool,
+    api_url: str,
 ) -> Dict[str, Tuple[Any, Any]]:
     """Retrieve info about reservation if needed."""
 

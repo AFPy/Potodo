@@ -396,7 +396,7 @@ def main() -> None:
         "--api-url",
         help=(
             "API URL to retrieve reservation tickets (https://api.github.com/repos/ORGANISATION/REPOSITORY/issues?state=open or https://git.afpy.org/api/v1/repos/ORGANISATION/REPOSITORY/issues?state=open&type=issues)"
-        )
+        ),
     )
 
     parser.add_argument(
