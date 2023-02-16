@@ -289,7 +289,6 @@ def buffer_add(
         print(path)
         return
     elif json_format:
-
         # the order of the keys is the display order
         d = dict(
             name=f"{directory}/{filename.replace('.po', '')}",
