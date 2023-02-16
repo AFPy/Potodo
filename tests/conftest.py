@@ -27,4 +27,5 @@ def base_config(repo_dir):
         "no_cache": True,
         "matching_files": False,
         "json_format": False,
+        "api_url": "",
     }
