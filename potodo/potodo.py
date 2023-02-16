@@ -13,7 +13,7 @@ from gitignore_parser import rule_from_pattern
 
 from potodo import __version__
 from potodo.arguments_handling import check_args
-from potodo.github import get_issue_reservations
+from potodo.forge_api import get_issue_reservations
 from potodo.json import json_dateconv
 from potodo.logging import setup_logging
 from potodo.po_file import get_po_stats_from_repo_or_cache
@@ -78,10 +78,14 @@ def non_interactive_output(
     is_interactive: bool,
     matching_files: bool,
     ignore_matches: Callable[[str], bool],
+    api_url: str,
 ) -> None:
     dir_stats: List[Any] = []
     # Initialize the arguments
-    issue_reservations = get_issue_reservations(offline, hide_reserved, path)
+    if api_url:
+        issue_reservations = get_issue_reservations(offline, hide_reserved, api_url)
+    else:
+        issue_reservations = {}
 
     total_translated: int = 0
     total_entries: int = 0
@@ -172,6 +176,7 @@ def exec_potodo(
     no_cache: bool,
     is_interactive: bool,
     matching_files: bool,
+    api_url: str,
 ) -> None:
     """
     Will run everything based on the given parameters
@@ -192,6 +197,7 @@ def exec_potodo(
     :param no_cache: Disables cache (Cache is disabled when files are modified)
     :param is_interactive: Switches output to an interactive CLI menu
     :param matching_files: Should the file paths be printed instead of normal output
+    :param api_url: API URL for reservation tickets on Gitea or GitHub
     """
 
     ignore_matches = build_ignore_matcher(path, exclude)
@@ -218,6 +224,7 @@ def exec_potodo(
             is_interactive,
             matching_files,
             ignore_matches,
+            api_url,
         )
 
 
@@ -381,7 +388,15 @@ def main() -> None:
         "-o",
         "--offline",
         action="store_true",
-        help="don't perform any fetching to GitHub/online",
+        help="don't perform any fetching to GitHub/Gitea/online",
+    )
+
+    parser.add_argument(
+        "-u",
+        "--api-url",
+        help=(
+            "API URL to retrieve reservation tickets (https://api.github.com/repos/ORGANISATION/REPOSITORY/issues?state=open or https://git.afpy.org/api/v1/repos/ORGANISATION/REPOSITORY/issues?state=open&type=issues)"
+        )
     )
 
     parser.add_argument(
