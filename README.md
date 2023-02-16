@@ -31,19 +31,23 @@ pip install potodo
 ## Usage example
 
 ```
-usage: potodo [-h] [-p path] [-e path [path ...]] [-a X] [-b X] [-f] [-o] [-n] [-c] [-j] [--exclude-fuzzy] [--exclude-reserved] [--only-reserved] [--show-reservation-dates] [--no-cache] [-i] [-l] [--version] [-v]
+usage: potodo [-h] [-p path] [-e path [path ...]] [-a X] [-b X] [-f] [-o] [-u API_URL] [-n] [-c] [-j] [--exclude-fuzzy] [--exclude-reserved]
+              [--only-reserved] [--show-reservation-dates] [--no-cache] [-i] [-l] [--version] [-v]
 
 List and prettify the po files left to translate.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -p path, --path path  execute Potodo in path
   -e path [path ...], --exclude path [path ...]
-                        exclude from search
+                        gitignore-style patterns to exclude from search.
   -a X, --above X       list all TODOs above given X% completion
   -b X, --below X       list all TODOs below given X% completion
   -f, --only-fuzzy      print only files marked as fuzzys
-  -o, --offline         don't perform any fetching to GitHub/online
+  -o, --offline         don't perform any fetching to GitHub/Gitea/online
+  -u API_URL, --api-url API_URL
+                        API URL to retrieve reservation tickets (https://api.github.com/repos/ORGANISATION/REPOSITORY/issues?state=open or
+                        https://git.afpy.org/api/v1/repos/ORGANISATION/REPOSITORY/issues?state=open&type=issues)
   -n, --no-reserved     don't print info about reserved files
   -c, --counts          render list with the count of remaining entries (translate or review) rather than percentage done
   -j, --json            format output as JSON
@@ -54,7 +58,8 @@ optional arguments:
                         show issue creation dates
   --no-cache            Disables cache (Cache is disabled when files are modified)
   -i, --interactive     Activates the interactive menu
-  -l, --matching-files  Suppress normal output; instead print the name of each matching po file from which output would normally have been printed.
+  -l, --matching-files  Suppress normal output; instead print the name of each matching po file from which output would normally have been
+                        printed.
   --version             show program's version number and exit
   -v, --verbose         Increases output verbosity
 ```
