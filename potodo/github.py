@@ -10,6 +10,7 @@ from typing import Tuple
 
 import requests
 
+
 class NoRemoteError(Exception):
     """Raise when no remote can be found, or when the remote is not github."""
 
@@ -59,9 +60,11 @@ def _get_reservation_list(repo_path: Path) -> Dict[str, Tuple[Any, Any]]:
 
     issues: List[Dict[Any, Any]] = []
     repo_name = get_repo_name(repo_path)
-    if 'github.com' not in repo_name:
-        logging.debug("Remote 'origin' does not points to a Github instance: "
-                      "not fetching issues.")
+    if "github.com" not in repo_name:
+        logging.debug(
+            "Remote 'origin' does not points to a Github instance: "
+            "not fetching issues."
+        )
         raise NoRemoteError
     if repo_name is None:
         return None

@@ -248,7 +248,6 @@ def buffer_add(
         or po_file_stats.percent_translated < above
         or po_file_stats.percent_translated > below
     ):
-
         # add the percentage of the file to the stats of the folder
         folder_stats["translated"] += po_file_stats.translated_nb
         folder_stats["total"] += po_file_stats.entries_count
