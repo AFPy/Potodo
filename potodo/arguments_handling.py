@@ -13,7 +13,6 @@ def check_args(
     above: int,
     verbose: int,
     only_fuzzy: bool,
-    offline: bool,
     hide_reserved: bool,
     counts: bool,
     json_format: bool,

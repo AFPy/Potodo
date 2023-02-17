@@ -31,7 +31,7 @@ pip install potodo
 ## Usage example
 
 ```
-usage: potodo [-h] [-p path] [-e path [path ...]] [-a X] [-b X] [-f] [-o] [-u API_URL] [-n] [-c] [-j] [--exclude-fuzzy] [--exclude-reserved]
+usage: potodo [-h] [-p path] [-e path [path ...]] [-a X] [-b X] [-f] [-u API_URL] [-n] [-c] [-j] [--exclude-fuzzy] [--exclude-reserved]
               [--only-reserved] [--show-reservation-dates] [--no-cache] [-i] [-l] [--version] [-v]
 
 List and prettify the po files left to translate.
@@ -44,7 +44,6 @@ options:
   -a X, --above X       list all TODOs above given X% completion
   -b X, --below X       list all TODOs below given X% completion
   -f, --only-fuzzy      print only files marked as fuzzys
-  -o, --offline         don't perform any fetching to GitHub/Gitea/online
   -u API_URL, --api-url API_URL
                         API URL to retrieve reservation tickets (https://api.github.com/repos/ORGANISATION/REPOSITORY/issues?state=open or
                         https://git.afpy.org/api/v1/repos/ORGANISATION/REPOSITORY/issues?state=open&type=issues)
