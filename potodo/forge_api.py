@@ -46,11 +46,12 @@ def _get_reservation_list(api_url: str) -> Dict[str, Tuple[Any, Any]]:
 
 
 def get_issue_reservations(
-    offline: bool, hide_reserved: bool, api_url: str,
+    hide_reserved: bool,
+    api_url: str,
 ) -> Dict[str, Tuple[Any, Any]]:
     """Retrieve info about reservation if needed."""
 
-    if not offline and not hide_reserved:
+    if api_url and not hide_reserved:
         logging.info("Getting issue reservations from git.afpy.org")
         # If the reservations are to be displayed, then get them
         issue_reservations = _get_reservation_list(api_url)

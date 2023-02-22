@@ -18,7 +18,6 @@ def base_config(repo_dir):
         "only_fuzzy": False,
         "hide_reserved": False,
         "counts": False,
-        "offline": True,
         "is_interactive": False,
         "exclude_fuzzy": False,
         "only_reserved": False,
@@ -27,4 +26,5 @@ def base_config(repo_dir):
         "no_cache": True,
         "matching_files": False,
         "json_format": False,
+        "api_url": "",
     }

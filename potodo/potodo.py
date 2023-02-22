@@ -66,7 +66,6 @@ def non_interactive_output(
     above: int,
     below: int,
     only_fuzzy: bool,
-    offline: bool,
     hide_reserved: bool,
     counts: bool,
     json_format: bool,
@@ -83,7 +82,7 @@ def non_interactive_output(
     dir_stats: List[Any] = []
     # Initialize the arguments
     if api_url:
-        issue_reservations = get_issue_reservations(offline, hide_reserved, api_url)
+        issue_reservations = get_issue_reservations(hide_reserved, api_url)
     else:
         issue_reservations = {}
 
@@ -165,7 +164,6 @@ def exec_potodo(
     above: int,
     below: int,
     only_fuzzy: bool,
-    offline: bool,
     hide_reserved: bool,
     counts: bool,
     json_format: bool,
@@ -186,7 +184,6 @@ def exec_potodo(
     :param above: The above threshold
     :param below: The below threshold
     :param only_fuzzy: Should only fuzzies be printed
-    :param offline: Will not connect to internet
     :param hide_reserved: Will not show the reserved files
     :param counts: Render list with counts not percentage
     :param json_format: Format output as JSON.
@@ -212,7 +209,6 @@ def exec_potodo(
             above,
             below,
             only_fuzzy,
-            offline,
             hide_reserved,
             counts,
             json_format,
@@ -385,18 +381,11 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "-o",
-        "--offline",
-        action="store_true",
-        help="don't perform any fetching to GitHub/Gitea/online",
-    )
-
-    parser.add_argument(
         "-u",
         "--api-url",
         help=(
             "API URL to retrieve reservation tickets (https://api.github.com/repos/ORGANISATION/REPOSITORY/issues?state=open or https://git.afpy.org/api/v1/repos/ORGANISATION/REPOSITORY/issues?state=open&type=issues)"
-        )
+        ),
     )
 
     parser.add_argument(
