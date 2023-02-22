@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "potodo"
+description = "List .po files to be translated."
+authors = [
+    { name = "Jules Lasne", email = "jules.lasne@gmail.com" },
+]
+keywords = ["potodo", "gettext", "i18n"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+]
+requires-python = ">= 3.6"
+dependencies = [
+    "gitignore-parser",
+    "polib",
+    "requests",
+    "simple-term-menu",
+]
+dynamic = [
+    "version",
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+text = "MIT License"
+
+[project.urls]
+Homepage = "https://github.com/afpy/potodo"
+
+[project.scripts]
+potodo = "potodo.potodo:main"
+
+[tool.setuptools]
+packages = [
+    "potodo",
+]
+include-package-data = true
+
+[tool.setuptools.dynamic.version]
+attr = "potodo.__version__"
+
+[tool.black]

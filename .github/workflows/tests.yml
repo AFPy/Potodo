@@ -19,11 +19,11 @@ jobs:
           - py_version: '3.7'
             env: py37
           - py_version: '3.8'
-            env: py38,flake8,mypy,black
+            env: py38
           - py_version: '3.9'
             env: py39
           - py_version: '3.10'
-            env: py310
+            env: py310,flake8,mypy,black
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
