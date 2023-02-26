@@ -35,8 +35,9 @@ def print_dir_stats(
         # placed it means it doesnt need to be printed
 
         folder_completion = 100 * folder_stats["translated"] / folder_stats["total"]
-
-        print(f"\n\n# {directory_name} ({folder_completion:.2f}% done)\n")
+        print(
+            f"\n\n# {directory_name} {folder_stats['translated']:3d} / {folder_stats['total']:3d} ({folder_completion:5.1f}% translated)\n"
+        )
         print("\n".join(buffer))
     logging.debug("Not printing directory %s", directory_name)
 
@@ -55,6 +56,9 @@ def add_dir_stats(
             dict(
                 name=f"{directory_name}/",
                 percent_translated=float(f"{folder_completion:.2f}"),
+                entries=sum(file["entries"] for file in buffer),
+                fuzzies=sum(file["fuzzies"] for file in buffer),
+                translated=sum(file["translated"] for file in buffer),
                 files=buffer,
             )
         )
@@ -140,7 +144,7 @@ def non_interactive_output(
     else:
         if total_entries != 0:
             total_completion = 100 * total_translated / total_entries
-            print(f"\n\n# TOTAL ({total_completion:.2f}% done)\n")
+            print(f"\n\n# TOTAL ({total_completion:.2f}% translated)\n")
 
 
 def build_ignore_matcher(path: Path, exclude: List[str]) -> Callable[[str], bool]:
